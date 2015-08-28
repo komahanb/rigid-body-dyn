@@ -34,6 +34,8 @@ end program second_order
 ! swap out solvers if needed
 ! treat q as scalar if needed
 
+
+
 subroutine test_get_extrapolated_q
 use settings
 use solver_utils
@@ -57,5 +59,12 @@ print*, "old q=", q0
 q(:) = get_extrapolated_q(dT=delta_t, old_q = q0, old_q_dot=q0_dot, old_q_double_dot=q0_double_dot)
 print*, "new q=", q
 
+
+! call the extrapolation routine
+print*, "old q=", q0
+q(:) = get_extrapolated_q(dT=delta_t, old_q = q0, old_q_dot=q0_dot)
+print*, "new q=", q
+
 return
 end subroutine test_get_extrapolated_q
+

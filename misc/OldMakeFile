@@ -1,0 +1,79 @@
+# Common prefix for installation directories.
+# NOTE: This directory must exist when you start the install.
+prefix = ${home}/tech/codes/secode
+# exec_prefix = $(prefix)
+# Where to put the executable for the command `gcc'.
+bindir = $(prefix)/bin
+# Where to put the directories used by the compiler.
+# libexecdir = $(exec_prefix)/libexec
+# Where to put the Info files.
+# infodir = $(prefix)/info
+
+
+#########################
+#       TARGET          #
+#########################
+
+TARGET= flex_dyn
+
+SRC_DIR= ./src
+BIN_DIR = ./bin
+
+SUF90=f90
+SUF77=f
+
+.SUFFIXES: .f90 .f .o .mod
+
+GSL_prefix = /usr/local
+
+#########################
+#      COMPILATION      #
+#########################
+
+FAD	= mpif90
+F90	= mpif90
+F77	= mpif77
+
+CC = mpicc
+FC = mpif90
+
+FFLAGS  = -Wall -Wno-unused -Wno-tabs  
+
+#-r8 -O4 -openmp # -fpe3 -parallel  #-traceback #-ftrapuv -check uninit -traceback #  -g -fpe3 # -traceback -debug all
+
+# -zero -fpe0  -CB  -O0  -g3 -debug extended -ftrapuv -check all #-parallel # -check
+# -openmp #-check
+
+CFLAGS = -fPIC -Wall -Wno-unused -g -I$(GSL_prefix)/include
+LFLAGS =  #-L$(GSL_prefix)/lib -lgsl -lgslcblas -lm
+LIBS = -ldl -lstdc++
+
+#export:
+#    ar rvs pcestimate.a *.o
+
+SRCS = settings.o common_utils.o solver_utils.o dim_flexible_multi_body_dyn.o main.o
+
+OBJS =  ${SRCS:.$(SUF)=.o}
+
+all:  $(TARGET)
+
+$(TARGET): $(OBJS) 
+	$(F90) $(FFLAGS) -o $(TARGET)  $(OBJS)  $(LFLAGS)
+	@echo " ----------- ${TARGET} created ----------- "
+
+######################################
+####### Compilation
+######################################
+%.o : %.mod
+
+.$(SUF90).o:
+	$(F90) $(FFLAGS) -c $<
+.$(SUF77).o:
+	$(F77) $(FFLAGS) -c $<
+
+##################################
+# Clean
+##################################
+
+clean:
+	rm -f *.o *.so
