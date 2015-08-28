@@ -22,7 +22,7 @@ program second_order
   q(0,:) = (/ (i, i = 1, nVars) /)                        ! set initial condition for q
   q_dot(0,:,:) = reshape((/ (i, i = 1,nvars**nvars) /),shape(q_dot(0,:,:)))    ! set initial condition for q_dot
 
-
+  
 
 
   !  print*,q_dot(0,:,:)
@@ -60,13 +60,13 @@ q0_double_dot = (/ 6._dp*x, -sin(x) /)
 
 ! call the extrapolation routine
 print*, "old q=", q0
-q(:) = get_extrapolated_q(delta_t,  q0, q0_dot, q0_double_dot)
+q(:) = get_extrapolated_q(dT=delta_t, old_q = q0, old_q_dot=q0_dot, old_q_double_dot=q0_double_dot)
 print*, "new q=", q
 
 
 ! call the extrapolation routine
 print*, "old q=", q0
-q(:) = get_extrapolated_q(delta_t, q0, q0_dot)
+q(:) = get_extrapolated_q(dT=delta_t, old_q = q0, old_q_dot=q0_dot)
 print*, "new q=", q
 
 return
