@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/aaa_solver_utils.f90
-MD5:2b1e2dbc62bd63742fb569643372a7f0 -- If you edit this, you'll get what you deserve.
+MD5:26645c824064766cd8655572ca848315 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -78,7 +78,7 @@ REAL ()) 1 12 ((ARRAY (FULL 1 2))))) ('' ()) ('' ())) '' 0 'size')) 0 ()
 19 'old_q_dot' '' '' 17 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 DIMENSION DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0 ASSUMED_SHAPE (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () () () 0 0)
-20 'del_q_dot' '' '' 17 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+20 'del_q' '' '' 17 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 DIMENSION DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0 ASSUMED_SHAPE (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () () () 0 0)
 21 'size' '(intrinsic)' '' 17 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
@@ -96,10 +96,9 @@ REAL ()) 1 19 ((ARRAY (FULL 1 2))))) ('' ()) ('' ())) '' 0 'size')) 0 ()
 UNKNOWN 0 0 DIMENSION DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
 ASSUMED_SHAPE (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () ()
 () 0 0)
-27 'del_q_double_dot' '' '' 24 ((VARIABLE IN UNKNOWN-PROC UNKNOWN
-UNKNOWN 0 0 DIMENSION DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0
-ASSUMED_SHAPE (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () ()
-() 0 0)
+27 'del_q' '' '' 24 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+DIMENSION DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0 ASSUMED_SHAPE (
+CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () () () 0 0)
 28 'size' '(intrinsic)' '' 24 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN 0 0 FUNCTION) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 28
 () () () 0 0)
