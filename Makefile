@@ -41,14 +41,14 @@ INCLUDES = -I/usr/local/include #-I/home/newhall/include  -I../include
 #   if I wanted to include libraries not in /usr/lib I'd specify
 #   their path using -Lpath, something like:
 #-----------------------------------------------------------------------
-LIB_FLAGS = #-L/home/newhall/lib  -L../lib
+LIB_FLAGS = #-L../lib #-L/home/newhall/lib  -L../lib
 
 #-----------------------------------------------------------------------
 # define any libraries to link into executable:
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname 
 #   option, something like (this will link in libmylib.so and libm.so:
 #-----------------------------------------------------------------------
-LIBS =  -ldl -lstdc++ #-lmylib -lm
+LIBS =  -ldl -lstdc++ #-ldiffer #-lmylib -lm
 
 #--------------------------
 # define the C, C++, Fortran source files

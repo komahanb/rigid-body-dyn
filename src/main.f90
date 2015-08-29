@@ -1,16 +1,17 @@
 program second_order
   use settings
+  use solver_utils
   use dim_flexible_multi_body_dyn
   implicit none
-
+  
   integer, parameter        :: t0=0, t_final=1
   integer, parameter        :: nSteps=10 ! number of time steps
-  integer, parameter        :: nVars=3
+  integer, parameter        :: nVars=1
   integer                   :: i,j,k
   real(dp), parameter       :: h = dble(t_final-t0)/dble(nSteps) ! time step size
   real(dp)                  :: q(0:nSteps,nVars)
-  real(dp)                  :: q_dot(0:nSteps,1:nVars,1:nVars)
-  real(dp)                  :: q_double_dot(0:nSteps, 1:nVars,1:nVars,1:nVars)  ! state variable, its first and second derivatives
+  real(dp)                  :: q_dot(0:nSteps,1:nVars)
+  real(dp)                  :: q_double_dot(0:nSteps, 1:nVars)  ! state variable, its first and second derivatives
 
   write(*,*) "-----------------------"
   write(*,*) "Second order ODE solver"
@@ -19,17 +20,21 @@ program second_order
   !-------------------
   ! Initial conditions
   !-------------------
-  q(0,:) = (/ (i, i = 1, nVars) /)                        ! set initial condition for q
-  q_dot(0,:,:) = reshape((/ (i, i = 1,nvars**nvars) /),shape(q_dot(0,:,:)))    ! set initial condition for q_dot
+  q(0,:) = (/ 1.0_dp /)           ! set initial condition for q(x=1.0) 
+  q_dot(0,:) =  (/ 1.0_dp /)      ! set initial condition for q_dot
 
+  !reshape((/ (i, i = 1,nvars**nvars) /),shape(q_dot(0,:,:)))    ! set initial condition for q_dot
 
-
-
+  print *,h,  q(0,:), q_dot(0,:)
+  print *,  get_extrapolated_q(h,  q(0,:), q_dot(0,:))
+stop
   !  print*,q_dot(0,:,:)
   !  write(*,*) "The initial conditions are:"
   !  write(*,*) "q     =", q(0,:)
   !  write(*,*) "q_dot =", (  q_dot(0,:,i), i= 1,nVars )
   call test_get_extrapolated_q
+!  call test04
+  print*,  get_bdf_coeffs(3,2)
 
 end program second_order
 
@@ -38,8 +43,9 @@ end program second_order
 ! swap out solvers if needed
 ! treat q as scalar if needed
 
-
-
+!----------------------------------------------------------------------
+! routine to test the extrapolation of the first and second derivatives
+!----------------------------------------------------------------------
 subroutine test_get_extrapolated_q
 use settings
 use solver_utils
@@ -63,7 +69,6 @@ print*, "old q=", q0
 q(:) = get_extrapolated_q(delta_t,  q0, q0_dot, q0_double_dot)
 print*, "new q=", q
 
-
 ! call the extrapolation routine
 print*, "old q=", q0
 q(:) = get_extrapolated_q(delta_t, q0, q0_dot)
@@ -71,4 +76,3 @@ print*, "new q=", q
 
 return
 end subroutine test_get_extrapolated_q
-
