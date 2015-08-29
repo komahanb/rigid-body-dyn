@@ -10,6 +10,7 @@ public get_updated_q, get_updated_q_dot, get_updated_q_double_dot,&   ! expose o
 
 contains
 
+!# yet to be tested
 !----------------------------------------------------
 ! updates the q vector value with the computed update
 !----------------------------------------------------
@@ -22,6 +23,7 @@ new_q(:) = old_q(:) + del_q(:)
 
 end function get_updated_q
 
+!# yet to be tested
 !--------------------------------------------------------
 ! updates the q_dot vector value with the computed update
 !--------------------------------------------------------
@@ -36,6 +38,7 @@ new_q_dot(:) = old_q_dot(:) + alpha0*del_q(:)/del_t
 
 end function get_updated_q_dot
 
+!# yet to be tested
 !---------------------------------------------------------------
 ! updates the q_double_dot vector value with the computed update
 !---------------------------------------------------------------
@@ -49,6 +52,7 @@ new_q_double_dot(:) = old_q_double_dot(:) + beta0*del_q(:)/del_t**2
 
 end function get_updated_q_double_dot
 
+!# tested OK
 !--------------------------------------------------------------------------
 ! returns the extrapolated value of q based on first and second derivatives
 !-------------------------------------------------------------------------
@@ -65,6 +69,7 @@ end if
 
 end function get_extrapolated_q
 
+!# yet to be tested
 !------------------------------------------------------------------
 ! returns the bdf coeffs (unscaled with respect to the step size h)
 !------------------------------------------------------------------
@@ -82,14 +87,13 @@ n = m +d                                    ! number of points needed for the re
 call differ_backward ( h, d, m, c, x )      ! calling a library function
 
 c = reverse_real(c)                         ! store in backward order for convenience
-x = reverse_real(x)                         ! store in backward order for convenience
-
-write (*, '(a,i2,a,i2)' )  '  Backward difference coefficients, d = ', d, ', m = ', m
-write (*, *) "index  ",  "coeff"
-
-do i = 1, n
-   write (*, '(a,i4,f13.2)') 'k', int(x(i)) , c(i)
-end do
+!!$x = reverse_real(x)                         ! store in backward order for convenience
+!!$write (*, '(a,i2,a,i2)' )  '  Backward difference coefficients, d = ', d, ', m = ', m
+!!$write (*, *) "index  ",  "coeff"
+!!$
+!!$do i = 1, n
+!!$   write (*, '(a,i4,f13.2)') 'k', int(x(i)) , c(i)
+!!$end do
 
 end function get_bdf_coeffs
 

@@ -19,19 +19,37 @@ program second_order
   q_dot(0,:) =  (/ 1.0_dp, 1.0_dp /)      ! set initial condition for q_dot
 
   call test_get_extrapolated_q
-
+  call test_get_bdf_coeffs
 
 end program second_order
 
 !----------------------------------------------------------------------
-
+! routine that will check the coefficients need for 1 ,2 nd der approx
 !----------------------------------------------------------------------
-subroutine test_
+subroutine test_get_bdf_coeffs
   use constants
   use solver_utils
   implicit none
+  print*, "------------------------------------------------------"
+  print*, "---------test_get_bdf_coeffs--------------------------"
+  print*, "------------------------------------------------------"
+  print*, "case 1: derivative d = 1 and order m = 1"
+  print*, get_bdf_coeffs(1, 1)
+  print*, "case 2: derivative d = 1 and order m = 2"
+  print*, get_bdf_coeffs(1, 2)
+  print*, "case 3: derivative d = 1 and order m = 3"
+  print*, get_bdf_coeffs(1, 3)
+  print*, "------------------------------------------------------"
+  print*, "case 4: derivative d = 2 and order m = 1"
+  print*, get_bdf_coeffs(2, 1)
+  print*, "case 5: derivative d = 2 and order m = 2"
+  print*, get_bdf_coeffs(2, 2)
+  print*, "case 6: derivative d = 2 and order m = 3"
+  print*, get_bdf_coeffs(2, 3)
+  print*, "--------completed--------------------------------------"
+  print*, ""
 
-end subroutine test_
+end subroutine test_get_bdf_coeffs
 
 !----------------------------------------------------------------------
 
