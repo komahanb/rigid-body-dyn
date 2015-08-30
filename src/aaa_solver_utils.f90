@@ -6,7 +6,8 @@ implicit none
 private                                                               ! makes all functions default by private
 
 public get_updated_q, get_updated_q_dot, get_updated_q_double_dot,&   ! expose only the functions that are needed outside the module
-     & get_extrapolated_q, get_bdf_coeffs , get_approximated_q_dot
+     & get_extrapolated_q, get_bdf_coeffs , get_approximated_q_dot,&
+     & get_approximated_q_double_dot
 
 contains
 
@@ -90,6 +91,7 @@ call differ_backward ( h, d, m, c, x )      ! calling a library function
 end function get_bdf_coeffs
 
 !# tested OK, just need to check the sign of the derivative
+!# how to deal with initial steps?
 !--------------------------------------------------------
 ! returns the approximated first derivative
 ! use 'q' to produce an m-th order approximation to q_dot
@@ -123,5 +125,46 @@ end do
 q_dot(:) = q_dot(:)/del_t
 
 end function get_approximated_q_dot
+
+
+
+
+!# tested OK, just need to check the sign of the derivative
+!# how to deal with initial steps?
+!--------------------------------------------------------
+! returns the approximated second derivative
+! use 'q' to produce an m-th order approximation to q_double_dot
+!--------------------------------------------------------
+function get_approximated_q_double_dot(q, m) result(q_double_dot)
+!************************************************
+! q = [t= 0                , (q1, q2, q_{dim_q}), 
+!      t= 0+del_t          , (q1, q2, q_{dim_q}),
+!         .                ,          .         ,
+!         .                ,          .         ,
+!      t= 0+k*del_t        , (q1, q2, q_{dim_q})]
+!************************************************
+integer(sp), parameter   :: degree = 2           ! since we are approximating second derivative
+integer(sp)              :: cnt                  ! cnt = m + degree -1
+integer(sp), intent(in)  :: m                    ! m = order of accuracy of sought derivative
+real(dp), intent(in)     :: q(0:degree+m-1,dim_q)! matrix whose structure is drawn above
+real(dp)                 :: q_double_dot(dim_q)  ! output second derivative vector
+real(dp)                 :: beta(0:m+degree-1)   ! should always be based on the reqd. accuracy (not on the total available data like beta(0 to k))
+integer(sp)              :: i
+
+! getting the BDF coefficients
+beta = get_bdf_coeffs(degree,m)
+
+cnt = m + degree -1
+if (size(beta).ne. cnt+1) stop"Wrong operation predicted. stopping"
+
+q_double_dot(:)=0._dp                                         ! initialize
+do i = 0, cnt                                                 ! loop (sum) across the data points (0 to m in paper) 
+   q_double_dot(:) =  q_double_dot(:) + beta(i)*q(i,:)        ! find the cumulative sum
+end do
+q_double_dot(:) = q_double_dot(:)/(del_t*del_t)
+
+end function get_approximated_q_double_dot
+
+
 
 end module solver_utils

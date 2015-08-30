@@ -21,13 +21,66 @@ program second_order
   call test_get_extrapolated_q
   call test_get_bdf_coeffs
   call test_get_approximated_q_dot
+  call test_get_approximated_q_double_dot
 
 end program second_order
 
+!-------------------------------------
+! test second derivative approximation
+!-------------------------------------
+subroutine test_get_approximated_q_double_dot
+  use constants
+  use solver_utils
+  implicit none
 
-!----------------------------------------------------------------------
+  real(dp)      :: q(0:4,dim_q)    ! I will simulate upto 5 available time-set data
+  real(dp)      :: q_double_dot(dim_q)    ! stores the time-derivative
+  integer(sp)   :: d, m, k
 
-!----------------------------------------------------------------------
+  ! first setup a q matrix with some simulated data
+  q(0,1:dim_q) = (/ 0.1_dp, (1.1_dp)**3 /)
+  q(1,1:dim_q) = (/ 0.2_dp, (1.2_dp)**3 /)
+  q(2,1:dim_q) = (/ 0.3_dp, (1.3_dp)**3 /)
+  q(3,1:dim_q) = (/ 0.4_dp, (1.4_dp)**3 /)
+  q(4,1:dim_q) = (/ 0.5_dp, (1.5_dp)**3 /)
+!!$
+
+  q(0,1:dim_q) = (/ 0.1_dp, exp(0.1_dp) /)
+  q(1,1:dim_q) = (/ 0.2_dp, exp(0.2_dp) /)
+  q(2,1:dim_q) = (/ 0.3_dp, exp(0.3_dp) /)
+  q(3,1:dim_q) = (/ 0.4_dp, exp(0.4_dp) /)
+  q(4,1:dim_q) = (/ 0.5_dp, exp(0.5_dp) /)
+
+  print*, "------------------------------------------------------"
+  print*, "---------test_get_approximated_q_double_dot------------"
+  print*, "------------------------------------------------------"  
+
+  ! call the routine to and check the q_double_dot vector
+  d=2; m=1; k=4
+  print*, "d=2, m=1,k=4(t=0.4s)", get_approximated_q_double_dot(q(k-(m+d-1):k,:), m)
+
+  d=2; m=2; k=4;
+  print*, "d=2, m=2,k=4(t=0.4s)", get_approximated_q_double_dot(q(k-(m+d-1):k,:), m)
+
+  d=2; m=3; k=4;
+  print*, "d=2, m=3,k=4(t=0.4s)", get_approximated_q_double_dot(q(k-(m+d-1):k,:), m)
+
+
+!  print*, "act  d=2,k=4(t=0.4s)", 0.0_dp, 6._dp *1.5_dp
+
+  print*, "act  d=2,k=4(t=0.4s)", 0.0_dp, exp(0.5_dp)
+
+  !  d=1; m=3
+  !  print*, "d=1, m=3", get_approximated_q_double_dot(q(0:d+m-1,:), 5 , m)
+!!$  d=1; m=4
+!!$  print*, "d=1, m=4", get_approximated_q_double_dot(q(0:d+m-1,:), 5 , m)
+  print*, "------------------------------------------------------"
+  print*, ""
+end subroutine test_get_approximated_q_double_dot
+
+!-------------------------------------
+! test first derivative approximation
+!-------------------------------------
 subroutine test_get_approximated_q_dot
   use constants
   use solver_utils
@@ -57,16 +110,16 @@ subroutine test_get_approximated_q_dot
 
   ! call the routine to and check the q_dot vector
   d=1; m=1; k=4
-  print*, "d=1, m=1,k=4(t=0.4s)", get_approximated_q_dot(q(k-m:k,:), m)
+  print*, "d=1, m=1,k=4(t=0.4s)", get_approximated_q_dot(q(k-(m+d-1):k,:), m)
 
   d=1; m=2; k=4;
-  print*, "d=1, m=2,k=4(t=0.4s)", get_approximated_q_dot(q(k-m:k,:), m)
+  print*, "d=1, m=2,k=4(t=0.4s)", get_approximated_q_dot(q(k-(m+d-1):k,:), m)
 
   d=1; m=3; k=4;
-  print*, "d=1, m=3,k=4(t=0.4s)", get_approximated_q_dot(q(k-m:k,:), m)
+  print*, "d=1, m=3,k=4(t=0.4s)", get_approximated_q_dot(q(k-(m+d-1):k,:), m)
 
   d=1; m=4; k=4;
-  print*, "d=1, m=3,k=4(t=0.4s)", get_approximated_q_dot(q(k-m:k,:), m)
+  print*, "d=1, m=3,k=4(t=0.4s)", get_approximated_q_dot(q(k-(m+d-1):k,:), m)
 
 !  print*, "act  d=1,k=4(t=0.4s)", 1.0_dp, 3._dp *1.5_dp*1.5_dp
 
