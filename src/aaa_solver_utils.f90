@@ -24,7 +24,7 @@ new_q(:) = old_q(:) + del_q(:)
 
 end function get_updated_q
 
-!# yet to be tested
+!# yet to be tested, what is alpha0
 !--------------------------------------------------------
 ! updates the q_dot vector value with the computed update
 !--------------------------------------------------------
@@ -39,7 +39,7 @@ new_q_dot(:) = old_q_dot(:) + alpha0*del_q(:)/del_t
 
 end function get_updated_q_dot
 
-!# yet to be tested
+!# yet to be tested, what is beta0
 !---------------------------------------------------------------
 ! updates the q_double_dot vector value with the computed update
 !---------------------------------------------------------------
@@ -116,7 +116,7 @@ integer(sp)              :: i
 alpha = get_bdf_coeffs(degree,m)
 
 cnt = m + degree -1
-if (size(alpha).ne. cnt+1) stop"Wrong operation predicted. stopping"
+if (size(alpha).ne. cnt+1) stop"Wrong operation predicted. stopping" ! use something diff?
 
 q_dot(:)=0._dp                                   ! initialize
 do i = 0, cnt                                    ! loop (sum) across the data points (0 to m in paper) 
@@ -125,9 +125,6 @@ end do
 q_dot(:) = q_dot(:)/del_t
 
 end function get_approximated_q_dot
-
-
-
 
 !# tested OK, just need to check the sign of the derivative
 !# how to deal with initial steps?
@@ -155,16 +152,15 @@ integer(sp)              :: i
 beta = get_bdf_coeffs(degree,m)
 
 cnt = m + degree -1
-if (size(beta).ne. cnt+1) stop"Wrong operation predicted. stopping"
+if (size(beta).ne. cnt+1) stop"Wrong operation predicted. stopping" ! use something diff?
 
 q_double_dot(:)=0._dp                                         ! initialize
 do i = 0, cnt                                                 ! loop (sum) across the data points (0 to m in paper) 
    q_double_dot(:) =  q_double_dot(:) + beta(i)*q(i,:)        ! find the cumulative sum
 end do
-q_double_dot(:) = q_double_dot(:)/(del_t*del_t)
+q_double_dot(:) = q_double_dot(:)/del_t**2
 
 end function get_approximated_q_double_dot
-
 
 
 end module solver_utils

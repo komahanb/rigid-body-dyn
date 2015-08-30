@@ -17,6 +17,24 @@ program second_order
 
   q(0,:)     = (/ 1.0_dp, 1.0_dp /)           ! set initial condition for q(x=1.0) 
   q_dot(0,:) =  (/ 1.0_dp, 1.0_dp /)      ! set initial condition for q_dot
+    
+  ! (1)  get approximated q_double_dot based on the initial conditions
+
+  ! while(residual.le.tol && time.eq.t_final)
+
+  ! (2) form R Matrix (rhs) (-R)
+  ! (3) form Jacobian (lhs) (partial_R/partial_q + (\alpha0/del_t) partial_R/partial_q_dot  + (\alpha0/del_t^2) partial_R/partial_q_double_dot)
+  ! (4) compute the stopping parameters such as residual, final_time steps etc
+  ! (5) use a solver to solve the system for del_q
+  ! (6) update, q, q_dot_q_double_dot
+
+  !  end while
+  
+  ! adjoint pseudo code
+  
+  !=====================
+  ! do unit testing here
+  !=====================
 
   call test_get_extrapolated_q
   call test_get_bdf_coeffs
