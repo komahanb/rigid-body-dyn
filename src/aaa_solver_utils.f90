@@ -6,7 +6,7 @@ implicit none
 private                                                               ! makes all functions default by private
 
 public get_updated_q, get_updated_q_dot, get_updated_q_double_dot,&   ! expose only the functions that are needed outside the module
-     & get_extrapolated_q, get_bdf_coeffs !, get_approximated_q_dot
+     & get_extrapolated_q, get_bdf_coeffs , get_approximated_q_dot
 
 contains
 
@@ -69,7 +69,7 @@ end if
 
 end function get_extrapolated_q
 
-!# yet to be tested
+!# yet to be tested for second derivative (confusion with no. of pts). first derivative tested OK
 !------------------------------------------------------------------
 ! returns the bdf coeffs (unscaled with respect to the step size h)
 !------------------------------------------------------------------
@@ -83,33 +83,45 @@ real(dp), parameter        :: h = 1._dp     ! if we set h=del_t we will get the 
 integer(sp)                :: i
 
 n = m +d                                    ! number of points needed for the reqd accuracy and degree
-
 call differ_backward ( h, d, m, c, x )      ! calling a library function
-
-c = reverse_real(c)                         ! store in backward order for convenience
+!$!c = reverse_real(c)                         ! store in backward order for convenience
 !!$x = reverse_real(x)                         ! store in backward order for convenience
-!!$write (*, '(a,i2,a,i2)' )  '  Backward difference coefficients, d = ', d, ', m = ', m
-!!$write (*, *) "index  ",  "coeff"
-!!$
-!!$do i = 1, n
-!!$   write (*, '(a,i4,f13.2)') 'k', int(x(i)) , c(i)
-!!$end do
 
 end function get_bdf_coeffs
 
-!------------------------------------------
+!# tested OK, just need to check the sign of the derivative
+!--------------------------------------------------------
 ! returns the approximated first derivative
-!------------------------------------------
-!!$function get_approximated_q_dot(q, nvars, npts) result(q_dot)
-!!$
-!!$integer(sp), intent(in)  :: nvars, npts
-!!$real(dp), intent(in)     :: q(nvars npts)
-!!$integer(sp), parameter   :: degree = 1 
-!!$real(dp)                 :: q_dot(nvars)
-!!$real(dp), allocatable    :: alpha(npts)
-!!$real(dp)                 :: total = 0._dp
-!!$integer(sp)              :: i
-!!$
-!!$end function get_approximated_q_dot
+! use 'q' to produce an m-th order approximation to q_dot
+!--------------------------------------------------------
+function get_approximated_q_dot(q, m) result(q_dot)
+!************************************************
+! q = [t= 0                , (q1, q2, q_{dim_q}), 
+!      t= 0+del_t          , (q1, q2, q_{dim_q}),
+!         .                ,          .         ,
+!         .                ,          .         ,
+!      t= 0+k*del_t        , (q1, q2, q_{dim_q})]
+!************************************************
+integer(sp), parameter   :: degree = 1           ! since we are approximating first derivative
+integer(sp)              :: cnt                  ! cnt = m + degree -1
+integer(sp), intent(in)  :: m                    ! m = order of accuracy of sought derivative
+real(dp), intent(in)     :: q(0:degree+m-1,dim_q)! matrix whose structure is drawn above
+real(dp)                 :: q_dot(dim_q)         ! output first derivative vector
+real(dp)                 :: alpha(0:m+degree-1)  ! should always be based on the reqd. accuracy (not on the total available data like alpha(0 to k))
+integer(sp)              :: i
+
+! getting the BDF coefficients
+alpha = get_bdf_coeffs(degree,m)
+
+cnt = m + degree -1
+if (size(alpha).ne. cnt+1) stop"Wrong operation predicted. stopping"
+
+q_dot(:)=0._dp                                   ! initialize
+do i = 0, cnt                                    ! loop (sum) across the data points (0 to m in paper) 
+   q_dot(:) =  q_dot(:) + alpha(i)*q(i,:)        ! find the cumulative sum
+end do
+q_dot(:) = q_dot(:)/del_t
+
+end function get_approximated_q_dot
 
 end module solver_utils

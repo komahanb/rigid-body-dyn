@@ -20,8 +20,65 @@ program second_order
 
   call test_get_extrapolated_q
   call test_get_bdf_coeffs
+  call test_get_approximated_q_dot
 
 end program second_order
+
+
+!----------------------------------------------------------------------
+
+!----------------------------------------------------------------------
+subroutine test_get_approximated_q_dot
+  use constants
+  use solver_utils
+  implicit none
+
+  real(dp)      :: q(0:4,dim_q)    ! I will simulate upto 5 available time-set data
+  real(dp)      :: q_dot(dim_q)    ! stores the time-derivative
+  integer(sp)   :: d, m, k
+
+  ! first setup a q matrix with some simulated data
+  q(0,1:dim_q) = (/ 0.1_dp, (1.1_dp)**3 /)
+  q(1,1:dim_q) = (/ 0.2_dp, (1.2_dp)**3 /)
+  q(2,1:dim_q) = (/ 0.3_dp, (1.3_dp)**3 /)
+  q(3,1:dim_q) = (/ 0.4_dp, (1.4_dp)**3 /)
+  q(4,1:dim_q) = (/ 0.5_dp, (1.5_dp)**3 /)
+
+
+  q(0,1:dim_q) = (/ 0.1_dp, exp(0.1_dp) /)
+  q(1,1:dim_q) = (/ 0.2_dp, exp(0.2_dp) /)
+  q(2,1:dim_q) = (/ 0.3_dp, exp(0.3_dp) /)
+  q(3,1:dim_q) = (/ 0.4_dp, exp(0.4_dp) /)
+  q(4,1:dim_q) = (/ 0.5_dp, exp(0.5_dp) /)
+
+  print*, "------------------------------------------------------"
+  print*, "---------test_get_approximated_q_dot------------------"
+  print*, "------------------------------------------------------"  
+
+  ! call the routine to and check the q_dot vector
+  d=1; m=1; k=4
+  print*, "d=1, m=1,k=4(t=0.4s)", get_approximated_q_dot(q(k-m:k,:), m)
+
+  d=1; m=2; k=4;
+  print*, "d=1, m=2,k=4(t=0.4s)", get_approximated_q_dot(q(k-m:k,:), m)
+
+  d=1; m=3; k=4;
+  print*, "d=1, m=3,k=4(t=0.4s)", get_approximated_q_dot(q(k-m:k,:), m)
+
+  d=1; m=4; k=4;
+  print*, "d=1, m=3,k=4(t=0.4s)", get_approximated_q_dot(q(k-m:k,:), m)
+
+!  print*, "act  d=1,k=4(t=0.4s)", 1.0_dp, 3._dp *1.5_dp*1.5_dp
+
+  print*, "act  d=1,k=4(t=0.4s)", 1.0_dp, exp(0.5_dp)
+
+  !  d=1; m=3
+  !  print*, "d=1, m=3", get_approximated_q_dot(q(0:d+m-1,:), 5 , m)
+!!$  d=1; m=4
+!!$  print*, "d=1, m=4", get_approximated_q_dot(q(0:d+m-1,:), 5 , m)
+  print*, "------------------------------------------------------"
+  print*, ""
+end subroutine test_get_approximated_q_dot
 
 !----------------------------------------------------------------------
 ! routine that will check the coefficients need for 1 ,2 nd der approx
@@ -30,6 +87,7 @@ subroutine test_get_bdf_coeffs
   use constants
   use solver_utils
   implicit none
+
   print*, "------------------------------------------------------"
   print*, "---------test_get_bdf_coeffs--------------------------"
   print*, "------------------------------------------------------"
@@ -46,13 +104,15 @@ subroutine test_get_bdf_coeffs
   print*, get_bdf_coeffs(2, 2)
   print*, "case 6: derivative d = 2 and order m = 3"
   print*, get_bdf_coeffs(2, 3)
+  print*, "case 7: derivative d = 2 and order m = 4"
+  print*, get_bdf_coeffs(2, 4)
   print*, "--------completed--------------------------------------"
   print*, ""
 
 end subroutine test_get_bdf_coeffs
 
 !----------------------------------------------------------------------
-
+!
 !----------------------------------------------------------------------
 subroutine test
   use constants
@@ -81,9 +141,9 @@ subroutine test_get_extrapolated_q
   x=1._dp
 
   ! give starting values for extrapolation
-  q0=(/ x**3, sin(x) /)
-  q0_dot = (/ 3._dp*x**2, cos(x) /)
-  q0_double_dot = (/ 6._dp*x, -sin(x) /)
+  q0=(/x**3, sin(x)/)
+  q0_dot = (/3._dp*x**2, cos(x)/)
+  q0_double_dot = (/6._dp*x, -sin(x)/)
 
   ! call the extrapolation routine
   print*, "old q=", q0

@@ -21,7 +21,7 @@ FC = mpif90
 #------------------------------
 CC_FLAGS = -Wall -g
 CX_FLAGS = -Wall -g
-FC_FLAGS = -Wall -g -Wno-unused
+FC_FLAGS = -Wall -g -Wno-unused -fbounds-check
 
 
 #------------------------------
