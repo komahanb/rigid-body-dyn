@@ -1,6 +1,0 @@
-module utils
-
-use constants
-
-
-end module utils

@@ -22,10 +22,10 @@ program second_order
   type(body_fixed_frame)    :: frame_A
 
 
-!  call test_skew_sym
+  !  call test_skew_sym
   call test_cross_pdt
   stop
-
+  
 
   frame_A%r_alpha     = (/ 1._dp, 1._dp, 1._dp /)
   frame_A%theta_alpha = (/ 30.0d0, 60.0d0, 0.0d0 /)/rad_to_deg
@@ -303,7 +303,7 @@ subroutine test_skew_sym
   real(dp)                  :: a_skew(3,3)
 
   a = (/ 1, 2, 3/)
-  a_skew = get_skew_sym_mat(a)
+  a_skew = skew(a)
 
   print*, ""
   print*, a
@@ -319,20 +319,15 @@ implicit none
 
 real(dp) :: a(3)
 real(dp) :: b(3)
-real(dp) :: cross(3,3)
+real(dp) :: cross_pdt(3,3)
 
   a = (/ 1, 2, 3/)
   b = (/ 3,4,5/)
 
-print *, shape(a)
-print*, shape(cross)
+  print*, "cross pdt:", cross(a,b)
 
-cross =get_skew_sym_mat(a)
-
-print*, "cross pdt:", matmul(cross,b)
-
-print*, a
-print*, b
-print*, cross
+  print*, a
+  print*, b
 
 end subroutine test_cross_pdt
+
