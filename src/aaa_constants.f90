@@ -7,6 +7,14 @@ implicit none
 
 integer, parameter           :: dp = kind(0.d0)                   ! double precision
 integer, parameter           :: sp = kind(0.0)                    ! single precision
+integer, parameter           :: units_len = 10                    ! length of the units
+
+integer, parameter           :: ref_frame_len = 8
+
+integer, parameter           :: num_spat_dim  = 3 
+
+real(dp), parameter          :: pi = 22._dp/7._dp
+real(dp), parameter          :: rad_to_deg = 180._dp/pi
 
 !------------------------------------
 ! define all solver related constants
