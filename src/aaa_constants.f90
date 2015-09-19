@@ -23,4 +23,9 @@ integer(sp), parameter       :: dim_q = 2                         ! number of va
 integer(sp), parameter       :: dim_x = 10                        ! number of variables in x_vector x = [x1, x2, x3, ..., x_{dim_x}]
 real(dp), parameter          :: del_t = 0.1_dp                    ! time step used in integration
 
+type vector
+   real(dp)                  :: x, y, z
+end type vector
+
+
 end module constants

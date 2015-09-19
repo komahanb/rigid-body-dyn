@@ -313,21 +313,31 @@ subroutine test_skew_sym
 end subroutine test_skew_sym
 
 subroutine test_cross_pdt
-use constants
-use utils
-implicit none
+  use constants
+  use utils
+  implicit none
 
-real(dp) :: a(3)
-real(dp) :: b(3)
-real(dp) :: cross_pdt(3,3)
+  real(dp) :: a(3)
+  real(dp) :: b(3)
 
-  a = (/ 1, 2, 3/)
-  b = (/ 3,4,5/)
-
+  type(vector) ::a1, b1
+  a = (/ -1, 2, -3/)
+  b = (/ 4,-5,6/)
+  
+  !  a1%x = -1
+  !  a1%y = 2
+  !  a1%z = -3
+  a1=vector(a)
+  !  b1%x = 4
+  !  b1%y = -5
+  !  b1%z = 6
+  b1=vector(b)
+  !real(dp) :: cross_pdt(3,3)
+  print*, a1, b1
   print*, "cross pdt:", cross(a,b)
+  print*, "cross pdt:", a1*b1
 
-  print*, a
-  print*, b
+  print*, "Dot product : ", dot(a1,b1)
 
 end subroutine test_cross_pdt
 
