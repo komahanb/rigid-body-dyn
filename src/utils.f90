@@ -10,12 +10,12 @@ end interface operator (*)
 
 ! overload abs 
 interface abs
-   module procedure absvec
+   module procedure abs_vec
 end interface abs
 
 ! constructor for vector data type
 interface vector
-   module procedure new_vector
+   module procedure new_vec
 end interface vector
 
 contains
@@ -51,14 +51,14 @@ function dot(a,b)
 end function dot
 
 ! returns the magnitude of a vector
-function absvec(a)
+function abs_vec(a)
   type (vector), intent (in) :: a
   real(dp)                   :: absvec
     absvec = sqrt(a%x**2 + a%y**2 + a%z**2)
-end function absvec
+end function abs_vec
 
 ! constructor for a new vector
-function new_vector(a)
+function new_vec(a)
   real(dp), intent(in) :: a(3)
   type(vector) :: new_vector
   
@@ -66,6 +66,6 @@ function new_vector(a)
   new_vector%y=a(2)
   new_vector%z=a(3)
 
-end function new_vector
+end function new_vec
 
 end module utils
