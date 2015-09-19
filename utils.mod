@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/utils.f90
-MD5:b75a2e31b4dc30cad802552b5ca61886 -- If you edit this, you'll get what you deserve.
+MD5:57f9932aec07df6865a4673111cd10dd -- If you edit this, you'll get what you deserve.
 
 (() () () () (2) () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -22,7 +22,7 @@ UNKNOWN-FL UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0)
 UNKNOWN-ACCESS ()) (8 'z' (REAL 8 0 0 0 REAL ()) () (UNKNOWN-FL
 UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) UNKNOWN-ACCESS ()))
 PUBLIC (() () () ()) () 0 0 95208851)
-3 'absvec' 'utils' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
+3 'abs_vec' 'utils' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
 UNKNOWN 0 0 FUNCTION IMPLICIT_PURE) (REAL 8 0 0 0 REAL ()) 9 0 (10) () 3
 () () () 0 0)
 11 'constants' 'constants' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC
@@ -53,7 +53,7 @@ INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
 27 'kind' '(intrinsic)' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN 0 0 FUNCTION) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 27
 () () () 0 0)
-4 'new_vector' 'utils' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
+4 'new_vec' 'utils' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
 UNKNOWN 0 0 FUNCTION IMPLICIT_PURE) (DERIVED 5 0 0 0 DERIVED ()) 28 0 (
 29) () 4 () () () 0 0)
 30 'num_spat_dim' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
@@ -119,8 +119,8 @@ INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3')) 0 () ()
 () 0 0)
 )
 
-('Vector' 0 5 'absvec' 0 3 'constants' 0 11 'cross' 0 12 'cross_pdt' 0 2
-'del_t' 0 19 'dim_q' 0 20 'dim_x' 0 21 'dot' 0 22 'dp' 0 26 'kind' 0 27
-'new_vector' 0 4 'num_spat_dim' 0 30 'pi' 0 31 'rad_to_deg' 0 32
+('Vector' 0 5 'abs_vec' 0 3 'constants' 0 11 'cross' 0 12 'cross_pdt' 0
+2 'del_t' 0 19 'dim_q' 0 20 'dim_x' 0 21 'dot' 0 22 'dp' 0 26 'kind' 0
+27 'new_vec' 0 4 'num_spat_dim' 0 30 'pi' 0 31 'rad_to_deg' 0 32
 'ref_frame_len' 0 33 'skew' 0 34 'sp' 0 38 'units_len' 0 39 'utils' 0 40
 'vector' 0 41)

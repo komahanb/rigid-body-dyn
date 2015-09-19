@@ -53,18 +53,18 @@ end function dot
 ! returns the magnitude of a vector
 function abs_vec(a)
   type (vector), intent (in) :: a
-  real(dp)                   :: absvec
-    absvec = sqrt(a%x**2 + a%y**2 + a%z**2)
+  real(dp)                   :: abs_vec
+    abs_vec = sqrt(a%x**2 + a%y**2 + a%z**2)
 end function abs_vec
 
 ! constructor for a new vector
 function new_vec(a)
   real(dp), intent(in) :: a(3)
-  type(vector) :: new_vector
+  type(vector) :: new_vec
   
-  new_vector%x=a(1)
-  new_vector%y=a(2)
-  new_vector%z=a(3)
+  new_vec%x=a(1)
+  new_vec%y=a(2)
+  new_vec%z=a(3)
 
 end function new_vec
 
