@@ -15,13 +15,13 @@ end interface abs
 
 ! constructor for vector data type
 interface vector
-   module procedure new_vec, get_array
+   module procedure get_array
 end interface vector
 
 
 ! constructor for vector data type
 interface matrix
-   module procedure new_matrix, get_matrix
+   module procedure new_matrix_from_array, get_matrix
 end interface 
 
 contains
@@ -60,7 +60,7 @@ function matrix_matrix(A, B)
   type(matrix), intent (in) :: A, B 
   type(matrix)              :: matrix_matrix
 
-  matrix_matrix = new_matrix_from_matrix( matmul( get_matrix(A), get_matrix(B) ) )
+  matrix_matrix = matrix( matmul( get_matrix(A), get_matrix(B) ) )
 
 end function matrix_matrix
 
@@ -102,15 +102,15 @@ function abs_vec(a)
 end function abs_vec
 
 ! constructor for a new vector
-function new_vec(a)
-  real(dp), intent(in) :: a(3)
-  type(vector) :: new_vec
-  
-  new_vec%x=a(1)
-  new_vec%y=a(2)
-  new_vec%z=a(3)
-
-end function new_vec
+!!$function new_vec(a)
+!!$  real(dp), intent(in) :: a(3)
+!!$  type(vector) :: new_vec
+!!$  
+!!$  new_vec%x=a(1)
+!!$  new_vec%y=a(2)
+!!$  new_vec%z=a(3)
+!!$
+!!$end function new_vec
 
 ! get the vector entries as array
 function get_array(a)
@@ -124,23 +124,23 @@ function get_array(a)
 end function get_array
 
 ! constructor for a new matrix
-function new_matrix(a)
+function new_matrix_from_array(a)
   real(dp), intent(in) :: a(num_spat_dim**2)
-  type(matrix) :: new_matrix
+  type(matrix) :: new_matrix_from_array
   real(dp)     :: tmp(num_spat_dim, num_spat_dim)
 
   tmp = reshape(a, (/ num_spat_dim, num_spat_dim /))
 
-  new_matrix%ij = tmp
+  new_matrix_from_array%ij = tmp
 
-end function new_matrix
+end function new_matrix_from_array
 
-! constructor for a new matrix
-function new_matrix_from_matrix(A)
-  real(dp), intent(in) :: A(num_spat_dim, num_spat_dim)
-  type(matrix)         :: new_matrix_from_matrix
-  new_matrix_from_matrix%ij=A
-end function new_matrix_from_matrix
+!!$! constructor for a new matrix
+!!$function new_matrix_from_matrix(A)
+!!$  real(dp), intent(in) :: A(num_spat_dim, num_spat_dim)
+!!$  type(matrix)         :: new_matrix_from_matrix
+!!$  new_matrix_from_matrix%ij=A
+!!$end function new_matrix_from_matrix
 
 !!$! constructor for a new matrix
 !!$function new_matrix(a,m,n)

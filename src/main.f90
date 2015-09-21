@@ -327,11 +327,11 @@ subroutine test_cross_pdt
   !  a1%x = -1
   !  a1%y = 2
   !  a1%z = -3
-  a1=vector(a)
+  a1=vector(1,2,3)
   !  b1%x = 4
   !  b1%y = -5
   !  b1%z = 6
-  b1=vector(b)
+  b1=vector(2,3,4)
   !real(dp) :: cross_pdt(3,3)
   print*, a1, b1
   print*, "cross pdt:", cross(a,b)

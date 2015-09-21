@@ -1,4 +1,4 @@
-module test
+module test_body
   use utils
 
   ! each body shall contain the following
@@ -36,4 +36,8 @@ module test
 
   end type body
   
-end module test
+
+contains
+
+
+end module test_body
