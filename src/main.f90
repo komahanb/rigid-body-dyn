@@ -303,7 +303,7 @@ subroutine test_skew_sym
   real(dp)                  :: a_skew(3,3)
 
   a = (/ 1, 2, 3/)
-  a_skew = skew(a)
+  a_skew = get_matrix(skew(vector(a)))
 
   print*, ""
   print*, a
@@ -317,25 +317,21 @@ subroutine test_cross_pdt
   use utils
   implicit none
 
-  real(dp) :: a(3)
-  real(dp) :: b(3)
 
   type(vector) ::a1, b1
-  a = (/ -1, 2, -3/)
-  b = (/ 4,-5,6/)
-  
-  !  a1%x = -1
-  !  a1%y = 2
-  !  a1%z = -3
-  a1=vector(1,2,3)
-  !  b1%x = 4
-  !  b1%y = -5
-  !  b1%z = 6
-  b1=vector(2,3,4)
+
+     a1%x = (/ 4,5,6/)
+     b1%x = (/ 4,5,6/)
+
+!  a1=vector((/1,2,3/))
+!    b1%x = 4
+!    b1%y = -5
+!    b1%z = 6
+ ! b1=vector((/2,3,4/))
   !real(dp) :: cross_pdt(3,3)
   print*, a1, b1
-  print*, "cross pdt:", cross(a,b)
-  print*, "cross pdt:", 2._dp*a1*b1*a1*b1
+  print*, "cross pdt:", cross(a1,b1)
+  print*, "cross pdt:", a1*b1
   print*, "Dot product : ", dot(a1,b1)
   print*, get_array(a1)
 

@@ -5,7 +5,7 @@ implicit none
 
 ! overload * for cross product
 interface operator (*)
-   module procedure cross_pdt, scal_vec, vector_matrix, matrix_vector, matrix_matrix
+   module procedure cross, scal_vec, vector_matrix, matrix_vector, matrix_matrix
 end interface operator (*)
 
 ! overload abs 
@@ -18,7 +18,6 @@ interface vector
    module procedure get_array
 end interface vector
 
-
 ! constructor for vector data type
 interface matrix
    module procedure new_matrix_from_array, get_matrix
@@ -30,9 +29,7 @@ function scal_vec(a, b)
   real(dp), intent (in)      :: a
   type (vector), intent (in) :: b
   type (vector) :: scal_vec
-  scal_vec%x = a*b%x
-  scal_vec%y = a*b%y
-  scal_vec%z = a*b%z
+  scal_vec%x   = a*b%x
 end function scal_vec
 
 
@@ -66,73 +63,66 @@ end function matrix_matrix
 
 ! returns a skew-symmetric matrix for doing cross product
 function skew(a) result(tilde_a)
-  real(dp), intent(in)           :: a(3)
-  real(dp)                       :: tilde_a(3,3)
-  tilde_a=reshape((/ 0.0_dp, a(3), -a(2), -a(3), 0.0_dp, a(1),  a(2), -a(1), 0.0_dp /), (/3, 3/))
+  type(vector), intent(in)           :: a
+  type(matrix)                       :: tilde_a
+  tilde_a = matrix((/ 0.0_dp, a%x(3), -a%x(2), -a%x(3), 0.0_dp, a%x(1),  a%x(2), -a%x(1), 0.0_dp /))
 end function skew
 
 ! returns cross product of vectors a and b
 function cross(a ,b) 
-  real(dp), intent(in) :: a(3), b(3)
-  real(dp)             :: cross(3)
-  cross =matmul(skew(a), b) 
-end function cross
+  type(vector), intent(in) :: a, b
+  type(vector)             :: cross
+  real(dp) ::Amat(3,3)
+  real(dp) :: x(3)
 
-! a different implementation of cross product
-function cross_pdt(a, b) 
-  type (vector), intent (in) :: a, b
-  type (vector) :: cross_pdt
-  cross_pdt%x = a%y * b%z - a%z * b%y
-  cross_pdt%y = a%z * b%x - a%x * b%z
-  cross_pdt%z = a%x * b%y - a%y * b%x
-end function cross_pdt
+  Amat = get_matrix(skew(a))
+  x = get_array(b)
+
+  cross = vector(matmul( Amat, x))
+ 
+end function cross
 
 ! returns the dot product of two vectors
 function dot(a,b)
   type (vector), intent (in) :: a, b
   real(dp)                   :: dot
-  dot = a%x*b%x + a%y*b%y + a%z*b%z
+  dot = norm2(a%x*b%x)
 end function dot
+
+! returns the dot product of two vectors
+function square(a)
+  type(vector), intent (in) :: a
+  type(vector)              :: square
+  square = vector(a%x(:)**2)
+end function square
+
 
 ! returns the magnitude of a vector
 function abs_vec(a)
   type (vector), intent (in) :: a
-  real(dp)                   :: abs_vec
-    abs_vec = sqrt(a%x**2 + a%y**2 + a%z**2)
+  real(dp)                   :: abs_vec  
+  abs_vec = norm2(a%x(:)**2)
 end function abs_vec
 
 ! constructor for a new vector
 !!$function new_vec(a)
-!!$  real(dp), intent(in) :: a(3)
+!!$  real(dp), intent(in) :: a(num_spat_dim)
 !!$  type(vector) :: new_vec
-!!$  
-!!$  new_vec%x=a(1)
-!!$  new_vec%y=a(2)
-!!$  new_vec%z=a(3)
-!!$
+!!$  new_vec%x=a
 !!$end function new_vec
 
 ! get the vector entries as array
 function get_array(a)
   type(vector), intent(in) :: a
   real(dp)                 :: get_array(num_spat_dim)
-
-  get_array(1) = a%x
-  get_array(2) = a%y
-  get_array(3) = a%z
-
+  get_array=a%x
 end function get_array
 
 ! constructor for a new matrix
 function new_matrix_from_array(a)
   real(dp), intent(in) :: a(num_spat_dim**2)
   type(matrix) :: new_matrix_from_array
-  real(dp)     :: tmp(num_spat_dim, num_spat_dim)
-
-  tmp = reshape(a, (/ num_spat_dim, num_spat_dim /))
-
-  new_matrix_from_array%ij = tmp
-
+  new_matrix_from_array%ij = reshape(a, (/ num_spat_dim, num_spat_dim /))
 end function new_matrix_from_array
 
 !!$! constructor for a new matrix

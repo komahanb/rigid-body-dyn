@@ -24,7 +24,7 @@ integer(sp), parameter       :: dim_x = 10                        ! number of va
 real(dp), parameter          :: del_t = 0.1_dp                    ! time step used in integration
 
 type vector
-   real(dp)                  :: x, y, z
+   real(dp)                  :: x(num_spat_dim)
 end type vector
 
 type matrix
