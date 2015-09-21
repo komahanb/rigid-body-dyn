@@ -15,20 +15,24 @@ module test
 
   type body
      
-     real(dp)     :: m
+     real(dp)     :: m				! mass
 
-     type(vector) :: r
-     type(vector) :: theta
-     type(vector) :: v, v_dot
-     type(vector) :: omega, omega_dot
-     type(vector) :: qs, qs_dot, qs_double_dot
+     type(vector) :: r				! radius of origin
+     type(vector) :: theta			! orientation of the body frame with respect to inertial
 
-     type(matrix)     :: C
-     type(matrix)     :: D
-     type(matrix)     :: S
-     type(matrix)     :: J
-     type(matrix)     :: K
-     type(matrix)     :: P
+     type(vector) :: v, v_dot			! the velocity and acceleration of the origin
+     type(vector) :: omega, omega_dot		! the angular velocity and acceleration of the body axis
+     type(vector) :: qs, qs_dot, qs_double_dot	! elastic state vectors due to deformation
+
+     type(vector) :: F				! external forces
+     type(vector) :: G				! external moments (torque)
+
+     type(matrix) :: C				! first moment of inertia
+     type(matrix) :: D				! rotation matrix
+     type(matrix) :: S				! transformation matrix
+     type(matrix) :: J				! second moment of inertia
+     type(matrix) :: K				! stiffness matrix
+     type(matrix) :: P				! 
 
   end type body
   

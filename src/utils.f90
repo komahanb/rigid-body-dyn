@@ -26,7 +26,6 @@ end interface
 
 contains
 
-
 function scal_vec(a, b) 
   real(dp), intent (in)      :: a
   type (vector), intent (in) :: b
@@ -64,10 +63,6 @@ function matrix_matrix(A, B)
   matrix_matrix = new_matrix_from_matrix( matmul( get_matrix(A), get_matrix(B) ) )
 
 end function matrix_matrix
-
-
-
-
 
 ! returns a skew-symmetric matrix for doing cross product
 function skew(a) result(tilde_a)
