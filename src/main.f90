@@ -22,7 +22,7 @@ program second_order
   type(body_fixed_frame)    :: frame_A
 
 
-  !  call test_skew_sym
+!  call test_skew_sym
   call test_cross_pdt
   stop
   
@@ -305,9 +305,8 @@ subroutine test_skew_sym
   a = (/ 1, 2, 3/)
   a_skew = get_matrix(skew(vector(a)))
 
-  print*, ""
-  print*, a
-  print*, ""
+  print*, "a=",a
+  print*, "anti-symmetric matrix:"
   print*, a_skew
 
 end subroutine test_skew_sym
@@ -317,23 +316,20 @@ subroutine test_cross_pdt
   use utils
   implicit none
 
-
   type(vector) ::a1, b1
 
-     a1%x = (/ 4,5,6/)
-     b1%x = (/ 4,5,6/)
+     a1%x = (/  -4,1,0 /)
+     b1%x = (/ 4,1,0 /)
+     
+     !  a1=vector((/1,2,3/))
+     !  b1=vector((/2,3,4/))
+     !  real(dp) :: cross_pdt(3,3)
 
-!  a1=vector((/1,2,3/))
-!    b1%x = 4
-!    b1%y = -5
-!    b1%z = 6
- ! b1=vector((/2,3,4/))
-  !real(dp) :: cross_pdt(3,3)
-  print*, a1, b1
-  print*, "cross pdt:", cross(a1,b1)
-  print*, "cross pdt:", a1*b1
-  print*, "Dot product : ", dot(a1,b1)
-  print*, get_array(a1)
+  print*, "a          =", a1
+  print*, "b          =", b1
+  print*, "cross pdt  =", cross(a1,b1)
+  print*, "cross pdt  =", a1*b1
+  print*, "Dot product=", dot(a1,b1)
 
 end subroutine test_cross_pdt
 
