@@ -18,6 +18,12 @@ interface vector
    module procedure new_vec, get_array
 end interface vector
 
+
+! constructor for vector data type
+interface matrix
+   module procedure new_matrix, get_array_from_mat
+end interface 
+
 contains
 
 ! a different implementation of cross product
@@ -88,5 +94,41 @@ function get_array(a)
   get_array(3) = a%z
 
 end function get_array
+
+! constructor for a new matrix
+function new_matrix(a)
+  real(dp), intent(in) :: a(num_spat_dim**2)
+  type(matrix) :: new_matrix
+  real(dp)     :: tmp(num_spat_dim, num_spat_dim)
+
+  tmp = reshape(a, (/ num_spat_dim, num_spat_dim /))
+
+  new_matrix%ij = tmp
+
+end function new_matrix
+
+!!$! constructor for a new matrix
+!!$function new_matrix(a,m,n)
+!!$  integer(sp), intent(in) :: m, n
+!!$  real(dp), intent(in)    :: a(m*n)
+!!$  type(matrix)            :: new_matrix
+!!$  real(dp)                :: tmp(num_spat_dim, num_spat_dim)
+!!$
+!!$  tmp = reshape(a, (num_spat_dim, num_spat_dim /))
+!!$  
+!!$  new_matrix%ij = tmp
+!!$
+!!$end function new_matrix
+
+
+! get the matrix entries as array
+function get_array_from_mat(a)
+  type(matrix), intent(in) :: a
+  real(dp)                 :: get_array_from_mat(num_spat_dim**2)
+!  get_array_from_mat(:) = a%ij(:)
+
+end function get_array_from_mat
+
+
 
 end module utils

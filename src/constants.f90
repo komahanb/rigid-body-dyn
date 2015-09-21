@@ -27,5 +27,8 @@ type vector
    real(dp)                  :: x, y, z
 end type vector
 
+type matrix
+   real(dp)                  :: ij(num_spat_dim, num_spat_dim)
+end type matrix
 
 end module constants

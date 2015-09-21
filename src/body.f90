@@ -14,24 +14,22 @@ module test
   ! EQ4, EQ5, EQ6 = {c}.{v0_dot}  + [J]{omega_dot} + [h]{qs_double_dot} + [c] x {omega} x {v0} + {omega} x [J] {omega} + {}x[p].{qs_dot} + {omega} x [h]{qs_dot} =gr
 
   type body
- 
+     
+     real(dp)     :: m
+
      type(vector) :: r
      type(vector) :: theta
-
      type(vector) :: v, v_dot
      type(vector) :: omega, omega_dot
-
-     real(dp)     :: m, C(num_spat_dim, num_spat_dim)
-
      type(vector) :: qs, qs_dot, qs_double_dot
 
-     real(dp)     :: D(num_spat_dim, num_spat_dim)
-     real(dp)     :: S(num_spat_dim, num_spat_dim)
+     type(matrix)     :: C
+     type(matrix)     :: D
+     type(matrix)     :: S
+     type(matrix)     :: J
+     type(matrix)     :: K
+     type(matrix)     :: P
 
-     real(dp)     :: J(num_spat_dim, num_spat_dim)
-     real(dp)     :: K(num_spat_dim, num_spat_dim)
-     real(dp)     :: P(num_spat_dim, num_spat_dim)
-      
   end type body
   
 end module test
