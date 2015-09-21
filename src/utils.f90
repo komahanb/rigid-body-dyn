@@ -5,7 +5,7 @@ implicit none
 
 ! overload * for cross product
 interface operator (*)
-   module procedure cross_pdt
+   module procedure cross_pdt, pdt
 end interface operator (*)
 
 ! overload abs 
@@ -15,10 +15,20 @@ end interface abs
 
 ! constructor for vector data type
 interface vector
-   module procedure new_vec
+   module procedure new_vec, get_array
 end interface vector
 
 contains
+
+! a different implementation of cross product
+function pdt(a, b) 
+  real(dp), intent (in)      :: a
+  type (vector), intent (in) :: b
+  type (vector) :: pdt
+  pdt%x = a*b%x
+  pdt%y = a*b%y
+  pdt%z = a*b%z
+end function pdt
 
 ! returns a skew-symmetric matrix for doing cross product
 function skew(a) result(tilde_a)
@@ -67,5 +77,16 @@ function new_vec(a)
   new_vec%z=a(3)
 
 end function new_vec
+
+! get the vector entries as array
+function get_array(a)
+  type(vector), intent(in) :: a
+  real(dp)                 :: get_array(num_spat_dim)
+
+  get_array(1) = a%x
+  get_array(2) = a%y
+  get_array(3) = a%z
+
+end function get_array
 
 end module utils

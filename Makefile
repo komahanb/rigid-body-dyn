@@ -59,7 +59,7 @@ LIBS =  -ldl -lstdc++ #-ldiffer #-lmylib -lm
 
 #SRCS = hey.f90 hello.f90 hello1.f90
 #SRC := $(wildcard src/*.f90 src/*.c src/*.cpp)
-SRC  := src/constants.f90 src/common_utils.f90 src/utils.f90 src/solver_utils.f90 src/flex_multi_dyn.f90 src/system_components.f90 src/differ.f90 src/main.f90
+SRC  := src/constants.f90 src/common_utils.f90 src/utils.f90 src/solver_utils.f90 src/flex_multi_dyn.f90 src/system_components.f90 src/differ.f90 src/main.f90 src/body.f90
 
 #-----------------------------------------------------------------------
 # define the C,C++, Fortran object files 

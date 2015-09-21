@@ -335,9 +335,9 @@ subroutine test_cross_pdt
   !real(dp) :: cross_pdt(3,3)
   print*, a1, b1
   print*, "cross pdt:", cross(a,b)
-  print*, "cross pdt:", a1*b1
-
+  print*, "cross pdt:", 2._dp*a1*b1*a1*b1
   print*, "Dot product : ", dot(a1,b1)
+  print*, get_array(a1)
 
 end subroutine test_cross_pdt
 
