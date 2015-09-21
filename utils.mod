@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/utils.f90
-MD5:7800d19592cb1e72ef785884c8540994 -- If you edit this, you'll get what you deserve.
+MD5:efc071647b813e3e6626a5760abf548c -- If you edit this, you'll get what you deserve.
 
 (() () () () (2 3 4 5 6) () () () () () () () () () () () () () () ()
 () () () () () () ())
@@ -93,18 +93,18 @@ UNKNOWN 0 0 FUNCTION IMPLICIT_PURE) (DERIVED 13 0 0 0 DERIVED ()) 53 0 (
 55 'num_spat_dim' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3') () 0 () () () 0 0)
-5 'pdt' 'utils' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL UNKNOWN
-0 0 FUNCTION IMPLICIT_PURE) (DERIVED 13 0 0 0 DERIVED ()) 56 0 (57 58) ()
-5 () () () 0 0)
-59 'pi' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+56 'pi' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (REAL 8 0 0 0
 REAL ()) 0 '0.32492492492492@1') () 0 () () () 0 0)
-60 'rad_to_deg' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+57 'rad_to_deg' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
 REAL 8 0 0 0 REAL ()) 0 '0.3945d1745d1746@2') () 0 () () () 0 0)
-61 'ref_frame_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
+58 'ref_frame_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
+5 'scal_vec' 'utils' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
+UNKNOWN 0 0 FUNCTION IMPLICIT_PURE) (DERIVED 13 0 0 0 DERIVED ()) 59 0 (
+60 61) () 5 () () () 0 0)
 62 'skew' 'utils' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
 UNKNOWN 0 0 DIMENSION FUNCTION IMPLICIT_PURE ALWAYS_EXPLICIT) (REAL 8 0
 0 0 REAL ()) 63 0 (64) (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER
@@ -168,9 +168,9 @@ INTEGER ()) 0 '3')) 0 () () () 0 0)
 DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4
 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3'))
 0 () () () 0 0)
-57 'a' '' '' 56 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY) (
+60 'a' '' '' 59 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY) (
 REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
-58 'b' '' '' 56 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY) (
+61 'b' '' '' 59 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY) (
 DERIVED 13 0 0 0 DERIVED ()) 0 0 () () 0 () () () 0 0)
 64 'a' '' '' 63 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION
 DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4
@@ -192,6 +192,6 @@ DERIVED 10 0 0 0 DERIVED ()) 0 0 () () 0 () () () 0 0)
 'cross_pdt' 0 6 'del_t' 0 28 'dim_q' 0 29 'dim_x' 0 30 'dot' 0 31 'dp' 0
 35 'get_array' 0 11 'get_matrix' 0 8 'kind' 0 40 'matrix' 0 41
 'matrix_matrix' 0 2 'matrix_vector' 0 3 'new_matrix' 0 9
-'new_matrix_from_matrix' 0 50 'new_vec' 0 12 'num_spat_dim' 0 55 'pdt' 0
-5 'pi' 0 59 'rad_to_deg' 0 60 'ref_frame_len' 0 61 'skew' 0 62 'sp' 0 66
-'units_len' 0 67 'utils' 0 68 'vector' 0 69 'vector_matrix' 0 4)
+'new_matrix_from_matrix' 0 50 'new_vec' 0 12 'num_spat_dim' 0 55 'pi' 0
+56 'rad_to_deg' 0 57 'ref_frame_len' 0 58 'scal_vec' 0 5 'skew' 0 62 'sp'
+0 66 'units_len' 0 67 'utils' 0 68 'vector' 0 69 'vector_matrix' 0 4)

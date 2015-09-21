@@ -5,7 +5,7 @@ implicit none
 
 ! overload * for cross product
 interface operator (*)
-   module procedure cross_pdt, pdt, vector_matrix, matrix_vector, matrix_matrix
+   module procedure cross_pdt, scal_vec, vector_matrix, matrix_vector, matrix_matrix
 end interface operator (*)
 
 ! overload abs 
@@ -27,14 +27,14 @@ end interface
 contains
 
 
-function pdt(a, b) 
+function scal_vec(a, b) 
   real(dp), intent (in)      :: a
   type (vector), intent (in) :: b
-  type (vector) :: pdt
-  pdt%x = a*b%x
-  pdt%y = a*b%y
-  pdt%z = a*b%z
-end function pdt
+  type (vector) :: scal_vec
+  scal_vec%x = a*b%x
+  scal_vec%y = a*b%y
+  scal_vec%z = a*b%z
+end function scal_vec
 
 
 ! {c} = {a}^T[B]
