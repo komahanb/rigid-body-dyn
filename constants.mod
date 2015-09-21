@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/constants.f90
-MD5:c9f3f0d08a0c1be36464eb8e83df0994 -- If you edit this, you'll get what you deserve.
+MD5:f0dfe0cb588b69da8949097160221b95 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () () ()
 () () ())
@@ -20,13 +20,15 @@ REAL 8 0 0 0 REAL ()) (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3') (CONSTANT (INTEGER
 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3'))
 (UNKNOWN-FL UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION)
-UNKNOWN-ACCESS ())) PUBLIC (() () () ()) () 0 0 46985105)
+UNKNOWN-ACCESS (CONSTANT (REAL 8 0 0 0 REAL ()) 0 '0.00000000000000@0')))
+PUBLIC (() () () ()) () 0 0 46985105)
 3 'Vector' 'constants' '' 1 ((DERIVED UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 ((5 'x' (
 REAL 8 0 0 0 REAL ()) (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3')) (UNKNOWN-FL
 UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION)
-UNKNOWN-ACCESS ())) PUBLIC (() () () ()) () 0 0 95208851)
+UNKNOWN-ACCESS (CONSTANT (REAL 8 0 0 0 REAL ()) 0 '0.00000000000000@0')))
+PUBLIC (() () () ()) () 0 0 95208851)
 6 'constants' 'constants' '' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 0 () () () 0
 0)

@@ -24,11 +24,11 @@ integer(sp), parameter       :: dim_x = 10                        ! number of va
 real(dp), parameter          :: del_t = 0.1_dp                    ! time step used in integration
 
 type vector
-   real(dp)                  :: x(num_spat_dim)
+   real(dp)                  :: x(num_spat_dim) = 0.0_dp
 end type vector
 
 type matrix
-   real(dp)                  :: ij(num_spat_dim, num_spat_dim)
+   real(dp)                  :: ij(num_spat_dim, num_spat_dim) = 0.0_dp
 end type matrix
 
 end module constants
