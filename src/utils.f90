@@ -5,7 +5,7 @@ implicit none
 
 ! overload * for cross product
 interface operator (*)
-   module procedure cross_pdt, pdt
+   module procedure cross_pdt, pdt, vector_matrix, matrix_vector, matrix_matrix
 end interface operator (*)
 
 ! overload abs 
@@ -21,12 +21,12 @@ end interface vector
 
 ! constructor for vector data type
 interface matrix
-   module procedure new_matrix, get_array_from_mat
+   module procedure new_matrix, get_matrix
 end interface 
 
 contains
 
-! a different implementation of cross product
+
 function pdt(a, b) 
   real(dp), intent (in)      :: a
   type (vector), intent (in) :: b
@@ -35,6 +35,39 @@ function pdt(a, b)
   pdt%y = a*b%y
   pdt%z = a*b%z
 end function pdt
+
+
+! {c} = {a}^T[B]
+function vector_matrix(a, B) 
+  
+  type(vector), intent (in) :: a
+  type(matrix), intent (in) :: B 
+  type(vector) ::  vector_matrix
+
+end function vector_matrix
+
+! {c} = [B]{a}
+function matrix_vector(B, a) 
+  
+  type(vector), intent (in) :: a
+  type(matrix), intent (in) :: B 
+  type(vector) ::  matrix_vector
+
+end function matrix_vector
+
+! [C] = [A]{B}
+function matrix_matrix(A, B) 
+
+  type(matrix), intent (in) :: A, B 
+  type(matrix)              :: matrix_matrix
+
+  matrix_matrix = new_matrix_from_matrix( matmul( get_matrix(A), get_matrix(B) ) )
+
+end function matrix_matrix
+
+
+
+
 
 ! returns a skew-symmetric matrix for doing cross product
 function skew(a) result(tilde_a)
@@ -107,6 +140,13 @@ function new_matrix(a)
 
 end function new_matrix
 
+! constructor for a new matrix
+function new_matrix_from_matrix(A)
+  real(dp), intent(in) :: A(num_spat_dim, num_spat_dim)
+  type(matrix)         :: new_matrix_from_matrix
+  new_matrix_from_matrix%ij=A
+end function new_matrix_from_matrix
+
 !!$! constructor for a new matrix
 !!$function new_matrix(a,m,n)
 !!$  integer(sp), intent(in) :: m, n
@@ -122,12 +162,13 @@ end function new_matrix
 
 
 ! get the matrix entries as array
-function get_array_from_mat(a)
-  type(matrix), intent(in) :: a
-  real(dp)                 :: get_array_from_mat(num_spat_dim**2)
-!  get_array_from_mat(:) = a%ij(:)
+function get_matrix(A)
+  type(matrix), intent(in) :: A
+  real(dp)                 :: get_matrix(num_spat_dim, num_spat_dim)
 
-end function get_array_from_mat
+  get_matrix = A%ij
+ 
+end function get_matrix
 
 
 
