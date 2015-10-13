@@ -1,7 +1,6 @@
 module matrix_utils
 use constants
 
-
 contains
 
 ! generates a nxn identity matrix

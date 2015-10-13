@@ -21,12 +21,13 @@ program second_order
   type(body)                :: body_A
   type(body_fixed_frame)    :: frame_A
 
-
 !  call test_skew_sym
 !  call test_cross_pdt
   call test_eye
   call test_ones
   call test_zeros
+  call test_add_sub_mat
+  
   stop
   
 
@@ -414,3 +415,17 @@ print*,"4x4:",zeros(4)
 print*,""
 
 end subroutine test_zeros
+
+
+
+subroutine test_add_sub_mat
+use constants
+use utils
+  real(dp) :: a1(3,3), b1(3,3)
+
+  a1 = 0.0_dp
+  b1 = -1.0_dp
+
+  print* ,  a1-b1
+  print* ,  matrix(a1)-matrix(b1)
+end subroutine test_add_sub_mat

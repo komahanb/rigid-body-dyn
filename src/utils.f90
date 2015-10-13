@@ -5,8 +5,16 @@ implicit none
 
 ! overload * for cross product
 interface operator (*)
-   module procedure cross, scal_vec, vector_matrix, matrix_vector, matrix_matrix
+   module procedure cross, scal_vec, scal_matrix, vector_matrix, matrix_vector, matrix_matrix
 end interface operator (*)
+
+interface operator (+)
+   module procedure add_matrices
+end interface operator (+)
+
+interface operator (-)
+   module procedure sub_matrices
+end interface operator (-)
 
 ! overload abs 
 interface abs
@@ -32,6 +40,16 @@ function scal_vec(a, b)
   scal_vec%x   = a*b%x
 end function scal_vec
 
+! {aB} = a[B]
+function scal_matrix(a, B) 
+ 
+  real(dp), intent (in)     :: a
+  type(matrix), intent (in) :: B 
+  type(matrix)              :: scal_matrix
+
+  scal_matrix%ij =  a*B%ij
+
+end function scal_matrix
 
 ! {c} = {a}^T[B]
 function vector_matrix(a, B) 
@@ -162,6 +180,17 @@ function get_matrix(A)
  
 end function get_matrix
 
+function add_matrices(A, B)
+  type(matrix), intent(in) :: A, B
+  type(matrix)  :: add_matrices
+  add_matrices%ij = A%ij +B%ij
+end function add_matrices
+
+function sub_matrices(A, B)
+  type(matrix), intent(in)  :: A, B
+  type(matrix)  :: sub_matrices
+  sub_matrices%ij = A%ij -B%ij
+end function sub_matrices
 
 
 end module utils
