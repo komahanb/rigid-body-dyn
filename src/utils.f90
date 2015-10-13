@@ -72,13 +72,12 @@ end function skew
 function cross(a ,b) 
   type(vector), intent(in) :: a, b
   type(vector)             :: cross
-  real(dp) ::Amat(3,3)
-  real(dp) :: x(3)
+!  real(dp) ::Amat(3,3)
+!  real(dp) :: x(3)
+!  Amat = get_matrix(skew(a))
+!  x = get_array(b)
 
-  Amat = get_matrix(skew(a))
-  x = get_array(b)
-
-  cross = vector(matmul( Amat, x))
+  cross = vector(matmul(get_matrix(skew(a)), get_array(b)))
  
 end function cross
 
