@@ -23,7 +23,10 @@ program second_order
 
 
 !  call test_skew_sym
-  call test_cross_pdt
+!  call test_cross_pdt
+  call test_eye
+  call test_ones
+  call test_zeros
   stop
   
 
@@ -95,8 +98,8 @@ program second_order
 
   !call test_get_extrapolated_q
   !call test_get_bdf_coeffs
-call test_get_approximated_q_dot
-call test_get_approximated_q_double_dot
+  call test_get_approximated_q_dot
+  call test_get_approximated_q_double_dot
 
 end program second_order
 
@@ -317,6 +320,24 @@ subroutine test_cross_pdt
   implicit none
 
   type(vector) ::a1, b1
+  type(matrix) :: A
+  real(dp) :: con =2
+
+  A%ij(1,1) = 1
+  A%ij(1,2) = 1
+  A%ij(1,3) = 1
+  A%ij(2,1) = 1
+  A%ij(2,2) = 1
+  A%ij(2,3) = 1
+  A%ij(3,1) = 1
+  A%ij(3,2) = 1
+  A%ij(3,3) = 1
+
+!  A%ij = con*A%ij
+
+ ! print*, con*A%ij
+
+!  stop
 
      a1%x = (/  -4,1,0 /)
      b1%x = (/ 4,1,0 /)
@@ -333,3 +354,63 @@ subroutine test_cross_pdt
 
 end subroutine test_cross_pdt
 
+subroutine test_eye
+use constants
+use matrix_utils
+print*,"Testing identitiy matrix"
+
+print*,"1x1:",eye(1)
+print*,""
+
+print*,"2x2:",eye(2)
+print*,""
+
+print*,"3x3:",matrix(eye(3))
+print*,""
+
+
+print*,"4x4:",eye(4)
+print*,""
+
+end subroutine test_eye
+
+
+! test unit matrix
+subroutine test_ones
+use matrix_utils
+print*,"Testing UNIT matrix"
+
+print*,"1x1:",ones(1)
+print*,""
+
+print*,"2x2:",ones(2)
+print*,""
+
+print*,"3x3:",matrix(ones(3))
+print*,""
+
+
+print*,"4x4:",ones(4)
+print*,""
+
+end subroutine test_ones
+
+
+subroutine test_zeros
+use matrix_utils
+print*,"Testing ZERO matrix"
+
+print*,"1x1:",zeros(1)
+print*,""
+
+print*,"2x2:",zeros(2)
+print*,""
+
+print*,"3x3:",matrix(zeros(3))
+print*,""
+
+
+print*,"4x4:",zeros(4)
+print*,""
+
+end subroutine test_zeros
