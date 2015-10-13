@@ -124,6 +124,14 @@ function new_matrix_from_array(a)
   new_matrix_from_array%ij = reshape(a, (/ num_spat_dim, num_spat_dim /))
 end function new_matrix_from_array
 
+! constructor for a new matrix
+function mat(arr,n)
+  real(dp), intent(in)    :: arr(n*n)
+  integer(sp), intent(in) :: n
+  real(dp)                :: mat(n,n)
+  mat   = reshape(arr, (/n,n/))
+end function mat
+
 !!$! constructor for a new matrix
 !!$function new_matrix_from_matrix(A)
 !!$  real(dp), intent(in) :: A(num_spat_dim, num_spat_dim)
