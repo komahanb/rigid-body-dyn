@@ -21,17 +21,17 @@ module test_body
      type(vector) :: r, r_dot              ! radius of origin
      type(vector) :: theta, theta_dot      ! orientation of the body frame with respect to inertial
 
-     type(vector) :: v, v_dot   ! the velocity and acceleration of the origin
-     type(vector) :: omega, omega_dot    ! the angular velocity and acceleration of the body axis
+     type(vector) :: v   ! the velocity and acceleration of the origin
+     type(vector) :: omega    ! the angular velocity and acceleration of the body axis
      type(vector) :: qs, qs_dot, qs_double_dot  ! elastic state vectors due to deformation
 
      type(vector) :: F        ! external forces
      type(vector) :: G        ! external moments (torque)
 
-     type(matrix) :: C        ! rotation matrix
-     type(matrix) :: S        ! transformation matrix
+     type(matrix) :: C_mat        ! rotation matrix
+     type(matrix) :: S, S_dot        ! transformation matrix
 
-     type(matrix) :: C_mat      ! first moment of inertia
+     type(vector) :: c        ! first moment of inertia
      type(matrix) :: J        ! second moment of inertia
      type(matrix) :: K        ! stiffness matrix
      type(matrix) :: P        ! 
@@ -42,46 +42,45 @@ module test_body
 
 contains
 
-! find the jacobian of the equation of motion for the supplied body
-function jac(B)
+! find the jacobian of the equation of motion for the supplied BODY alpha
+function jac(alpha)
 
-  type(body)   :: B
+  type(body)   :: alpha
   type(matrix) :: jac(4,4) ! where 4 is the state vector length
+  type(matrix)  :: O ! zero matrix
+  type(matrix)  :: U ! unit matrix
+  type(matrix)  :: I ! identity matrix
+
+  ! some useful matrices
+  O = matrix(zeros(num_spat_dim))
+  U = matrix(ones(num_spat_dim))
+  I = matrix(eye(num_spat_dim))
+  
+  ! assemble jacobian
+  jac(1,1) = alpha%a * alpha%C_mat
+  jac(2,1) = skew(alpha%C_mat * alpha%r_dot) * alpha%S
+  jac(3,1) = -1.0_dp*U
+  jac(4,1) = O
+
+  jac(1,2) = O
+  jac(2,2) = alpha%S_dot + skew(alpha%S*alpha%theta_dot)*alpha%S + alpha%a * alpha%S
+  jac(3,2) = O
+  jac(4,2) = -1.0_dp*U
+
+  jac(1,3) = O
+  jac(2,3) = O
+  jac(3,3) = alpha%m*(alpha%a*U + skew(alpha%omega))
+  jac(4,3) = -alpha%a*skew(alpha%c) + skew(skew(alpha%c)*alpha%omega)  - alpha%m*skew(alpha%V) - skew(alpha%omega)*skew(alpha%C)
+
+  jac(1,4) = O
+  jac(2,4) = O
+  jac(3,4) = alpha%a*skew(alpha%C) + skew(alpha%C) * skew(alpha%omega)
+  jac(4,4) = alpha%a*alpha%J  + skew(alpha%omega)*alpha%J - skew(alpha%J*alpha%omega) -skew(alpha%c)*skew(alpha%V)
 
 !  real(dp)     :: OO(num_spat_dim,num_spat_dim) ! zero matrix
 !  real(dp)     :: UU(num_spat_dim,num_spat_dim) ! unit matrix
 !  real(dp)     :: II(num_spat_dim,num_spat_dim) ! identity matrix
 !  type(vector) :: vec
-
-
-  type(matrix)  :: O(num_spat_dim,num_spat_dim) ! zero matrix
-  type(matrix)  :: U(num_spat_dim,num_spat_dim) ! unit matrix
-  type(matrix)  :: I(num_spat_dim,num_spat_dim) ! identity matrix
-
-  O = matrix(zeros(num_spat_dim))
-  U = matrix(ones(num_spat_dim))
-  I = matrix(eye(num_spat_dim))
-  
-!!$  jac(1,1) = B%a * B%C_mat
-!!$  jac(2,1) = skew(B%C_mat * B%r_dot) * B%S
-!!$  jac(3,1) = -1._dp*U
-!!$  jac(4,1) = O
-!!$
-!!$  jac(1,2) = O
-!!$  jac(2,2) = B%S_dot + skew(B%S*B%theta_dot)*B%S + B%a * B%S
-!!$  jac(3,2) = O
-!!$  jac(4,2) = -1.0_dp*UU
-!!$
-!!$  jac(1,3) = O
-!!$  jac(2,3) = O
-!!$  jac(3,3) = B%m*(B%a*U + skew(B%omega))
-!!$  jac(4,3) = -B%a*skew(B%C) + skew(skew(B%C)*B%omega) - B%m*skew(B%V) - skew(B%omega)*skew(B%C)
-!!$
-!!$  jac(1,4) = O
-!!$  jac(2,4) = O
-!!$  jac(3,4) = B%a*skew(B%C) + skew(B%C) * skew(B%omega)
-!!$  jac(4,4) = B%a*B%J  + skew(B%omega)*B%J - skew(B%J*B%omega) -skew(B%c)*skew(B%V)
-!!$
 
 !  vec = matrix_vector(B%C_mat,B%r_dot)
 !  print*, skew() * B%S)

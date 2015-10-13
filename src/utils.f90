@@ -13,8 +13,11 @@ interface operator (+)
 end interface operator (+)
 
 interface operator (-)
-   module procedure sub_matrices
+   module procedure sub_matrices, negate_vector,  negate_matrix
 end interface operator (-)
+
+
+
 
 ! overload abs 
 interface abs
@@ -180,17 +183,32 @@ function get_matrix(A)
  
 end function get_matrix
 
+!returns the matrix addition of matrices of TYPE matrix
 function add_matrices(A, B)
   type(matrix), intent(in) :: A, B
   type(matrix)  :: add_matrices
   add_matrices%ij = A%ij +B%ij
 end function add_matrices
 
+!returns the matrix subtraction of matrices of TYPE matrix
 function sub_matrices(A, B)
   type(matrix), intent(in)  :: A, B
   type(matrix)  :: sub_matrices
   sub_matrices%ij = A%ij -B%ij
 end function sub_matrices
 
+! returns the negative of type matrix
+function negate_matrix(A)
+  type(matrix), intent(in)  :: A
+  type(matrix)  :: negate_matrix
+  negate_matrix%ij = -A%ij
+end function negate_matrix
+
+! returns the negative of type vector
+function negate_vector(a)
+  type(vector), intent(in)  :: a
+  type(vector)  :: negate_vector
+  negate_vector%x = -a%x
+end function negate_vector
 
 end module utils
