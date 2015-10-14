@@ -16,26 +16,33 @@ module test_body
 
   type body
      
-     real(dp)     :: m          ! mass
+     real(dp)     :: m                          ! mass
 
-     type(vector) :: r, r_dot              ! radius of origin
-     type(vector) :: theta, theta_dot      ! orientation of the body frame with respect to inertial
+     type(vector) :: r, r_dot                   ! radius of origin
+     type(vector) :: theta, theta_dot           ! orientation of the body frame with respect to inertial
 
-     type(vector) :: v   ! the velocity and acceleration of the origin
-     type(vector) :: omega    ! the angular velocity and acceleration of the body axis
+     type(vector) :: v                          ! the velocity and acceleration of the origin
+     type(vector) :: omega                      ! the angular velocity and acceleration of the body axis
      type(vector) :: qs, qs_dot, qs_double_dot  ! elastic state vectors due to deformation
 
-     type(vector) :: F        ! external forces
-     type(vector) :: G        ! external moments (torque)
+     type(vector) :: F                          ! external forces
+     type(vector) :: G                          ! external moments (torque)
 
-     type(matrix) :: C_mat        ! rotation matrix
-     type(matrix) :: S, S_dot        ! transformation matrix
+     type(matrix) :: C_mat                      ! rotation matrix
+     type(matrix) :: S, S_dot                   ! transformation matrix
 
-     type(vector) :: c        ! first moment of inertia
-     type(matrix) :: J        ! second moment of inertia
-     type(matrix) :: K        ! stiffness matrix
-     type(matrix) :: P        ! 
+     type(vector) :: c                          ! first moment of inertia
+     type(matrix) :: J                          ! second moment of inertia
+     type(matrix) :: K                          ! stiffness matrix
+
+     type(matrix) :: p                          ! 
+     type(matrix) :: h                          ! 
+
      real(dp)     :: a, b                       ! constant multipliers
+
+
+     ! for elastic
+     ! type(vector) :: q_dot !? maybe qs
 
   end type body
   
@@ -43,10 +50,10 @@ module test_body
 contains
 
 ! find the jacobian of the equation of motion for the supplied BODY alpha
-function jac(alpha)
+function D_R(alpha)
 
   type(body)   :: alpha
-  type(matrix) :: jac(4,4) ! where 4 is the state vector length
+  type(matrix) :: D_R(4,4) ! where 4 is the state vector length
   type(matrix)  :: O ! zero matrix
   type(matrix)  :: U ! unit matrix
   type(matrix)  :: I ! identity matrix
@@ -57,25 +64,25 @@ function jac(alpha)
   I = matrix(eye(num_spat_dim))
   
   ! assemble jacobian
-  jac(1,1) = alpha%a * alpha%C_mat
-  jac(2,1) = skew(alpha%C_mat * alpha%r_dot) * alpha%S
-  jac(3,1) = -1.0_dp*U
-  jac(4,1) = O
+  D_R(1,1) = alpha%a * alpha%C_mat
+  D_R(2,1) = skew(alpha%C_mat * alpha%r_dot) * alpha%S
+  D_R(3,1) = -1.0_dp*U
+  D_R(4,1) = O
 
-  jac(1,2) = O
-  jac(2,2) = alpha%S_dot + skew(alpha%S*alpha%theta_dot)*alpha%S + alpha%a * alpha%S
-  jac(3,2) = O
-  jac(4,2) = -1.0_dp*U
+  D_R(1,2) = O
+  D_R(2,2) = alpha%S_dot + skew(alpha%S*alpha%theta_dot)*alpha%S + alpha%a * alpha%S
+  D_R(3,2) = O
+  D_R(4,2) = -1.0_dp*U
 
-  jac(1,3) = O
-  jac(2,3) = O
-  jac(3,3) = alpha%m*(alpha%a*U + skew(alpha%omega))
-  jac(4,3) = -alpha%a*skew(alpha%c) + skew(skew(alpha%c)*alpha%omega)  - alpha%m*skew(alpha%V) - skew(alpha%omega)*skew(alpha%C)
+  D_R(1,3) = O
+  D_R(2,3) = O
+  D_R(3,3) = alpha%m*(alpha%a*U + skew(alpha%omega))
+  D_R(4,3) = -alpha%a*skew(alpha%c) + skew(skew(alpha%c)*alpha%omega)  - alpha%m*skew(alpha%V) - skew(alpha%omega)*skew(alpha%C)
 
-  jac(1,4) = O
-  jac(2,4) = O
-  jac(3,4) = alpha%a*skew(alpha%C) + skew(alpha%C) * skew(alpha%omega)
-  jac(4,4) = alpha%a*alpha%J  + skew(alpha%omega)*alpha%J - skew(alpha%J*alpha%omega) -skew(alpha%c)*skew(alpha%V)
+  D_R(1,4) = O
+  D_R(2,4) = O
+  D_R(3,4) = alpha%a*skew(alpha%C) + skew(alpha%C) * skew(alpha%omega)
+  D_R(4,4) = alpha%a*alpha%J  + skew(alpha%omega)*alpha%J - skew(alpha%J*alpha%omega) -skew(alpha%c)*skew(alpha%V)
 
 !  real(dp)     :: OO(num_spat_dim,num_spat_dim) ! zero matrix
 !  real(dp)     :: UU(num_spat_dim,num_spat_dim) ! unit matrix
@@ -93,6 +100,39 @@ function jac(alpha)
 !  print*, cross(B%C_mat * B%r_dot, B%S)
 !  print*, B%C_mat * B%r_dot * B%S ! vector right now should be matrix
 
-end function jac
+end function D_R
+
+
+! jacobian of the structural degree of freedom
+function S_R(alpha)
+
+  type(body)   :: alpha
+  type(matrix) :: S_R(4,4) ! where 4 is the state vector length
+  type(matrix)  :: O ! zero matrix
+
+  O = matrix(zeros(num_spat_dim))
+
+  S_R(1,1) = O
+  S_R(2,1) = O
+  S_R(3,1) = O
+  S_R(4,1) = O
+
+  S_R(1,2) = O
+  S_R(2,2) = O
+  S_R(3,2) = O
+  S_R(4,2) = O
+
+  S_R(1,3) = O
+  S_R(2,3) = O
+  S_R(3,3) = O
+  S_R(4,3) = - skew(alpha%p*alpha%qs_dot)
+
+  S_R(1,4) = O
+  S_R(2,4) = O
+  S_R(3,4) = - skew(alpha%p*alpha%qs_dot)
+  S_R(4,4) = - skew(alpha%h*alpha%qs_dot)
+
+end function S_R
+
 
 end module test_body
