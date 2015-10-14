@@ -33,13 +33,15 @@ module test_body
 
      type(vector) :: c                          ! first moment of inertia
      type(matrix) :: J                          ! second moment of inertia
+
      type(matrix) :: K                          ! stiffness matrix
+     type(matrix) :: M_mat                      ! mass matrix
 
      type(matrix) :: p                          ! 
      type(matrix) :: h                          ! 
 
      real(dp)     :: a, b                       ! constant multipliers
-
+     
 
      ! for elastic
      ! type(vector) :: q_dot !? maybe qs
@@ -133,6 +135,27 @@ function S_R(alpha)
   S_R(4,4) = - skew(alpha%h*alpha%qs_dot)
 
 end function S_R
+
+! linear combination of stiffness and mass matrix
+function S_S(alpha)
+
+  type(body)   :: alpha
+  type(matrix) :: S_S
+
+  S_S = alpha%K  + alpha%b*alpha%M_mat
+
+end function S_S
+
+
+!!$
+!!$function S_RS(alpha)
+!!$  type(body)   :: alpha
+!!$  type(matrix) :: S_RS(4)
+!!$  type(matrix) :: O ! zero matrix
+!!$
+!!$  O = matrix(zeros(num_spat_dim))
+!!$
+!!$end function S_RS
 
 
 end module test_body
