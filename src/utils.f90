@@ -178,10 +178,15 @@ end function mat
 function get_matrix(A)
   type(matrix), intent(in) :: A
   real(dp)                 :: get_matrix(num_spat_dim, num_spat_dim)
-
   get_matrix = A%ij
- 
 end function get_matrix
+
+! transpose of a matrix
+function trans(A)
+  type(matrix),intent(in) :: A
+  type(matrix)            :: trans
+  trans = matrix(transpose(get_matrix(A)))
+end function trans
 
 !returns the matrix addition of matrices of TYPE matrix
 function add_matrices(A, B)

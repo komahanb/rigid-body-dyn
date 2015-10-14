@@ -142,20 +142,38 @@ function S_S(alpha)
   type(body)   :: alpha
   type(matrix) :: S_S
 
-  S_S = alpha%K  + alpha%b*alpha%M_mat
+  S_S = alpha%K  + alpha%b*alpha%M_mat ! K + b M
 
 end function S_S
 
+function S_RS(alpha)
+  type(body)   :: alpha
+  type(matrix) :: S_RS(4)
+  type(matrix) :: O ! zero matrix
 
-!!$
-!!$function S_RS(alpha)
-!!$  type(body)   :: alpha
-!!$  type(matrix) :: S_RS(4)
-!!$  type(matrix) :: O ! zero matrix
-!!$
-!!$  O = matrix(zeros(num_spat_dim))
-!!$
-!!$end function S_RS
+  O = matrix(zeros(num_spat_dim))
+
+  S_RS(1) = O
+  S_RS(2) = O
+  S_RS(3) = alpha%b*alpha%p + alpha%a*skew(alpha%omega)*alpha%p !bp +a wx p
+  S_RS(4) = alpha%b*alpha%h + alpha%a*(skew(alpha%v)*alpha%p  + skew(alpha%omega)*alpha%h) !bh +a(vx p + wx h)
+
+end function S_RS
+
+
+function S_SR(alpha)
+  type(body)   :: alpha
+  type(matrix) :: S_SR(4)
+  type(matrix) :: O ! zero matrix
+
+  O = matrix(zeros(num_spat_dim))
+
+  S_SR(1) = O
+  S_SR(2) = O
+  S_SR(3) = alpha%a * trans(alpha%p) !a p^T
+  S_SR(4) = alpha%a * trans(alpha%p) !a h^T
+ 
+end function S_SR
 
 
 end module test_body
