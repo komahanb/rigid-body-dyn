@@ -181,6 +181,33 @@ function get_matrix(A)
   get_matrix = A%ij
 end function get_matrix
 
+! unwraps a 2d matrix and stores as real numbers
+function get_matrix_2d(A,m,n)
+  integer(sp) :: m,n
+  type(matrix), intent(in) :: A(m,n)
+  real(dp)    :: get_matrix_2d(m*num_spat_dim, n*num_spat_dim) 
+  integer(sp) :: i,j
+  integer(sp) :: is_i, ie_i, is_j, ie_j
+
+  do i = 1, n
+     do j = 1, m
+        call split(j,is_j,ie_j) ! split j index storage
+        call split(i,is_i,ie_i) ! split i index storage
+        get_matrix_2d(is_j:ie_j,is_i:ie_i) = get_matrix(A(j,i))
+        !        print*, is_j,ie_j,is_i,ie_i,i,j
+     end do
+  end do
+
+end function get_matrix_2d
+
+ subroutine split(i,is,ie)
+   integer(sp) :: i
+   integer(sp ):: is, ie
+   is = (num_spat_dim*(i-1) ) + 1
+   ie = num_spat_dim*( (i-1) + 1)
+!   print*, is,ie !,num_spat_dim,i
+ end subroutine split
+
 ! transpose of a matrix
 function trans(A)
   type(matrix),intent(in) :: A
