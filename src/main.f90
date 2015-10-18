@@ -21,6 +21,7 @@ program second_order
   type(body)                :: body_A
   type(body_fixed_frame)    :: frame_A
   type(matrix) :: test(1,1)
+  type(vector) ::dd(2)
 
 !  print*, size(test,1)
 !  print*, get_matrix(test)

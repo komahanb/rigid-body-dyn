@@ -14,7 +14,7 @@ end type jacobian
 contains
 
   ! decompose the jacobian in to double precision matrix
- function get_matrix(jac)
+ function jac(jac)
    type(jacobian)  :: Jac
    real(dp)        :: get_matrix(12,12)
    type(matrix)   :: D_R (4,4)
@@ -26,10 +26,6 @@ contains
 
  end function get_matrix
  
- function residual(res)
-   real(dp) :: residual(size(res),num_spat_dim)
- end function residual
-
 
 !!$function Jac(alpha)
 !!$  type(body)   :: alpha

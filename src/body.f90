@@ -53,17 +53,17 @@ contains
 
 function res(alpha)
 
-  type(vector) :: res(4,1)
+  type(vector) :: res(4)
   type(body) :: alpha
   
-  res(1,1)  = alpha%C_mat*alpha%r_dot - alpha%v
+  res(1)  = alpha%C_mat*alpha%r_dot - alpha%v
 
-  res(2,1)  = alpha%S*alpha%theta_dot - alpha%omega
+  res(2)  = alpha%S*alpha%theta_dot - alpha%omega
 
-  res(3,1)  = alpha%m*alpha%v_dot - skew(alpha%c)*alpha%omega_dot +alpha%p*alpha%qs_double_dot &
+  res(3)  = alpha%m*alpha%v_dot - skew(alpha%c)*alpha%omega_dot +alpha%p*alpha%qs_double_dot &
        &+ skew(alpha%omega)*(alpha%m*alpha%v - alpha%c*alpha%omega + alpha%p*alpha%qs_dot)
 
-  res(4,1)  = skew(alpha%c)*alpha%v_dot + alpha%J*alpha%omega_dot + alpha%h*alpha%qs_double_dot &
+  res(4)  = skew(alpha%c)*alpha%v_dot + alpha%J*alpha%omega_dot + alpha%h*alpha%qs_double_dot &
        &+ skew(alpha%c)*skew(alpha%omega)*alpha%v + skew(alpha%omega)*alpha%J*alpha%omega &
        &+ skew(alpha%v)*alpha%p*alpha%qs_dot + skew(alpha%omega)*alpha%h*alpha%qs_dot &
        &+ skew(alpha%omega)*alpha%h*alpha%qs_dot 

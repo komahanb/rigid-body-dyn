@@ -138,6 +138,18 @@ function get_array(a)
   get_array=a%x
 end function get_array
 
+! get the vector entries as array
+function get_array_1d(a,n)
+  integer :: n
+  type(vector), intent(in) :: a(n)
+  real(dp)                 :: get_array_1d(n*num_spat_dim)
+  integer                  :: j, is_j, ie_j
+  do j = 1, n
+     call split(j,is_j,ie_j) ! split j index storage
+     get_array_1d(is_j:ie_j) = get_array(a(j))
+  end do
+end function get_array_1d
+
 ! constructor for a new matrix
 function new_matrix_from_array(a)
   real(dp), intent(in) :: a(num_spat_dim**2)
