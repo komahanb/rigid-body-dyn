@@ -25,7 +25,7 @@ program second_order
 !  print*, size(test,1)
 !  print*, get_matrix(test)
 !  call split(4,i,j)
-  print*, get_matrix_2d(test,1,1)
+!  print*, get_matrix_2d(test,1,1)
 
   stop
 !  call test_skew_sym

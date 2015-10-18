@@ -9,11 +9,11 @@ interface operator (*)
 end interface operator (*)
 
 interface operator (+)
-   module procedure add_matrices
+   module procedure add_matrices, add_vectors
 end interface operator (+)
 
 interface operator (-)
-   module procedure sub_matrices, negate_vector,  negate_matrix
+   module procedure sub_matrices, sub_vectors, negate_vector, negate_matrix
 end interface operator (-)
 
 
@@ -215,6 +215,8 @@ function trans(A)
   trans = matrix(transpose(get_matrix(A)))
 end function trans
 
+
+
 !returns the matrix addition of matrices of TYPE matrix
 function add_matrices(A, B)
   type(matrix), intent(in) :: A, B
@@ -222,12 +224,32 @@ function add_matrices(A, B)
   add_matrices%ij = A%ij +B%ij
 end function add_matrices
 
+
+
+!returns the matrix addition of vectors of TYPE matrix
+function add_vectors(a, b)
+  type(vector), intent(in) :: a, b
+  type(vector)  :: add_vectors
+  add_vectors%x = a%x + b%x
+end function add_vectors
+
+
 !returns the matrix subtraction of matrices of TYPE matrix
 function sub_matrices(A, B)
   type(matrix), intent(in)  :: A, B
   type(matrix)  :: sub_matrices
   sub_matrices%ij = A%ij -B%ij
 end function sub_matrices
+
+
+
+!returns the matrix addition of vectors of TYPE matrix
+function sub_vectors(a, b)
+  type(vector), intent(in) :: a, b
+  type(vector)  :: sub_vectors
+  sub_vectors%x = a%x - b%x
+end function sub_vectors
+
 
 ! returns the negative of type matrix
 function negate_matrix(A)

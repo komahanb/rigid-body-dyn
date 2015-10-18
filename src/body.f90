@@ -23,8 +23,8 @@ module body_mod
      type(vector) :: r, r_dot                   ! radius of origin
      type(vector) :: theta, theta_dot           ! orientation of the body frame with respect to inertial
 
-     type(vector) :: v                          ! the velocity and acceleration of the origin
-     type(vector) :: omega                      ! the angular velocity and acceleration of the body axis
+     type(vector) :: v, v_dot                          ! the velocity and acceleration of the origin
+     type(vector) :: omega, omega_dot                      ! the angular velocity and acceleration of the body axis
      type(vector) :: qs, qs_dot, qs_double_dot  ! elastic state vectors due to deformation
 
      type(vector) :: F                          ! external forces
@@ -44,10 +44,34 @@ module body_mod
 
      real(dp)     :: a, b                       ! constant multipliers
      
-
      ! for elastic
      ! type(vector) :: q_dot !? maybe qs
 
   end type body
+
+contains
+
+function res(alpha)
+
+  type(vector) :: res(4,1)
+  type(body) :: alpha
+  
+  res(1,1)  = alpha%C_mat*alpha%r_dot - alpha%v
+
+  res(2,1)  = alpha%S*alpha%theta_dot - alpha%omega
+
+  res(3,1)  = alpha%m*alpha%v_dot - skew(alpha%c)*alpha%omega_dot +alpha%p*alpha%qs_double_dot &
+       &+ skew(alpha%omega)*(alpha%m*alpha%v - alpha%c*alpha%omega + alpha%p*alpha%qs_dot)
+
+  res(4,1)  = skew(alpha%c)*alpha%v_dot + alpha%J*alpha%omega_dot + alpha%h*alpha%qs_double_dot &
+       &+ skew(alpha%c)*skew(alpha%omega)*alpha%v + skew(alpha%omega)*alpha%J*alpha%omega &
+       &+ skew(alpha%v)*alpha%p*alpha%qs_dot + skew(alpha%omega)*alpha%h*alpha%qs_dot &
+       &+ skew(alpha%omega)*alpha%h*alpha%qs_dot 
+
+end function res
+! m scalar/matrix 
+! f_ab
+
+
   
 end module body_mod
