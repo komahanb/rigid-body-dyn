@@ -41,14 +41,14 @@ INCLUDES = -I/usr/local/include #-I/home/newhall/include  -I../include
 #   if I wanted to include libraries not in /usr/lib I'd specify
 #   their path using -Lpath, something like:
 #-----------------------------------------------------------------------
-LIB_FLAGS = #-L../lib #-L/home/newhall/lib  -L../lib
+LIB_FLAGS = -L./lib #-L../lib #-L/home/newhall/lib  -L../lib
 
 #-----------------------------------------------------------------------
 # define any libraries to link into executable:
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname 
 #   option, something like (this will link in libmylib.so and libm.so:
 #-----------------------------------------------------------------------
-LIBS =  -ldl -lstdc++ #-ldiffer #-lmylib -lm
+LIBS =  -ldl -lstdc++ lib/daesolve.a #-ldiffer #-lmylib -lm
 
 #--------------------------
 # define the C, C++, Fortran source files
@@ -59,7 +59,9 @@ LIBS =  -ldl -lstdc++ #-ldiffer #-lmylib -lm
 
 #SRCS = hey.f90 hello.f90 hello1.f90
 #SRC := $(wildcard src/*.f90 src/*.c src/*.cpp)
-SRC  := src/constants.f90 src/common_utils.f90 src/utils.f90 src/solver_utils.f90 src/flex_multi_dyn.f90 src/system_components.f90 src/differ.f90 src/matrix_utils.f90 src/body.f90  src/main.f90
+SRC  := src/constants.f90 src/common_utils.f90 src/utils.f90 src/solver_utils.f90 src/flex_multi_dyn.f90 src/system_components.f90 src/differ.f90 src/matrix_utils.f90 src/body.f90  test/pend.f90
+
+#src/main.f90
 
 #-----------------------------------------------------------------------
 # define the C,C++, Fortran object files 
