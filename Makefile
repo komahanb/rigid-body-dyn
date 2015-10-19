@@ -19,9 +19,9 @@ FC = mpif90
 #------------------------------
 # define any compile-time flags
 #------------------------------
-CC_FLAGS = -Wall -g
-CX_FLAGS = -Wall -g
-FC_FLAGS = -Wall -g -Wno-unused -fbounds-check
+CC_FLAGS =  -g #-Wall
+CX_FLAGS =  -g #-Wall
+FC_FLAGS =  -g -Wno-unused -fbounds-check #-Wall
 
 
 #------------------------------
@@ -59,7 +59,7 @@ LIBS =  -ldl -lstdc++ lib/daesolve.a #-ldiffer #-lmylib -lm
 
 #SRCS = hey.f90 hello.f90 hello1.f90
 #SRC := $(wildcard src/*.f90 src/*.c src/*.cpp)
-SRC  := src/constants.f90 src/common_utils.f90 src/utils.f90 src/solver_utils.f90 src/flex_multi_dyn.f90 src/system_components.f90 src/differ.f90 src/matrix_utils.f90 src/body.f90  test/pend.f90
+SRC  := src/constants.f90 src/common_utils.f90 src/utils.f90 src/solver_utils.f90 src/flex_multi_dyn.f90 src/system_components.f90 src/differ.f90 src/matrix_utils.f90 src/body.f90 test/pend.f90
 
 #src/main.f90
 
