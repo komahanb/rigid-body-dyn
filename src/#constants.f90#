@@ -16,8 +16,11 @@ integer, parameter           :: num_spat_dim  = 3
 real(dp), parameter          :: pi = 22._dp/7._dp
 real(dp), parameter          :: rad_to_deg = 180._dp/pi
 
-real(dp), parameter          :: dzero = 0._dp
-real(dp), parameter          :: done  = 1._dp
+real(dp), parameter          :: dzero=0._dp
+real(dp), parameter          :: done=1._dp
+
+
+
 
 !------------------------------------
 ! define all solver related constants

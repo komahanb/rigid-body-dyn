@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/constants.f90
-MD5:f0dfe0cb588b69da8949097160221b95 -- If you edit this, you'll get what you deserve.
+MD5:8e8dded5c02e0afd945071c750da55a3 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () () ()
 () () ())
@@ -41,39 +41,45 @@ CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2') () 0 () () () 0 0)
 9 'dim_x' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '10') () 0 () () () 0 0)
-10 'dp' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+10 'done' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.10000000000000@1') () 0 () () () 0 0)
+11 'dp' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
-11 'kind' '(intrinsic)' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN UNKNOWN 0 0 FUNCTION) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 11
+12 'dzero' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.00000000000000@0') () 0 () () () 0 0)
+13 'kind' '(intrinsic)' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN 0 0 FUNCTION) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 13
 () () () 0 0)
-12 'matrix' 'constants' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+14 'matrix' 'constants' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
 DECL UNKNOWN 0 0 FUNCTION GENERIC) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-13 'num_spat_dim' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
+15 'num_spat_dim' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3') () 0 () () () 0 0)
-14 'pi' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+16 'pi' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (REAL 8 0 0 0
 REAL ()) 0 '0.32492492492492@1') () 0 () () () 0 0)
-15 'rad_to_deg' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+17 'rad_to_deg' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
 REAL 8 0 0 0 REAL ()) 0 '0.3945d1745d1746@2') () 0 () () () 0 0)
-16 'ref_frame_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
+18 'ref_frame_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
-17 'sp' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+19 'sp' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '4') () 0 () () () 0 0)
-18 'units_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+20 'units_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '10') () 0 () () () 0 0)
-19 'vector' 'constants' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+21 'vector' 'constants' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
 DECL UNKNOWN 0 0 FUNCTION GENERIC) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
 )
 
 ('Matrix' 0 2 'Vector' 0 3 'constants' 0 6 'del_t' 0 7 'dim_q' 0 8 'dim_x'
-0 9 'dp' 0 10 'kind' 0 11 'matrix' 0 12 'num_spat_dim' 0 13 'pi' 0 14
-'rad_to_deg' 0 15 'ref_frame_len' 0 16 'sp' 0 17 'units_len' 0 18 'vector'
-0 19)
+0 9 'done' 0 10 'dp' 0 11 'dzero' 0 12 'kind' 0 13 'matrix' 0 14
+'num_spat_dim' 0 15 'pi' 0 16 'rad_to_deg' 0 17 'ref_frame_len' 0 18 'sp'
+0 19 'units_len' 0 20 'vector' 0 21)

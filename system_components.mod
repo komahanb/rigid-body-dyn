@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/system_components.f90
-MD5:0fd81390be58417b463b0bce463830b3 -- If you edit this, you'll get what you deserve.
+MD5:d1152ea73762c4b4f0e99411dfbc67f6 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -100,50 +100,56 @@ CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2') () 0 () () () 0 0)
 29 'dim_x' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '10') () 0 () () () 0 0)
-30 'dp' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+30 'done' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.10000000000000@1') () 0 () () () 0 0)
+31 'dp' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
-31 'kind' '(intrinsic)' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN UNKNOWN 0 0 FUNCTION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 31
+32 'dzero' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.00000000000000@0') () 0 () () () 0 0)
+33 'kind' '(intrinsic)' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN 0 0 FUNCTION) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 33
 () () () 0 0)
-32 'matrix' 'constants' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+34 'matrix' 'constants' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
 DECL UNKNOWN 0 0 FUNCTION GENERIC) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () ()
 0 () () () 0 0)
-33 'num_spat_dim' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
+35 'num_spat_dim' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3') () 0 () () () 0 0)
-34 'pi' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+36 'pi' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (REAL 8 0 0 0
 REAL ()) 0 '0.32492492492492@1') () 0 () () () 0 0)
-35 'rad_to_deg' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+37 'rad_to_deg' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
 REAL 8 0 0 0 REAL ()) 0 '0.3945d1745d1746@2') () 0 () () () 0 0)
-36 'ref_frame_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
+38 'ref_frame_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
-37 'rotate_to_body_frame' 'system_components' '' 1 ((PROCEDURE
+39 'rotate_to_body_frame' 'system_components' '' 1 ((PROCEDURE
 UNKNOWN-INTENT MODULE-PROC DECL UNKNOWN 0 0 DIMENSION FUNCTION
-IMPLICIT_PURE ALWAYS_EXPLICIT) (REAL 8 0 0 0 REAL ()) 38 0 (39) (2 0
+IMPLICIT_PURE ALWAYS_EXPLICIT) (REAL 8 0 0 0 REAL ()) 40 0 (41) (2 0
 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '3') (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
-0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3')) 40 () () () 0 0)
-41 'sp' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3')) 42 () () () 0 0)
+43 'sp' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '4') () 0 () () () 0 0)
-42 'system_components' 'system_components' '' 1 ((MODULE UNKNOWN-INTENT
+44 'system_components' 'system_components' '' 1 ((MODULE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN 0 0) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-43 'units_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+45 'units_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '10') () 0 () () () 0 0)
-44 'vector' 'constants' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+46 'vector' 'constants' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
 DECL UNKNOWN 0 0 FUNCTION GENERIC) (REAL 4 0 0 0 REAL ()) 0 0 () () 0 ()
 () () 0 0)
-39 'theta' '' '' 38 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+41 'theta' '' '' 40 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 DIMENSION DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0 EXPLICIT (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '3')) 0 () () () 0 0)
-40 'c_mat' '' '' 38 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+42 'c_mat' '' '' 40 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 DIMENSION RESULT ALWAYS_EXPLICIT) (REAL 8 0 0 0 REAL ()) 0 0
 () (2 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3') (CONSTANT (INTEGER 4 0 0 0
@@ -153,6 +159,7 @@ INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3')) 0 () ()
 
 ('Body' 0 2 'Body_fixed_frame' 0 3 'Matrix' 0 4 'Vector' 0 5 'body' 0 24
 'body_fixed_frame' 0 25 'constants' 0 26 'del_t' 0 27 'dim_q' 0 28 'dim_x'
-0 29 'dp' 0 30 'kind' 0 31 'matrix' 0 32 'num_spat_dim' 0 33 'pi' 0 34
-'rad_to_deg' 0 35 'ref_frame_len' 0 36 'rotate_to_body_frame' 0 37 'sp'
-0 41 'system_components' 0 42 'units_len' 0 43 'vector' 0 44)
+0 29 'done' 0 30 'dp' 0 31 'dzero' 0 32 'kind' 0 33 'matrix' 0 34
+'num_spat_dim' 0 35 'pi' 0 36 'rad_to_deg' 0 37 'ref_frame_len' 0 38
+'rotate_to_body_frame' 0 39 'sp' 0 43 'system_components' 0 44 'units_len'
+0 45 'vector' 0 46)

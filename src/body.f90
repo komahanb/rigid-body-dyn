@@ -30,8 +30,8 @@ module body_mod
      type(vector) :: omega, omega_dot                      ! the angular velocity and acceleration of the body axis
      type(vector) :: qs, qs_dot, qs_double_dot  ! elastic state vectors due to deformation
 
-     type(vector) :: F                          ! external forces
-     type(vector) :: G                          ! external moments (torque)
+     type(vector) :: fr                          ! external forces
+     type(vector) :: gr                          ! external moments (torque)
 
      type(matrix) :: C_mat                      ! rotation matrix
      type(matrix) :: S, S_dot                   ! transformation matrix
@@ -64,12 +64,12 @@ function res(alpha)
   res(2)  = alpha%S*alpha%theta_dot - alpha%omega
 
   res(3)  = alpha%m*alpha%v_dot - skew(alpha%c)*alpha%omega_dot +alpha%p*alpha%qs_double_dot &
-       &+ skew(alpha%omega)*(alpha%m*alpha%v - alpha%c*alpha%omega + alpha%p*alpha%qs_dot)
+       &+ skew(alpha%omega)*(alpha%m*alpha%v - alpha%c*alpha%omega + alpha%p*alpha%qs_dot) - alpha%fr
 
   res(4)  = skew(alpha%c)*alpha%v_dot + alpha%J*alpha%omega_dot + alpha%h*alpha%qs_double_dot &
        &+ skew(alpha%c)*skew(alpha%omega)*alpha%v + skew(alpha%omega)*alpha%J*alpha%omega &
        &+ skew(alpha%v)*alpha%p*alpha%qs_dot + skew(alpha%omega)*alpha%h*alpha%qs_dot &
-       &+ skew(alpha%omega)*alpha%h*alpha%qs_dot 
+       &+ skew(alpha%omega)*alpha%h*alpha%qs_dot -alpha%gr
 
 end function res
 ! m scalar/matrix 

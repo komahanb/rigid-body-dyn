@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from src/common_utils.f90
-MD5:cfc14a144a23ea04c844ffea1bc4ae06 -- If you edit this, you'll get what you deserve.
+MD5:c41e55a4a62468d334ba48ee54ce6cef -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () ()
 () () () ())
@@ -44,84 +44,90 @@ CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '2') () 0 () () () 0 0)
 10 'dim_x' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '10') () 0 () () () 0 0)
-11 'dp' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+11 'done' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.10000000000000@1') () 0 () () () 0 0)
+12 'dp' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
-12 'kind' '(intrinsic)' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN UNKNOWN 0 0 FUNCTION) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 12
+13 'dzero' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
+REAL 8 0 0 0 REAL ()) 0 '0.00000000000000@0') () 0 () () () 0 0)
+14 'kind' '(intrinsic)' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN 0 0 FUNCTION) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 14
 () () () 0 0)
-13 'matrix' 'constants' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+15 'matrix' 'constants' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
 DECL UNKNOWN 0 0 FUNCTION GENERIC) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-14 'newunit' 'common_utils' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
+16 'newunit' 'common_utils' '' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
 DECL UNKNOWN 0 0 FUNCTION ALWAYS_EXPLICIT) (INTEGER 4 0 0 0 INTEGER ())
-15 0 (16) () 17 () () () 0 0)
-18 'num_spat_dim' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
+17 0 (18) () 19 () () () 0 0)
+20 'num_spat_dim' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '3') () 0 () () () 0 0)
-19 'pi' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+21 'pi' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (REAL 8 0 0 0
 REAL ()) 0 '0.32492492492492@1') () 0 () () () 0 0)
-20 'rad_to_deg' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+22 'rad_to_deg' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (REAL 8 0 0 0 REAL ()) 0 0 () (CONSTANT (
 REAL 8 0 0 0 REAL ()) 0 '0.3945d1745d1746@2') () 0 () () () 0 0)
-21 'ref_frame_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
+23 'ref_frame_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0
 () (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '8') () 0 () () () 0 0)
-22 'reverse_int' 'common_utils' '' 1 ((PROCEDURE UNKNOWN-INTENT
+24 'reverse_int' 'common_utils' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 DIMENSION FUNCTION IMPLICIT_PURE
-ALWAYS_EXPLICIT) (INTEGER 4 0 0 0 INTEGER ()) 23 0 (24) (1 0 EXPLICIT (
+ALWAYS_EXPLICIT) (INTEGER 4 0 0 0 INTEGER ()) 25 0 (26) (1 0 EXPLICIT (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (FUNCTION (INTEGER 4 0 0 0
-INTEGER ()) 0 25 (('' (VARIABLE (INTEGER 4 0 0 0 INTEGER ()) 1 24 ((
-ARRAY (FULL 1 2))))) ('' ()) ('' ())) '' 0 'size')) 26 () () () 0 0)
-27 'reverse_real' 'common_utils' '' 1 ((PROCEDURE UNKNOWN-INTENT
+INTEGER ()) 0 27 (('' (VARIABLE (INTEGER 4 0 0 0 INTEGER ()) 1 26 ((
+ARRAY (FULL 1 2))))) ('' ()) ('' ())) '' 0 'size')) 28 () () () 0 0)
+29 'reverse_real' 'common_utils' '' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN 0 0 DIMENSION FUNCTION IMPLICIT_PURE
-ALWAYS_EXPLICIT) (REAL 8 0 0 0 REAL ()) 28 0 (29) (1 0 EXPLICIT (
+ALWAYS_EXPLICIT) (REAL 8 0 0 0 REAL ()) 30 0 (31) (1 0 EXPLICIT (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (FUNCTION (INTEGER 4 0 0 0
-INTEGER ()) 0 30 (('' (VARIABLE (REAL 8 0 0 0 REAL ()) 1 29 ((ARRAY (
-FULL 1 2))))) ('' ()) ('' ())) '' 0 'size')) 31 () () () 0 0)
-32 'sp' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+INTEGER ()) 0 32 (('' (VARIABLE (REAL 8 0 0 0 REAL ()) 1 31 ((ARRAY (
+FULL 1 2))))) ('' ()) ('' ())) '' 0 'size')) 33 () () () 0 0)
+34 'sp' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '4') () 0 () () () 0 0)
-33 'units_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
+35 'units_len' 'constants' '' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN IMPLICIT-SAVE 0 0) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (
 CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '10') () 0 () () () 0 0)
-34 'vector' 'constants' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+36 'vector' 'constants' '' 1 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
 DECL UNKNOWN 0 0 FUNCTION GENERIC) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-16 'unit' '' '' 15 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
+18 'unit' '' '' 17 ((VARIABLE OUT UNKNOWN-PROC UNKNOWN UNKNOWN 0 0
 OPTIONAL DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-17 'n' '' '' 15 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN 0
+19 'n' '' '' 17 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN 0
 0 RESULT ALWAYS_EXPLICIT) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () ()
 () 0 0)
-24 'a' '' '' 23 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION
+26 'a' '' '' 25 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION
 DUMMY) (INTEGER 4 0 0 0 INTEGER ()) 0 0 () (1 0 ASSUMED_SHAPE (CONSTANT
 (INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () () () 0 0)
-25 'size' '(intrinsic)' '' 23 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN UNKNOWN 0 0 FUNCTION) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 25
+27 'size' '(intrinsic)' '' 25 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN 0 0 FUNCTION) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 27
 () () () 0 0)
-26 'rev_a' '' '' 23 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+28 'rev_a' '' '' 25 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 DIMENSION RESULT ALWAYS_EXPLICIT) (INTEGER 4 0 0 0 INTEGER ())
 0 0 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-FUNCTION (INTEGER 4 0 0 0 INTEGER ()) 0 25 (('' (VARIABLE (INTEGER 4 0 0
-0 INTEGER ()) 1 24 ((ARRAY (FULL 1 2))))) ('' ()) ('' ())) '' 0 'size'))
+FUNCTION (INTEGER 4 0 0 0 INTEGER ()) 0 27 (('' (VARIABLE (INTEGER 4 0 0
+0 INTEGER ()) 1 26 ((ARRAY (FULL 1 2))))) ('' ()) ('' ())) '' 0 'size'))
 0 () () () 0 0)
-29 'a' '' '' 28 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION
+31 'a' '' '' 30 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DIMENSION
 DUMMY) (REAL 8 0 0 0 REAL ()) 0 0 () (1 0 ASSUMED_SHAPE (CONSTANT (
 INTEGER 4 0 0 0 INTEGER ()) 0 '1') ()) 0 () () () 0 0)
-30 'size' '(intrinsic)' '' 28 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN UNKNOWN 0 0 FUNCTION) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 30
+32 'size' '(intrinsic)' '' 30 ((PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN 0 0 FUNCTION) (UNKNOWN 0 0 0 0 UNKNOWN ()) 0 0 () () 32
 () () () 0 0)
-31 'rev_a' '' '' 28 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+33 'rev_a' '' '' 30 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN 0 0 DIMENSION RESULT ALWAYS_EXPLICIT) (REAL 8 0 0 0 REAL ()) 0 0
 () (1 0 EXPLICIT (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (
-FUNCTION (INTEGER 4 0 0 0 INTEGER ()) 0 30 (('' (VARIABLE (REAL 8 0 0 0
-REAL ()) 1 29 ((ARRAY (FULL 1 2))))) ('' ()) ('' ())) '' 0 'size')) 0 ()
+FUNCTION (INTEGER 4 0 0 0 INTEGER ()) 0 32 (('' (VARIABLE (REAL 8 0 0 0
+REAL ()) 1 31 ((ARRAY (FULL 1 2))))) ('' ()) ('' ())) '' 0 'size')) 0 ()
 () () 0 0)
 )
 
 ('Matrix' 0 2 'Vector' 0 3 'common_utils' 0 6 'constants' 0 7 'del_t' 0
-8 'dim_q' 0 9 'dim_x' 0 10 'dp' 0 11 'kind' 0 12 'matrix' 0 13 'newunit'
-0 14 'num_spat_dim' 0 18 'pi' 0 19 'rad_to_deg' 0 20 'ref_frame_len' 0
-21 'reverse_int' 0 22 'reverse_real' 0 27 'sp' 0 32 'units_len' 0 33
-'vector' 0 34)
+8 'dim_q' 0 9 'dim_x' 0 10 'done' 0 11 'dp' 0 12 'dzero' 0 13 'kind' 0
+14 'matrix' 0 15 'newunit' 0 16 'num_spat_dim' 0 20 'pi' 0 21 'rad_to_deg'
+0 22 'ref_frame_len' 0 23 'reverse_int' 0 24 'reverse_real' 0 29 'sp' 0
+34 'units_len' 0 35 'vector' 0 36)

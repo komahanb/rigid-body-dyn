@@ -277,4 +277,16 @@ function negate_vector(a)
   negate_vector%x = -a%x
 end function negate_vector
 
+! convert from degree to radian
+function deg2rad(deg)
+  real(dp) :: deg2rad,deg
+  deg2rad  =  deg/rad_to_deg
+end function deg2rad
+
+! convert from radian to degree
+function rad2deg(rad)
+  real(dp) :: rad2deg,rad
+  rad2deg  =  rad*rad_to_deg
+end function rad2deg
+
 end module utils

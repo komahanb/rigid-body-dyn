@@ -1,17 +1,64 @@
 program pendulum
   ! program to run dynamics simulation of a pendulu use constants
+  use constants
   use utils
   use body_mod
+  use matrix_utils
+
   implicit none
 
   type(body) :: alpha
   real(dp)   :: residual(12)
   real(dp)   :: jacob(12,12)
+  INTEGER NEQ,INFO(15),IDID,LRW,LIW,IWORK(1000),IPAR, MY, II
+  DOUBLE PRECISION T, Y(12), YPRIME(12), TOUT, RTOL(12),ATOL(12), RWORK(1055), RPAR,H0
+  double precision :: temp
 
-  INTEGER NEQ,INFO(15),IDID,LRW,LIW,IWORK(1000),IPAR, MY, I, II
-  DOUBLE PRECISION T, Y(20), YPRIME(20), TOUT, RTOL(12),ATOL(12), RWORK(1055), RPAR,H0
+  real(dp), parameter           :: m = done
+  type(vector), parameter       :: g0 = vector((/ dzero, dzero, -1.0_dp /))
 
+  type(vector), parameter       :: zeroV = vector((/ dzero, dzero, dzero /))
+  type(vector), parameter       :: unitV = vector((/ dzero, dzero, dzero /))
+
+  type(matrix)                  :: idM   
+  type(matrix)                  :: zeroM 
+  type(matrix)                  :: unitM 
+
+  type(vector), parameter       :: re = vector((/ 1.0_dp, 1.0_dp, 1.0_dp /)) ! position vector of a point on the circumference of the sphere
+  
   external RES , JAC
+  
+  idM   = matrix(eye(num_spat_dim))
+  zeroM = matrix(zeros(num_spat_dim))
+  unitM = matrix(ones(num_spat_dim))
+
+
+  ! define positions of body frame from inertial
+  alpha%r         = vector((/ 2.0_dp, 2._dp, 2.0d0 /))
+  alpha%theta     = vector((/ deg2rad(30.0d0), deg2rad(45.0d0), deg2rad(60.0d0)/))
+
+  ! define velocities of the body frame
+  alpha%r_dot     = zeroV
+  alpha%omega_dot = zeroV
+
+  ! rotation and rate matrices
+
+
+  ! mass of the body
+  alpha%m  = m
+
+  ! mass moment of intertia (second moment)
+  temp     = (2.0_dp*m*abs(re)**2)/5.0_dp  
+  alpha%J  = temp*idM
+  
+  ! first moment of mass
+  alpha%c  = m*re
+  
+  ! force 
+  alpha%fr = m*g0
+  
+  ! torque
+  alpha%gr = alpha%J*alpha%omega_dot
 
   ! set number of equations to solve
   NEQ=12
@@ -32,8 +79,8 @@ program pendulum
   ! initial state
 
   ! info block
-  DO I=1,15
-     INFO(I)=0    
+  DO II=1,15
+     INFO(II)=0    
   end do
   INFO(2)=1
   INFO(3)=1
@@ -108,3 +155,4 @@ END SUBROUTINE RES
 subroutine jac
   stop"where is the impl"
 end subroutine jac
+
