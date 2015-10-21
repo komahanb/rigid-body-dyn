@@ -27,43 +27,46 @@ program pendulum
   type(matrix)                  :: unitM 
 
   type(vector), parameter       :: re = vector((/ 1.0_dp, 1.0_dp, 1.0_dp /)) ! position vector of a point on the circumference
-  real(dp)                      :: r0(num_spat_dim), theta0(num_spat_dim)
+
+  real(dp)                      :: r(num_spat_dim), theta(num_spat_dim), v(num_spat_dim), omega(num_spat_dim)
 
 !  type(frame)                  :: frame_A 
   external RES , JAC
-  
-  !  frame_A%rot_mat     = rotmat(frame_A%theta_alpha)
-  !  body_A%v_alpha   = matmul(frame_A%rot_mat, frame_A%v_alpha)
-  
-  !  print*, frame_A%v_alpha
-  !  print*, body_A%v_alpha
-  !  print*, ""
-  
+ 
   idM   = matrix(eye(num_spat_dim))
   zeroM = matrix(zeros(num_spat_dim))
   unitM = matrix(ones(num_spat_dim))
 
-  ! define positions of body frame from inertial
-  r0       = (/ 2.0_dp, 2._dp, 2.0_dp /)
-  theta0   = (/ deg2rad(30.0d0), deg2rad(45.0d0), deg2rad(60.0d0) /)
+  write(*,*) "Setting up the test problem"
+  
+  ! define positions of body frame from inertial (q terms)
+  r       = (/ 2.0_dp, 2._dp, 2.0_dp /)
+  theta   = (/ deg2rad(30.0d0), deg2rad(45.0d0), deg2rad(60.0d0) /)
+  v     = (/ 0.0d0, 0.0d0, 0.0d0 /)
+  omega = (/ 0.0d0, 0.0d0, 1.0d0 /)
 
-  alpha%r         = vector(r0)
-  alpha%theta     = vector(theta0)
+  alpha%r         = vector(r)
+  alpha%theta     = vector(theta)
+  alpha%v         = vector(v)
+  alpha%omega     = vector(omega)
 
-  ! define velocities of the body frame
+  ! define velocities of the body frame (q_dot terms)
   alpha%r_dot     = zeroV
+  alpha%theta_dot = zeroV
+  alpha%v_dot     = zeroV
   alpha%omega_dot = zeroV
 
   ! rotation and rate matrices
-  alpha%C_mat     = matrix(CBI(theta0)) !?
-  alpha%S         = matrix(SIB(theta0)) !?
+  alpha%C_mat     = matrix(CBI(theta)) !?
+  alpha%S         = matrix(SIB(theta)) !?
 
   ! mass of the body
   alpha%m  = m
 
   ! mass moment of intertia (second moment)
-  temp     = (2.0_dp*m*abs(re)**2)/5.0_dp  
-  alpha%J  = temp*idM
+  !  temp     = (2.0_dp*m*abs(re)**2)/5.0_dp  
+  !  alpha%J  = temp*idM
+  alpha%J = -m*skew(re)*skew(re)
   
   ! first moment of mass
   alpha%c  = m*re
@@ -170,3 +173,12 @@ subroutine jac
   stop"where is the impl"
 end subroutine jac
 
+
+
+
+  !  frame_A%rot_mat     = rotmat(frame_A%theta_alpha)
+  !  body_A%v_alpha   = matmul(frame_A%rot_mat, frame_A%v_alpha)
+  
+  !  print*, frame_A%v_alpha
+  !  print*, body_A%v_alpha
+  !  print*, ""
