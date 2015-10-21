@@ -225,20 +225,20 @@ function get_matrix_2d(A,m,n)
 end function get_matrix_2d
 
 ! unwraps a vector of vector and stores as an array
-function get_vector(a,n)
+function get_vector_elements(a,n)
   integer(sp) :: n
   type(vector), intent(in) :: a(n)
-  real(dp)    :: get_vector(n*num_spat_dim) 
+  real(dp)    :: get_vector_elements(n*num_spat_dim) 
   integer(sp) :: i
   integer(sp) :: is_i, ie_i
 
   do i = 1, n
      call split(i,is_i,ie_i) ! split i index storage
-     get_vector(is_i:ie_i) = a(i)%x ! get_matrix(A(j,i))
+     get_vector_elements(is_i:ie_i) = a(i)%x ! get_matrix(A(j,i))
      !        print*, is_j,ie_j,is_i,ie_i,i,j
   end do
 
-end function get_vector
+end function get_vector_elements
 
  subroutine split(i,is,ie)
    integer(sp) :: i

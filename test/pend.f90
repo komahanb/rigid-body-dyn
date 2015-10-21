@@ -17,6 +17,7 @@ program pendulum
   ! solver related variables
   integer neq,info(15),idid,lrw,liw,iwork(1000),ipar, my, ii
   double precision t, y(12), yprime(12), tout, rtol(12),atol(12), rwork(1055), rpar, h0
+
   external RES , JAC
 
   write(*,*) "Setting up the test problem"
@@ -77,7 +78,7 @@ end program pendulum
 subroutine res(t,y,yprime,delta,ires,rpar,ipar)
   ! implements the residual of the governing equation at the for the given t, y, yprime values
   use constants
-  use utils,only:get_vector
+  use utils,only:get_vector_elements
   use body_mod,only:alpha, R_rigid
 !  use jacobian_mod, only: res_rigid
   implicit none
@@ -101,7 +102,7 @@ subroutine res(t,y,yprime,delta,ires,rpar,ipar)
   ! option to compute yprime by itself
 
   !?? get the residual
-  delta = get_vector(R_rigid(alpha),4)
+  delta = get_vector_elements(R_rigid(alpha),4)
   print*, "residual vector = ", delta
 
 end subroutine res
@@ -111,13 +112,11 @@ end subroutine res
 !********************************
 subroutine jac
   ! JACOBIAN  = jac_rigid(alpha,a) !?? implement jacobian
+  
+
   stop"where is the impl"
+
 end subroutine jac
-
-
-
-
-
 
 !  frame_A%rot_mat     = rotmat(frame_A%theta_alpha)
 !  body_A%v_alpha   = matmul(frame_A%rot_mat, frame_A%v_alpha)
