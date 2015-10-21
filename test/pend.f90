@@ -8,13 +8,15 @@ program pendulum
   implicit none
 
   type(body) :: alpha
+
   real(dp)   :: residual(12)
   real(dp)   :: jacob(12,12)
+
   INTEGER NEQ,INFO(15),IDID,LRW,LIW,IWORK(1000),IPAR, MY, II
-  DOUBLE PRECISION T, Y(12), YPRIME(12), TOUT, RTOL(12),ATOL(12), RWORK(1055), RPAR,H0
+  DOUBLE PRECISION T, Y(12), YPRIME(12), TOUT, RTOL(12),ATOL(12), RWORK(1055), RPAR, H0
   double precision :: temp
 
-  real(dp), parameter           :: m = done
+  real(dp), parameter           :: m  = done
   type(vector), parameter       :: g0 = vector((/ dzero, dzero, -1.0_dp /))
 
   type(vector), parameter       :: zeroV = vector((/ dzero, dzero, dzero /))
@@ -24,33 +26,37 @@ program pendulum
   type(matrix)                  :: zeroM 
   type(matrix)                  :: unitM 
 
-  type(vector), parameter       :: re = vector((/ 1.0_dp, 1.0_dp, 1.0_dp /)) ! position vector of a point on the circumference of the sphere
-!  type(frame)                   :: frame_A
+  type(vector), parameter       :: re = vector((/ 1.0_dp, 1.0_dp, 1.0_dp /)) ! position vector of a point on the circumference
+  real(dp)                      :: r0(num_spat_dim), theta0(num_spat_dim)
 
+!  type(frame)                  :: frame_A 
   external RES , JAC
- 
-!  frame_A%rot_mat     = rotmat(frame_A%theta_alpha)
-!  body_A%v_alpha   = matmul(frame_A%rot_mat, frame_A%v_alpha)
-
-!  print*, frame_A%v_alpha
-!!  print*, body_A%v_alpha
-!  print*, ""
-
+  
+  !  frame_A%rot_mat     = rotmat(frame_A%theta_alpha)
+  !  body_A%v_alpha   = matmul(frame_A%rot_mat, frame_A%v_alpha)
+  
+  !  print*, frame_A%v_alpha
+  !  print*, body_A%v_alpha
+  !  print*, ""
+  
   idM   = matrix(eye(num_spat_dim))
   zeroM = matrix(zeros(num_spat_dim))
   unitM = matrix(ones(num_spat_dim))
 
-
   ! define positions of body frame from inertial
-  alpha%r         = vector((/ 2.0_dp, 2._dp, 2.0d0 /))
-  alpha%theta     = vector((/ deg2rad(30.0d0), deg2rad(45.0d0), deg2rad(60.0d0)/))
+  r0       = (/ 2.0_dp, 2._dp, 2.0_dp /)
+  theta0   = (/ deg2rad(30.0d0), deg2rad(45.0d0), deg2rad(60.0d0) /)
+
+  alpha%r         = vector(r0)
+  alpha%theta     = vector(theta0)
 
   ! define velocities of the body frame
   alpha%r_dot     = zeroV
   alpha%omega_dot = zeroV
 
   ! rotation and rate matrices
-
+  alpha%C_mat     = matrix(CBI(theta0)) !?
+  alpha%S         = matrix(SIB(theta0)) !?
 
   ! mass of the body
   alpha%m  = m
@@ -164,42 +170,3 @@ subroutine jac
   stop"where is the impl"
 end subroutine jac
 
-! rotates a vector from body frame inertial
-function CBI(theta)
-  use constants
-  real(dp), intent(in)    :: theta(num_spat_dim)
-  real(dp)                :: CBI(num_spat_dim, num_spat_dim)
-
-  CBI(1,1) =  cos(theta(2))*cos(theta(3)) + sin(theta(1))*sin(theta(2))*sin(theta(3))
-  CBI(2,1) =  cos(theta(1))*sin(theta(3))
-  CBI(3,1) = -sin(theta(2))*cos(theta(3)) + sin(theta(1))*cos(theta(2))*sin(theta(3))
-
-  CBI(1,2) = -cos(theta(2))*sin(theta(3)) + sin(theta(1))*sin(theta(2))*cos(theta(3))
-  CBI(2,2) =  cos(theta(1))*cos(theta(3))
-  CBI(3,2) =  sin(theta(2))*sin(theta(3)) + sin(theta(1))*cos(theta(2))*cos(theta(3))
-
-  CBI(1,3) =  cos(theta(1))*sin(theta(2))
-  CBI(2,3) = -sin(theta(1))
-  CBI(3,3) =  cos(theta(1))*cos(theta(2))
-
-end function CBI
-
-! transformation matrix between angular velocity between intertial and body axis
-function SIB(theta)
-  use constants
-  real(dp), intent(in)    :: theta(num_spat_dim)
-  real(dp)                :: SIB(num_spat_dim, num_spat_dim)
-
-  SIB(1,1) = cos(theta(3))
-  SIB(2,1) = cos(theta(1))*sin(theta(3))
-  SIB(3,1) = 0.0_dp
-
-  SIB(2,1) = -sin(theta(3))
-  SIB(2,2) = cos(theta(1))*cos(theta(3))
-  SIB(3,2) = 0.0_dp
-
-  SIB(3,1) = 0.0_dp
-  SIB(3,2) = -sin(theta(1)) 
-  SIB(3,3) = 1.0_dp
-
-end function SIB
