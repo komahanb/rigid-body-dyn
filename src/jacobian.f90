@@ -1,3 +1,5 @@
+! moduele that assembles the jacobian
+! terms in jacobian come from (a) body (b) joints (c)
 module jacobian_mod
 use utils
 use body_mod
