@@ -77,6 +77,11 @@ program pendulum
   ! torque
   alpha%gr = alpha%J*alpha%omega_dot
 
+
+
+
+
+
   ! set number of equations to solve
   NEQ=12
 
@@ -165,11 +170,14 @@ SUBROUTINE RES(T,Y,YPRIME,DELTA,IRES,RPAR,IPAR)
 
   ! option to compute yprime by itself
 
+  !?? get the residual
+  ! DELTA = res_rigid(alpha)
 
 END SUBROUTINE RES
 
 ! implement th jacoain if needed
 subroutine jac
+  ! JACOBIAN  = jac_rigid(alpha,a) !?? implement jacobian
   stop"where is the impl"
 end subroutine jac
 
