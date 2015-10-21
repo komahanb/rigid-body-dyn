@@ -63,7 +63,7 @@ module body_mod
 
 contains
 
-! residual vector
+! assembles the residual vector using the supplied body
 function residual(alpha)
 
   type(vector) :: residual(4)
