@@ -22,37 +22,39 @@ module body_mod
   
   type body
      
-     real(dp)     :: m                          ! mass
-
+     ! rigid body state variables
      type(vector) :: r
      type(vector) :: theta
      type(vector) :: v
      type(vector) :: omega
 
-     type(vector) :: r_dot                   ! radius of origin
-     type(vector) :: theta_dot           ! orientation of the body frame with respect to inertial
-     type(vector) :: v_dot                          ! the velocity and acceleration of the origin
-     type(vector) :: omega_dot                      ! the angular velocity and acceleration of the body axis
+     type(vector) :: r_dot
+     type(vector) :: theta_dot
+     type(vector) :: v_dot
+     type(vector) :: omega_dot
 
+     ! elatic state variables
      type(vector) :: qs
      type(vector) :: qs_dot
-     type(vector) :: qs_double_dot  ! elastic state vectors due to deformation
+     type(vector) :: qs_double_dot
 
-     type(vector) :: c                          ! first moment of inertia
-     type(matrix) :: J                          ! second moment of inertia
+     ! other body properties
+     real(dp)     :: mass           ! mass (denoted m in paper)   
+     type(vector) :: c              ! first moment of inertia
+     type(matrix) :: J              ! second moment of inertia
 
-     type(matrix) :: K                          ! stiffness matrix
-     type(matrix) :: M_mat                      ! mass matrix
+     type(matrix) :: p              ! 
+     type(matrix) :: h              ! 
 
-     type(matrix) :: p                          ! 
-     type(matrix) :: h                          ! 
-
+     type(matrix) :: K              ! stiffness matrix
+     type(matrix) :: M              ! mass matrix
  
-     type(matrix) :: C_mat                      ! rotation matrix
-     type(matrix) :: S, S_dot                   ! transformation matrix
+     type(matrix) :: C_mat          ! rotation matrix
+     type(matrix) :: S
+     type(matrix) :: S_dot          ! transformation matrix
 
-     type(vector) :: fr                          ! external forces
-     type(vector) :: gr                          ! external moments (torque)
+     type(vector) :: fr             ! external/reaction force
+     type(vector) :: gr             ! external/reaction torque
      
      ! for elastic
      ! type(vector) :: q_dot !? maybe qs
@@ -71,8 +73,8 @@ function residual(alpha)
 
   residual(2)  = alpha%S*alpha%theta_dot - alpha%omega
 
-  residual(3)  = alpha%m*alpha%v_dot - skew(alpha%c)*alpha%omega_dot +alpha%p*alpha%qs_double_dot &
-       &+ skew(alpha%omega)*(alpha%m*alpha%v - alpha%c*alpha%omega + alpha%p*alpha%qs_dot) - alpha%fr
+  residual(3)  = alpha%mass*alpha%v_dot - skew(alpha%c)*alpha%omega_dot +alpha%p*alpha%qs_double_dot &
+       &+ skew(alpha%omega)*(alpha%mass*alpha%v - alpha%c*alpha%omega + alpha%p*alpha%qs_dot) - alpha%fr
 
   residual(4)  = skew(alpha%c)*alpha%v_dot + alpha%J*alpha%omega_dot + alpha%h*alpha%qs_double_dot &
        &+ skew(alpha%c)*skew(alpha%omega)*alpha%v + skew(alpha%omega)*alpha%J*alpha%omega &

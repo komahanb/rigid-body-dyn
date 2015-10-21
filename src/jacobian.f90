@@ -137,7 +137,7 @@ function S_S(alpha, a)
   real(dp)     :: a
   type(matrix) :: S_S
 
-  S_S = alpha%K  + alpha%b*alpha%M_mat ! K + b M
+  S_S = alpha%K  + alpha%b*alpha%M ! K + b M
 
 end function S_S
 

@@ -61,7 +61,7 @@ program pendulum
   alpha%S         = matrix(SIB(theta)) !?
 
   ! mass of the body
-  alpha%m  = m
+  alpha%mass  = m
 
   ! mass moment of intertia (second moment)
   !  temp     = (2.0_dp*m*abs(re)**2)/5.0_dp  
