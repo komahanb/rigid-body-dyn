@@ -2,6 +2,7 @@
 ! terms in jacobian come from (a) body (b) joints (c)
 module jacobian_mod
 use utils
+use matrix_utils
 use body_mod
 implicit none
 
@@ -15,18 +16,18 @@ end type jacobian
 
 contains
 
-  ! decompose the jacobian in to double precision matrix
- function getJacobian(jac)
-   type(jacobian)  :: Jac
-   real(dp)        :: getJacobian(12,12)
+  ! returns the rigid body terms in the jacobian matrix
+ function jac_rigid(jac)
+   type(jacobian)  :: jac
+   real(dp)        :: jac_rigid(12,12)
    type(matrix)   :: D_R (4,4)
    D_R = Jac%D_R
    
-   getJacobian = getJacobian_2d(D_R,4,4)
+   jac_rigid = get_matrix_2d(D_R,4,4)
 
-   print*, decompose
+!   print*, decompose
 
- end function getJacobian
+ end function jac_rigid
 !!$ 
 !!$ function residual(res)
 !!$   real(dp) :: residual(size(res),num_spat_dim)
@@ -134,18 +135,18 @@ function S_R(alpha, a)
 end function S_R
 
 ! linear combination of stiffness and mass matrix
-function S_S(alpha, a)
+function S_S(alpha, a, b)
   type(body)   :: alpha
-  real(dp)     :: a
+  real(dp)     :: a, b
   type(matrix) :: S_S
 
-  S_S = alpha%K  + alpha%b*alpha%M ! K + b M
+  S_S = alpha%K  + b*alpha%M ! K + b M
 
 end function S_S
 
-function S_RS(alpha, a)
+function S_RS(alpha, a, b)
   type(body)   :: alpha
-  real(dp)     :: a
+  real(dp)     :: a, b
   type(matrix) :: S_RS(4,1)
   type(matrix) :: O ! zero matrix
 
@@ -153,8 +154,8 @@ function S_RS(alpha, a)
 
   S_RS(1,1) = O
   S_RS(2,1) = O
-  S_RS(3,1) = alpha%b*alpha%p + a*skew(alpha%omega)*alpha%p !bp +a wx p
-  S_RS(4,1) = alpha%b*alpha%h + a*(skew(alpha%v)*alpha%p  + skew(alpha%omega)*alpha%h) !bh +a(vx p + wx h)
+  S_RS(3,1) = b*alpha%p + a*skew(alpha%omega)*alpha%p !bp +a wx p
+  S_RS(4,1) = b*alpha%h + a*(skew(alpha%v)*alpha%p  + skew(alpha%omega)*alpha%h) !bh +a(vx p + wx h)
 
 end function S_RS
 
