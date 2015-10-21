@@ -45,10 +45,11 @@ contains
 
 
 ! find the jacobian of the equation of motion for the supplied BODY alpha
-function D_R(alpha)
+function D_R(alpha, a)
 
-  type(body)   :: alpha
-  type(matrix) :: D_R(4,4) ! where 4 is the state vector length
+  type(body)    :: alpha
+  real(dp)      :: a
+  type(matrix)  :: D_R(4,4) ! where 4 is the state vector length
   type(matrix)  :: O ! zero matrix
   type(matrix)  :: U ! unit matrix
   type(matrix)  :: I ! identity matrix
@@ -59,25 +60,25 @@ function D_R(alpha)
   I = matrix(eye(num_spat_dim))
   
   ! assemble jacobian
-  D_R(1,1) = alpha%a * alpha%C_mat
+  D_R(1,1) = a * alpha%C_mat
   D_R(2,1) = skew(alpha%C_mat * alpha%r_dot) * alpha%S
   D_R(3,1) = -1.0_dp*U
   D_R(4,1) = O
 
   D_R(1,2) = O
-  D_R(2,2) = alpha%S_dot + skew(alpha%S*alpha%theta_dot)*alpha%S + alpha%a * alpha%S
+  D_R(2,2) = alpha%S_dot + skew(alpha%S*alpha%theta_dot)*alpha%S + a * alpha%S
   D_R(3,2) = O
   D_R(4,2) = -1.0_dp*U
 
   D_R(1,3) = O
   D_R(2,3) = O
-  D_R(3,3) = alpha%m*(alpha%a*U + skew(alpha%omega))
-  D_R(4,3) = -alpha%a*skew(alpha%c) + skew(skew(alpha%c)*alpha%omega)  - alpha%m*skew(alpha%V) - skew(alpha%omega)*skew(alpha%C)
+  D_R(3,3) = alpha%m*(a*U + skew(alpha%omega))
+  D_R(4,3) = -a*skew(alpha%c) + skew(skew(alpha%c)*alpha%omega)  - alpha%m*skew(alpha%V) - skew(alpha%omega)*skew(alpha%C)
 
   D_R(1,4) = O
   D_R(2,4) = O
-  D_R(3,4) = alpha%a*skew(alpha%C) + skew(alpha%C) * skew(alpha%omega)
-  D_R(4,4) = alpha%a*alpha%J  + skew(alpha%omega)*alpha%J - skew(alpha%J*alpha%omega) -skew(alpha%c)*skew(alpha%V)
+  D_R(3,4) = a*skew(alpha%C) + skew(alpha%C) * skew(alpha%omega)
+  D_R(4,4) = a*alpha%J  + skew(alpha%omega)*alpha%J - skew(alpha%J*alpha%omega) -skew(alpha%c)*skew(alpha%V)
 
 !  real(dp)     :: OO(num_spat_dim,num_spat_dim) ! zero matrix
 !  real(dp)     :: UU(num_spat_dim,num_spat_dim) ! unit matrix
@@ -99,9 +100,10 @@ end function D_R
 
 
 ! jacobian of the structural degree of freedom
-function S_R(alpha)
+function S_R(alpha, a)
 
   type(body)   :: alpha
+  real(dp)     :: a
   type(matrix) :: S_R(4,4) ! where 4 is the state vector length
   type(matrix)  :: O ! zero matrix
 
@@ -130,17 +132,18 @@ function S_R(alpha)
 end function S_R
 
 ! linear combination of stiffness and mass matrix
-function S_S(alpha)
-
+function S_S(alpha, a)
   type(body)   :: alpha
+  real(dp)     :: a
   type(matrix) :: S_S
 
   S_S = alpha%K  + alpha%b*alpha%M_mat ! K + b M
 
 end function S_S
 
-function S_RS(alpha)
+function S_RS(alpha, a)
   type(body)   :: alpha
+  real(dp)     :: a
   type(matrix) :: S_RS(4,1)
   type(matrix) :: O ! zero matrix
 
@@ -148,14 +151,15 @@ function S_RS(alpha)
 
   S_RS(1,1) = O
   S_RS(2,1) = O
-  S_RS(3,1) = alpha%b*alpha%p + alpha%a*skew(alpha%omega)*alpha%p !bp +a wx p
-  S_RS(4,1) = alpha%b*alpha%h + alpha%a*(skew(alpha%v)*alpha%p  + skew(alpha%omega)*alpha%h) !bh +a(vx p + wx h)
+  S_RS(3,1) = alpha%b*alpha%p + a*skew(alpha%omega)*alpha%p !bp +a wx p
+  S_RS(4,1) = alpha%b*alpha%h + a*(skew(alpha%v)*alpha%p  + skew(alpha%omega)*alpha%h) !bh +a(vx p + wx h)
 
 end function S_RS
 
 
-function S_SR(alpha)
+function S_SR(alpha, a)
   type(body)   :: alpha
+  real(dp)     :: a
   type(matrix) :: S_SR(1,4)
   type(matrix) :: O ! zero matrix
 
@@ -163,8 +167,8 @@ function S_SR(alpha)
 
   S_SR(1,1) = O
   S_SR(1,2) = O
-  S_SR(1,3) = alpha%a * trans(alpha%p) !a p^T
-  S_SR(1,4) = alpha%a * trans(alpha%p) !a h^T
+  S_SR(1,3) = a * trans(alpha%p) !a p^T
+  S_SR(1,4) = a * trans(alpha%p) !a h^T
  
 end function S_SR
 

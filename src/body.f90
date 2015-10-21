@@ -24,18 +24,19 @@ module body_mod
      
      real(dp)     :: m                          ! mass
 
-     type(vector) :: r, r_dot                   ! radius of origin
-     type(vector) :: theta, theta_dot           ! orientation of the body frame with respect to inertial
+     type(vector) :: r
+     type(vector) :: theta
+     type(vector) :: v
+     type(vector) :: omega
 
-     type(vector) :: v, v_dot                          ! the velocity and acceleration of the origin
-     type(vector) :: omega, omega_dot                      ! the angular velocity and acceleration of the body axis
-     type(vector) :: qs, qs_dot, qs_double_dot  ! elastic state vectors due to deformation
+     type(vector) :: r_dot                   ! radius of origin
+     type(vector) :: theta_dot           ! orientation of the body frame with respect to inertial
+     type(vector) :: v_dot                          ! the velocity and acceleration of the origin
+     type(vector) :: omega_dot                      ! the angular velocity and acceleration of the body axis
 
-     type(vector) :: fr                          ! external forces
-     type(vector) :: gr                          ! external moments (torque)
-
-     type(matrix) :: C_mat                      ! rotation matrix
-     type(matrix) :: S, S_dot                   ! transformation matrix
+     type(vector) :: qs
+     type(vector) :: qs_dot
+     type(vector) :: qs_double_dot  ! elastic state vectors due to deformation
 
      type(vector) :: c                          ! first moment of inertia
      type(matrix) :: J                          ! second moment of inertia
@@ -46,7 +47,12 @@ module body_mod
      type(matrix) :: p                          ! 
      type(matrix) :: h                          ! 
 
-     real(dp)     :: a, b                       ! constant multipliers
+ 
+     type(matrix) :: C_mat                      ! rotation matrix
+     type(matrix) :: S, S_dot                   ! transformation matrix
+
+     type(vector) :: fr                          ! external forces
+     type(vector) :: gr                          ! external moments (torque)
      
      ! for elastic
      ! type(vector) :: q_dot !? maybe qs
@@ -112,5 +118,10 @@ function SIB(theta)
   SIB(3,3) = 1.0_dp
 
 end function SIB
+
+! function to create body and set the class variables
+!!$function makeBody()
+!!$type(body) :: makebody
+!!$end function makeBody
   
 end module body_mod
