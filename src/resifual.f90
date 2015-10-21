@@ -1,11 +1,8 @@
 module residual
-implicit none
-use utils
+
+  use utils
+  implicit none
 
 contains
-
-
-
-
 
 end module residual

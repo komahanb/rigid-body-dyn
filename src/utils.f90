@@ -3,6 +3,7 @@ use constants
 
 implicit none
 
+
 ! overload * for cross product
 interface operator (*)
    module procedure cross, scal_vec, scal_matrix, vector_matrix, matrix_vector, matrix_matrix
@@ -33,6 +34,9 @@ end interface vector
 interface matrix
    module procedure new_matrix_from_array, get_matrix
 end interface 
+
+type(vector), parameter       :: zeroV = vector((/ dzero, dzero, dzero /))
+type(vector), parameter       :: unitV = vector((/ dzero, dzero, dzero /))
 
 contains
 
