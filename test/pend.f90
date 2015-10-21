@@ -25,7 +25,7 @@ program pendulum
   call create_body()
 
   print*, alpha
-
+  call jac
   stop
 
   ! set number of equations to solve
@@ -111,8 +111,14 @@ end subroutine res
 ! implementation of the jacobian
 !********************************
 subroutine jac
+  use constants,only:dp,sp
+  use body_mod,only:alpha
+  use jacobian_mod,only:jac_rigid
+  real(dp) :: a
   ! JACOBIAN  = jac_rigid(alpha,a) !?? implement jacobian
-  
+  a = 0.1d0
+
+  print*, "JAC:", jac_rigid (alpha, a)
 
   stop"where is the impl"
 
