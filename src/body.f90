@@ -6,7 +6,7 @@ module body_mod
 
   private
   
-  public body, CBI, SIB
+  public body, CBI, SIB, alpha, R_rigid
   
   type body
      
@@ -45,6 +45,8 @@ module body_mod
      type(vector) :: gr             ! external/reaction torque
      
   end type body
+
+  type(body)      :: alpha
 
 contains
 

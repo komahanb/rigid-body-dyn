@@ -197,6 +197,14 @@ function get_matrix(A)
   get_matrix = A%ij
 end function get_matrix
 
+
+!!$! get the vector entries as array
+!!$function getentries(a)
+!!$  type(matrix), intent(in) :: a
+!!$  real(dp)                 :: getentries(num_spat_dim)
+!!$  getentries = a%ij
+!!$end function getentries
+
 ! unwraps a 2d matrix and stores as real numbers
 function get_matrix_2d(A,m,n)
   integer(sp) :: m,n
@@ -215,6 +223,22 @@ function get_matrix_2d(A,m,n)
   end do
 
 end function get_matrix_2d
+
+! unwraps a vector of vector and stores as an array
+function get_vector(a,n)
+  integer(sp) :: n
+  type(vector), intent(in) :: a(n)
+  real(dp)    :: get_vector(n*num_spat_dim) 
+  integer(sp) :: i
+  integer(sp) :: is_i, ie_i
+
+  do i = 1, n
+     call split(i,is_i,ie_i) ! split i index storage
+     get_vector(is_i:ie_i) = a(i)%x ! get_matrix(A(j,i))
+     !        print*, is_j,ie_j,is_i,ie_i,i,j
+  end do
+
+end function get_vector
 
  subroutine split(i,is,ie)
    integer(sp) :: i

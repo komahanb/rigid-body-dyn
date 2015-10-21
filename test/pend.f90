@@ -10,7 +10,7 @@ program pendulum
 
   implicit none
 
-  type(body) :: alpha
+!  type(body) :: alpha
   real(dp)   :: residual(12)
   real(dp)   :: jacob(12,12)
 
@@ -21,6 +21,11 @@ program pendulum
 
   write(*,*) "Setting up the test problem"
 
+  call create_body()
+
+  print*, alpha
+
+  stop
 
   ! set number of equations to solve
   NEQ=12
@@ -72,7 +77,9 @@ end program pendulum
 subroutine res(t,y,yprime,delta,ires,rpar,ipar)
   ! implements the residual of the governing equation at the for the given t, y, yprime values
   use constants
-  use utils
+  use utils,only:get_vector
+  use body_mod,only:alpha, R_rigid
+!  use jacobian_mod, only: res_rigid
   implicit none
 
   real(dp)  :: t
@@ -85,6 +92,8 @@ subroutine res(t,y,yprime,delta,ires,rpar,ipar)
 
   integer(sp):: i,j,k
 
+  
+  ! sanity check 
 !!$  do i = 1, 12
 !!$     if (y(i) .lt. dzero)  ires = -1; return
 !!$  end do
@@ -92,7 +101,8 @@ subroutine res(t,y,yprime,delta,ires,rpar,ipar)
   ! option to compute yprime by itself
 
   !?? get the residual
-  ! delta = res_rigid(alpha)
+  delta = get_vector(R_rigid(alpha),4)
+  print*, "residual vector = ", delta
 
 end subroutine res
 
@@ -134,7 +144,7 @@ end subroutine jac
 !!$  type(matrix) :: test(1,1)
 !!$  type(vector) ::dd(2)
 
-subroutine create_body(alpha)
+subroutine create_body()
 
   use constants
   use utils
@@ -142,7 +152,6 @@ subroutine create_body(alpha)
   use matrix_utils
 
   implicit none
-  type(body),intent(out) :: alpha
 
   real(dp), parameter           :: m  = 1.0_dp
   type(vector), parameter       :: g0 = vector((/ dzero, dzero, -1.0_dp /))
