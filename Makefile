@@ -1,4 +1,4 @@
-#
+#src
 # 'make depend' uses makedepend to automatically generate dependencies 
 #               (dependencies are added to end of Makefile)
 # 'make'        build executable file 'mycc'
@@ -59,7 +59,7 @@ LIBS =  -ldl -lstdc++ -llapack -lblas lib/daesolve.a #-ldiffer #-lmylib -lm
 
 #SRCS = hey.f90 hello.f90 hello1.f90
 #SRC := $(wildcard src/*.f90 src/*.c src/*.cpp)
-SRC  := src/constants.f90 src/common_utils.f90 src/utils.f90 src/solver_utils.f90 src/flex_multi_dyn.f90 src/system_components.f90 src/differ.f90 src/matrix_utils.f90 src/body.f90 src/jacobian.f90 test/pend.f90
+SRC  := src/dispmodule.f90 src/constants.f90 src/common_utils.f90 src/utils.f90 src/solver_utils.f90 src/flex_multi_dyn.f90 src/system_components.f90 src/differ.f90 src/matrix_utils.f90 src/body.f90 src/jacobian.f90 test/pend.f90
 
 #src/main.f90
 
