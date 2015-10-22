@@ -7,14 +7,18 @@ program pendulum
   use utils
   use body_mod
   use matrix_utils
+  use jacobian_mod
 
   implicit none
-
+  real(dp)         :: delta(12)
+  real(dp)         :: pd(12,12)
   ! solver related variables
   integer(sp)      :: neq,info(15),idid,lrw,liw,iwork(1000),ipar, my, ii
   real(dp)         :: t, y(12), yprime(12), tout, rtol(12),atol(12), rwork(1055), rpar
+  ! state variables
   real(dp)         :: r(num_spat_dim), theta(num_spat_dim), v(num_spat_dim), omega(num_spat_dim) ! state vars
   real(dp)         :: r_dot(num_spat_dim), theta_dot(num_spat_dim), v_dot(num_spat_dim), omega_dot(num_spat_dim) ! state vars
+  ! other variables
   real(dp)         :: m, g0(num_spat_dim), re(num_spat_dim)
 
   external RES , JAC
@@ -25,42 +29,42 @@ program pendulum
   ! (1) create a pendulum body
   ! ******************************************************
 
-  r       = (/ 0.0_dp, 0._dp, 0.0_dp /)
-  theta   = (/ deg2rad(10.0d0), deg2rad(20.0d0), deg2rad(40.0d0) /)
-  v       = (/ 1.0d0, 0.0d0, 0.0d0 /)
-  omega   = (/ 1.0d0, 0.0d0, 0.0d0 /)
+  r       = (/ 1.0_dp, 2._dp, 3.0_dp /)
+  theta   = (/ deg2rad(10.0d0), deg2rad(-20.0d0), deg2rad(-40.0d0) /)
+  v       = (/ 1.0d0, -2.0d0, 3.0d0 /)
+  omega   = (/ -1.0d0, 3.0d0, -4.0d0 /)
 
+  r_dot       = (/ 1.0d0, -2.0d0, 3.0d0 /)
+  theta_dot   = (/ -1.0d0, 2.0d0, -1.0d0 /)
+  v_dot       = (/ 1.0d0, 2.0d0, -2.0d0 /)
+  omega_dot   = (/ -1.0d0, 4.0d0, -2.0d0 /)
+
+  ! initial state values
   Y       = (/r, theta, v, omega /)
-
-  r_dot       = (/ 0.0d0, 0.0d0, 0.0d0 /)
-  theta_dot   = (/ 0.0d0, 0.0d0, 0.0d0 /)
-  v_dot       = (/ 1.0d0, 0.0d0, 0.0d0 /)
-  omega_dot   = (/ 1.0d0, 0.0d0, 0.0d0 /)
-
   YPRIME  = (/r_dot, theta_dot, v_dot, omega_dot /)
 
+  !  call disp('   Y      =  ', Y)
+  !  call disp('   Yprime =  ',yprime)
 
-  m  = 1.0d0
+  m  = 5.0d0
 
-  g0 = (/ 0.0d0, -1.0d0, 0.0d0/)
-  re = (/ 1.0d0, 1.0d0, 1.0d0/)
+  g0 = (/ -1.0d0, -1.0d0, -1.0d0/)
+  re = (/ -1.0d0, 2.0d0, 1.0d0/)
 
-  CALL DISP('   g0 =   ', g0, SEP=', ', ORIENT = 'ROW') 
-  CALL DISP('   re =   ', re, SEP=', ', ORIENT = 'ROW') 
-
+  !  CALL DISP('   g0 =   ', g0, SEP=', ', ORIENT = 'ROW') 
+  !  CALL DISP('   re =   ', re, SEP=', ', ORIENT = 'ROW') 
+  
   call create_body(m, vector(g0), vector(re), Y, YPRIME, alpha)
 
-  !  print*, y
-  !  print*, yprime
-  !  print*, alpha
+!!$  delta = get_vector_elements(R_rigid(alpha),4)
+!!$  call print_body(alpha)
+!!$  call disp("   R   =   ", delta)
+!!$
+!!$  pd = jac_rigid (alpha, 2.0d0)
+!!$  call disp("   JAC =   ", pd)
+!!$
+!!$  stop
 
-  !  Y = 0.0d0
-  !  YPRIME = 0.0d0
-
-  !  call setstatevars(y, yprime, alpha)
-  !  print*, alpha
-
-  ! stop
   ! ******************************************************
   ! (2) set the res and jacobian for the linear system
   ! ******************************************************
@@ -90,7 +94,7 @@ program pendulum
   ! derivatives automatically by numerical differences
   info(5) = 1   ! Yes - Set INFO(5)=0   ! No  - Set INFO(5)=1 ! provide JAC
 
-  info(11) = 1 ! 1 = Y and Y prime are consistent ; 0 = not consistent compute automatically
+  info(11) = 0 ! 1 = Y and Y prime are consistent ; 0 = not consistent compute automatically
 
   ! allocate size of work arrays
   liw=1000;  lrw=1055 ;
@@ -104,9 +108,14 @@ program pendulum
   write(*,*) '************************************************************************************&
        &*************************************************************************************'
   do while (t .le. tout) 
+
      call ddassl(res,neq,t,y,yprime,tout,info,rtol,atol,&
           & idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
-     write(*,'(8f13.2)') t, y(1), y(2), y(3), y(4), y(5), y(6), y(7), y(8), y(9), y(10), y(11), y(12)
+
+     !     write(*,'(8f13.2)') t, y(1), y(2), y(3), y(4), y(5), y(6), y(7), y(8), y(9), y(10), y(11), y(12)
+
+     call disp('      t, y(1:12) = ',(/ t, y/), SEP=', ', ORIENT = 'ROW')
+
   end do
 
 end program pendulum
@@ -141,8 +150,9 @@ subroutine res(t,y,yprime,delta,ires,rpar,ipar)
   call SetStateVars(Y, YPRIME, alpha)
   !?? get the residual
   delta = get_vector_elements(R_rigid(alpha),4)
+  !  call print_body(alpha)
   call disp("   R   =   ", delta)
-
+  !  stop
   !  call print_body(alpha)
   !  print*,"body=",alpha
   !  print*, "residual vector = ", delta
@@ -186,9 +196,8 @@ subroutine jac(t,y,yprime,pd,cj,rpar,ipar)
   real(dp)     :: pd(12,12)
   integer(sp)  :: i,j,k
 
-
-!  print*,"a=", cj
-!  cj = 1.0d-1
+  !  print*,"a=", cj
+  !  cj = 1.0d-1
   call SetStateVars(Y, YPRIME, alpha)
   pd = jac_rigid (alpha, cj)
   call disp("   JAC =   ", pd)

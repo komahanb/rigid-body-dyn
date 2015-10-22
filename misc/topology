@@ -1,0 +1,19 @@
+module topology
+ ! contains datatypes and functions that describe the topology of the structure
+ use constants
+  
+ ! define a derived type for each body in the multibody system
+ type body
+    type(body_fixed_frame)         :: frame
+    type(body_force)               :: force 
+    type(body_torque)              :: torque
+ end type body
+  
+ ! contains all needed information about
+ type joint
+    !    character(len=10) :: type              ! spherical, revolute, prismatic, planar
+    type(body)        :: body(2)           ! two bodies make a joint (should be scaled for accomodating n bodies too
+ end type joint
+  
+ 
+end module topology

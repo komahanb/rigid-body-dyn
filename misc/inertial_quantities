@@ -1,0 +1,73 @@
+module intertial_quantities
+  use constants
+
+  ! a point in space with respect to the inertial axis
+  type inert_position
+     real(dp) :: pos(num_spat_dim) = 0._dp 
+  end type inert_position
+
+  ! rotation with respect to the inertial axis
+  type inert_rotation
+     real(dp) :: angle(num_spat_dim) = 0._dp ! in radians
+  end type inert_rotation
+
+  !===================================
+  ! time derivatives of the position
+  !===================================
+  ! velocity of  a point in space with respect to the inertial axis
+  type inert_vel
+     real(dp) :: vel(num_spat_dim) = 0._dp
+  end type inert_vel
+
+  ! acceleration of  a point in space with respect to the inertial axis
+  type inert_acc
+     real(dp) :: acc(num_spat_dim) = 0._dp
+  end type inert_acc
+
+  ! angular velocity of  a point in space with respect to the inertial axis
+  type inert_ang_vel
+     real(dp) :: ang_vel(num_spat_dim) = 0._dp
+  end type inert_ang_vel
+
+  ! acceleration of  a point in space with respect to the inertial axis
+  type inert_ang_acc
+     real(dp) :: ang_acc(num_spat_dim) = 0._dp
+  end type inert_ang_acc
+
+end module intertial_quantities
+
+  ! ********************************************************************************
+  ! Each body (alpha) has a body fixed frame attached to it.
+  ! The body_fixed_frame is attached to a point P on the body. 
+  ! Point P may or maynot be the center of mass; may or maynot be on the body itself
+  ! ********************************************************************************
+  type body_fixed_frame
+     ! location
+     type(inert_position) :: r_alpha
+     type(inert_rotation) :: theta_alpha
+     ! time derivatives
+     type(velocity)       :: v_alpha      ! d/dt (r_alpha)
+     type(ang_velocity)   :: omega_alpha  ! d/dt (theta_alpha)
+  end type body_fixed_frame
+
+  ! try and define all physical quantities that are used and perhaps their units
+  type ref_frame
+     character(len=num_spat_dim)  :: axis_type ! inertial or body fixed
+     ! type position(len=num_spat_dim)  :: pos_vec
+  end type ref_frame
+
+
+  ! define the force
+  type force
+     type(ref_frame)          :: ref_frame    ! frame of reference in which the force is measured
+     real(dp)                 :: mag     ! magnitude of force
+     real(dp)                 :: dir(3)  ! three
+     character(len=units_len) :: unit    ! newton, lbf 
+  end type force
+
+  ! define the torque
+  type torque
+
+  end type torque
+
+end module physical_quantities

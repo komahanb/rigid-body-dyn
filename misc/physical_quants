@@ -1,0 +1,37 @@
+module inert_quants
+  use constants
+
+  ! a point in space with respect to the inertial frame of ref
+  type inert_position
+     real(dp) :: pos(num_spat_dim) = 0._dp 
+  end type inert_position
+
+  ! rotation with respect to the inertial frame of reference
+  type inert_rotation
+     real(dp) :: angle(num_spat_dim) = 0._dp ! in radians
+  end type inert_rotation
+
+  !===================================
+  ! time derivatives of the position
+  !===================================
+  ! velocity of  a point in space with respect to the inertial frame of reference
+  type inert_vel
+     real(dp) :: vel(num_spat_dim) = 0._dp
+  end type inert_vel
+
+  ! acceleration of  a point in space with respect to the inertial frame of reference
+  type inert_acc
+     real(dp) :: acc(num_spat_dim) = 0._dp
+  end type inert_acc
+
+  ! angular velocity of  a point in space with respect to the inertial frame of reference
+  type inert_ang_vel
+     real(dp) :: ang_vel(num_spat_dim) = 0._dp
+  end type inert_ang_vel
+
+  ! acceleration of  a point in space with respect to the inertial frame of reference
+  type inert_ang_acc
+     real(dp) :: ang_acc(num_spat_dim) = 0._dp
+  end type inert_ang_acc
+
+end module inert_quants
