@@ -3,7 +3,6 @@ use constants
 
 implicit none
 
-
 ! overload * for cross product
 interface operator (*)
    module procedure cross, scal_vec, scal_matrix, vector_matrix, matrix_vector, matrix_matrix
@@ -316,5 +315,22 @@ function rad2deg(rad)
   real(dp) :: rad2deg,rad
   rad2deg  =  rad*rad_to_deg
 end function rad2deg
+
+subroutine disp(t,y)
+  real(dp)    :: t, y(12)
+  integer(sp) :: i
+  write(*,'(13f13.2)') t, (y(i),i=1,12)
+end subroutine disp
+
+
+subroutine disp_mat(t, A,m,n)
+  implicit none
+  real(dp), intent(in) :: t
+  integer(sp)          :: i, j, m, n
+  real(dp)             :: A(m,n)
+  do i = 1, n
+     write(*,'(13f13.2)') t, (A(j,i),j=1,m)
+  end do
+end subroutine disp_mat
 
 end module utils

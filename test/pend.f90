@@ -11,8 +11,11 @@ program pendulum
   implicit none
 
   ! solver related variables
-  integer neq,info(15),idid,lrw,liw,iwork(1000),ipar, my, ii
-  double precision t, y(12), yprime(12), tout, rtol(12),atol(12), rwork(1055), rpar, h0
+  integer(sp)      :: neq,info(15),idid,lrw,liw,iwork(1000),ipar, my, ii
+  real(dp)         :: t, y(12), yprime(12), tout, rtol(12),atol(12), rwork(1055), rpar
+  real(dp)         :: r(num_spat_dim), theta(num_spat_dim), v(num_spat_dim), omega(num_spat_dim) ! state vars
+  real(dp)         :: r_dot(num_spat_dim), theta_dot(num_spat_dim), v_dot(num_spat_dim), omega_dot(num_spat_dim) ! state vars
+  real(dp)         :: m, g0(num_spat_dim), re(num_spat_dim)
 
   external RES , JAC
 
@@ -22,8 +25,41 @@ program pendulum
   ! (1) create a pendulum body
   ! ******************************************************
 
-  call create_body()
+  r       = (/ 0.0_dp, 0._dp, 0.0_dp /)
+  theta   = (/ deg2rad(10.0d0), deg2rad(20.0d0), deg2rad(40.0d0) /)
+  v       = (/ 1.0d0, 0.0d0, 0.0d0 /)
+  omega   = (/ 1.0d0, 0.0d0, 0.0d0 /)
+
+  Y       = (/r, theta, v, omega /)
+
+  r_dot       = (/ 0.0d0, 0.0d0, 0.0d0 /)
+  theta_dot   = (/ 0.0d0, 0.0d0, 0.0d0 /)
+  v_dot       = (/ 1.0d0, 0.0d0, 0.0d0 /)
+  omega_dot   = (/ 1.0d0, 0.0d0, 0.0d0 /)
+
+  YPRIME  = (/r_dot, theta_dot, v_dot, omega_dot /)
+
+
+  m  = 1.0d0
   
+  g0 = (/ 0.0d0, -1.0d0, 0.0d0/)
+
+  re = (/ 1.0d0, 1.0d0, 1.0d0/)
+
+!  print*,   deg2rad(10.0d0), deg2rad(20.0d0), deg2rad(40.0d0)
+  call create_body(m, vector(g0), vector(re), Y, YPRIME, alpha)
+
+!  print*, y
+!  print*, yprime
+!  print*, alpha
+
+!  Y = 0.0d0
+!  YPRIME = 0.0d0
+
+!  call setstatevars(y, yprime, alpha)
+!  print*, alpha
+
+! stop
   ! ******************************************************
   ! (2) set the res and jacobian for the linear system
   ! ******************************************************
@@ -41,7 +77,7 @@ program pendulum
   t=0.00
 
   ! final time
-  tout=0.03
+  tout=1.0d0
 
   ! info block
   do ii=1,15
@@ -53,7 +89,7 @@ program pendulum
   ! derivatives automatically by numerical differences
   info(5) = 1   ! Yes - Set INFO(5)=0   ! No  - Set INFO(5)=1 ! provide JAC
 
-  info(11) = 0 ! 1 = Y and Y prime are consistent ; 0 = not consistent compute automatically
+  info(11) = 1 ! 1 = Y and Y prime are consistent ; 0 = not consistent compute automatically
 
   ! allocate size of work arrays
   liw=1000;  lrw=1055 ;
@@ -69,7 +105,7 @@ program pendulum
   do while (t .le. tout) 
      call ddassl(res,neq,t,y,yprime,tout,info,rtol,atol,&
           & idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
-     write(*,'(8f13.2)') t,y(1),y(2),y(3),y(4),y(5),y(6),y(7),y(8),y(9),y(10),y(11),y(12)
+     write(*,'(8f13.2)') t, y(1), y(2), y(3), y(4), y(5), y(6), y(7), y(8), y(9), y(10), y(11), y(12)
   end do
 
 end program pendulum
@@ -80,8 +116,8 @@ end program pendulum
 subroutine res(t,y,yprime,delta,ires,rpar,ipar)
   ! implements the residual of the governing equation at the for the given t, y, yprime values
   use constants
-  use utils,only:get_vector_elements
-  use body_mod,only:alpha, R_rigid
+  use utils,only:get_vector_elements,disp
+  use body_mod
   implicit none
 
   real(dp)  :: t
@@ -94,19 +130,20 @@ subroutine res(t,y,yprime,delta,ires,rpar,ipar)
 
   integer(sp):: i,j,k
 
-  
+  print*, "calling residual"
+
   ! sanity check 
 !!$  do i = 1, 12
 !!$     if (y(i) .lt. dzero)  ires = -1; return
 !!$  end do
 
   ! option to compute yprime by itself
-
+  call SetStateVars(Y, YPRIME, alpha)
   !?? get the residual
   delta = get_vector_elements(R_rigid(alpha),4)
-!  print*, "residual vector = ", delta
-
-  call disp(t,delta)
+  print*,"body=",alpha
+  !  print*, "residual vector = ", delta
+  !  call disp(t,delta)
 
 end subroutine res
 
@@ -131,9 +168,11 @@ subroutine jac(t,y,yprime,pd,cj,rpar,ipar)
 !!$C         YPRIME and PD in JAC.
 
   use constants,only:dp,sp
-  use body_mod,only:alpha
+  use utils,only:disp_mat
+  use body_mod
   use jacobian_mod,only:jac_rigid
   implicit none
+
   real(dp)     :: cj
   real(dp)     :: t
   real(dp)     :: y(12)
@@ -144,20 +183,18 @@ subroutine jac(t,y,yprime,pd,cj,rpar,ipar)
   real(dp)     :: pd(12,12)
   integer(sp)  :: i,j,k
 
-  ! JACOBIAN  = jac_rigid(alpha,a) !?? implement jacobian
- ! print*,cj 
-!  stop
-  cj = 0.1
+
+  print*, "calling residual"
+
+  print*,"a=", cj
+  !  cj = 0.1
+  call SetStateVars(Y, YPRIME, alpha)
   pd = jac_rigid (alpha, cj)
-
-  print*,  shape(pd)
-  
-  call disp_mat(t, pd, 12, 12)
-
-  stop
-
-  !  stop"where is the impl"
-
+  print*, "body =" , alpha
+  ! print*, "jacobian matrix ="
+  ! call disp_mat(t, pd, 12, 12)
+  ! stop"where is the impl"
+  return
 end subroutine jac
 
 !  frame_A%rot_mat     = rotmat(frame_A%theta_alpha)
@@ -184,96 +221,3 @@ end subroutine jac
 !!$  type(body_fixed_frame)    :: frame_A
 !!$  type(matrix) :: test(1,1)
 !!$  type(vector) ::dd(2)
-
-subroutine create_body()
-
-  use constants
-  use utils
-  use body_mod
-  use matrix_utils
-
-  implicit none
-
-  real(dp), parameter           :: m  = 1.0_dp
-  type(vector), parameter       :: g0 = vector((/ dzero, dzero, -1.0_dp /))
-  type(vector), parameter       :: re = vector((/ 1.0_dp, 1.0_dp, 1.0_dp /)) ! position vector of a point on the circumference
-
-  real(dp)                      :: r(num_spat_dim), theta(num_spat_dim), v(num_spat_dim), omega(num_spat_dim)
-
-!!$
-!!$!(r, theta, v, omega, r_dot, theta_dot, v_dot, omega_dot,&
-!!$!     & mass, c, J, p, h, K, M, C_mat, S, S_dot, fr, gr)
-!!$
-
-  ! define positions of body frame from inertial (q terms)
-  r       = (/ 0.0_dp, 0._dp, 0.0_dp /)
-  theta   = (/ deg2rad(10.0d0), deg2rad(0.0d0), deg2rad(0.0d0) /)
-  v     = (/ 1.0d0, 0.0d0, 0.0d0 /)
-  omega = (/ 1.0d0, 0.0d0, 0.0d0 /)
-
-  alpha%r         = vector(r)
-  alpha%theta     = vector(theta)
-  alpha%v         = vector(v)
-  alpha%omega     = vector(omega)
-
-  ! define velocities of the body frame (q_dot terms)
-  alpha%r_dot     = zeroV
-  alpha%theta_dot = zeroV
-  alpha%v_dot     = zeroV
-  alpha%omega_dot = zeroV
-
-  ! rotation and rate matrices
-  alpha%C_mat     = matrix(CBI(theta)) !?
-  alpha%S         = matrix(SIB(theta)) !?
-
-  ! mass of the body
-  alpha%mass  = m
-
-  ! mass moment of intertia (second moment)
-  !  temp     = (2.0_dp*m*abs(re)**2)/5.0_dp  
-  !  alpha%J  = temp*idM
-  alpha%J = -m*skew(re)*skew(re)
-
-  ! first moment of mass
-  alpha%c  = m*re
-
-  ! force 
-  alpha%fr = m*g0
-
-  ! torque
-  alpha%gr = alpha%J*alpha%omega_dot
-
-end subroutine create_body
-
-
-
-subroutine disp(t,y)
-
-  use constants,only:dp,sp
-  implicit none
-
-  real(dp)    :: t, y(12)
-  integer(sp) :: i
-
-  write(*,'(13f13.2)') t, (y(i),i=1,12)
-
-
-end subroutine disp
-
-
-subroutine disp_mat(t, A,m,n)
-
-  use constants, only:dp,sp
-  implicit none
-
-  real(dp), intent(in) :: t
-  integer(sp)          :: i, j, m, n
-  real(dp)             :: A(m,n)
-
-
-  do i = 1, n
-     write(*,'(13f13.2)') t, (A(j,i),j=1,m)
-  end do
-
-
-end subroutine disp_mat
