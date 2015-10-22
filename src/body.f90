@@ -6,7 +6,7 @@ module body_mod
 
   private
 
-  public body, CBI, SIB, alpha, R_rigid, setstatevars, create_body
+  public body, CBI, SIB, alpha, R_rigid, setstatevars, create_body, print_body
 
   type body
 
@@ -49,6 +49,41 @@ module body_mod
   type(body)      :: alpha
 
 contains
+
+  subroutine print_body(alpha)
+    use dispmodule
+    implicit none
+
+    type(body):: alpha
+
+    CALL DISP('.....................Body.........................')
+    call DISP('')
+    CALL DISP('   r          =   ', get_array(alpha%r), SEP=', ', ORIENT = 'ROW')
+    CALL DISP('   theta      =   ', get_array(alpha%theta), SEP=', ', ORIENT = 'ROW')
+    CALL DISP('   v          =   ', get_array(alpha%r), SEP=', ', ORIENT = 'ROW')
+    CALL DISP('   omega      =   ', get_array(alpha%theta), SEP=', ', ORIENT = 'ROW')
+    call DISP('')
+    CALL DISP('   r_dot      =   ', get_array(alpha%r), SEP=', ', ORIENT = 'ROW')
+    CALL DISP('   theta_dot  =   ', get_array(alpha%theta), SEP=', ', ORIENT = 'ROW')
+    CALL DISP('   v_dot      =   ', get_array(alpha%r), SEP=', ', ORIENT = 'ROW')
+    CALL DISP('   omega_dot  =   ', get_array(alpha%theta), SEP=', ', ORIENT = 'ROW')
+    call DISP('')
+    CALL DISP('   c          =   ', get_array(alpha%c), SEP=', ', ORIENT = 'ROW')
+    call DISP('')
+    CALL DISP('   J          =   ', get_matrix(alpha%J))
+    call DISP('')
+    CALL DISP('   C          =   ', get_matrix(alpha%C_mat))
+    call DISP('')
+    CALL DISP('   S          =   ', get_matrix(alpha%S))
+    call DISP('')
+    CALL DISP('   S_dot      =   ', get_matrix(alpha%S_dot))
+    call DISP('')
+    CALL DISP('   fr         =   ', get_array(alpha%fr), SEP=', ', ORIENT = 'ROW')
+    CALL DISP('   gr         =   ', get_array(alpha%gr), SEP=', ', ORIENT = 'ROW')
+    call DISP('')
+    CALL DISP('..................................................')
+
+  end subroutine print_body
 
   ! assembles the R_rigid vector for the body
   function R_rigid(alpha)
@@ -116,7 +151,7 @@ contains
     alpha%omega_dot = vector(YPRIME(10:12))
 
   end subroutine SetStateVars
-  
+
   !**************************************************************
   ! create a body using the supplied state and other parameters
   !**************************************************************
@@ -159,7 +194,9 @@ contains
     ! torque
     alpha%gr = alpha%J*alpha%omega_dot
 
-    print*, "new body=", alpha
+    !  print*, "new body=", alpha
+
+    call print_body(alpha)
 
   end subroutine create_body
 
@@ -170,7 +207,7 @@ end module body_mod
 !!$!     & mass, c, J, p, h, K, M, C_mat, S, S_dot, fr, gr)
 !!$
 
-    ! define positions of body frame from inertial (q terms)
+! define positions of body frame from inertial (q terms)
 !!$  r       = (/ 0.0_dp, 0._dp, 0.0_dp /)
 !!$  theta   = (/ deg2rad(10.0d0), deg2rad(0.0d0), deg2rad(0.0d0) /)
 !!$  v     = (/ 1.0d0, 0.0d0, 0.0d0 /)

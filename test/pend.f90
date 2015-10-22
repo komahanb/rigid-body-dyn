@@ -2,7 +2,7 @@
 ! program to run dynamics simulation of a physical pendulum
 !===========================================================
 program pendulum
-
+  use dispmodule 
   use constants
   use utils
   use body_mod
@@ -41,25 +41,26 @@ program pendulum
 
 
   m  = 1.0d0
-  
-  g0 = (/ 0.0d0, -1.0d0, 0.0d0/)
 
+  g0 = (/ 0.0d0, -1.0d0, 0.0d0/)
   re = (/ 1.0d0, 1.0d0, 1.0d0/)
 
-!  print*,   deg2rad(10.0d0), deg2rad(20.0d0), deg2rad(40.0d0)
+  CALL DISP('   g0 =   ', g0, SEP=', ', ORIENT = 'ROW') 
+  CALL DISP('   re =   ', re, SEP=', ', ORIENT = 'ROW') 
+
   call create_body(m, vector(g0), vector(re), Y, YPRIME, alpha)
 
-!  print*, y
-!  print*, yprime
-!  print*, alpha
+  !  print*, y
+  !  print*, yprime
+  !  print*, alpha
 
-!  Y = 0.0d0
-!  YPRIME = 0.0d0
+  !  Y = 0.0d0
+  !  YPRIME = 0.0d0
 
-!  call setstatevars(y, yprime, alpha)
-!  print*, alpha
+  !  call setstatevars(y, yprime, alpha)
+  !  print*, alpha
 
-! stop
+  ! stop
   ! ******************************************************
   ! (2) set the res and jacobian for the linear system
   ! ******************************************************
@@ -77,7 +78,7 @@ program pendulum
   t=0.00
 
   ! final time
-  tout=1.0d0
+  tout=1.0d-1
 
   ! info block
   do ii=1,15
@@ -115,6 +116,7 @@ end program pendulum
 !********************************
 subroutine res(t,y,yprime,delta,ires,rpar,ipar)
   ! implements the residual of the governing equation at the for the given t, y, yprime values
+  use dispmodule 
   use constants
   use utils,only:get_vector_elements,disp
   use body_mod
@@ -130,8 +132,6 @@ subroutine res(t,y,yprime,delta,ires,rpar,ipar)
 
   integer(sp):: i,j,k
 
-  print*, "calling residual"
-
   ! sanity check 
 !!$  do i = 1, 12
 !!$     if (y(i) .lt. dzero)  ires = -1; return
@@ -141,7 +141,10 @@ subroutine res(t,y,yprime,delta,ires,rpar,ipar)
   call SetStateVars(Y, YPRIME, alpha)
   !?? get the residual
   delta = get_vector_elements(R_rigid(alpha),4)
-  print*,"body=",alpha
+  call disp("   R   =   ", delta)
+
+  !  call print_body(alpha)
+  !  print*,"body=",alpha
   !  print*, "residual vector = ", delta
   !  call disp(t,delta)
 
@@ -166,7 +169,7 @@ subroutine jac(t,y,yprime,pd,cj,rpar,ipar)
 !!$C         You must declare the name JAC in an EXTERNAL statement in
 !!$C         your program that calls DDASSL.  You must dimension Y,
 !!$C         YPRIME and PD in JAC.
-
+  use dispmodule 
   use constants,only:dp,sp
   use utils,only:disp_mat
   use body_mod
@@ -184,13 +187,13 @@ subroutine jac(t,y,yprime,pd,cj,rpar,ipar)
   integer(sp)  :: i,j,k
 
 
-  print*, "calling residual"
-
-  print*,"a=", cj
-  !  cj = 0.1
+!  print*,"a=", cj
+!  cj = 1.0d-1
   call SetStateVars(Y, YPRIME, alpha)
   pd = jac_rigid (alpha, cj)
-  print*, "body =" , alpha
+  call disp("   JAC =   ", pd)
+  !  print*, "body =" , alpha
+  !  call print_body(alpha)
   ! print*, "jacobian matrix ="
   ! call disp_mat(t, pd, 12, 12)
   ! stop"where is the impl"
