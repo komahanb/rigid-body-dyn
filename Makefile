@@ -48,7 +48,7 @@ LIB_FLAGS = -L./lib #-L../lib #-L/home/newhall/lib  -L../lib
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname 
 #   option, something like (this will link in libmylib.so and libm.so:
 #-----------------------------------------------------------------------
-LIBS =  -ldl -lstdc++ lib/daesolve.a #-ldiffer #-lmylib -lm
+LIBS =  -ldl -lstdc++ -llapack -lblas lib/daesolve.a #-ldiffer #-lmylib -lm
 
 #--------------------------
 # define the C, C++, Fortran source files
