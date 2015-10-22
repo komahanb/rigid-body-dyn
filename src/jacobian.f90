@@ -86,23 +86,23 @@ contains
 
     ! assemble jacobian
     D_R(1,1) = a * alpha%C_mat
-    D_R(2,1) = skew(alpha%C_mat * alpha%r_dot) * alpha%S
-    D_R(3,1) = -1.0_dp*U
+    D_R(2,1) = O
+    D_R(3,1) = O
     D_R(4,1) = O
 
-    D_R(1,2) = O
+    D_R(1,2) = skew(alpha%C_mat * alpha%r_dot) * alpha%S
     D_R(2,2) = alpha%S_dot + skew(alpha%S*alpha%theta_dot)*alpha%S + a * alpha%S
     D_R(3,2) = O
-    D_R(4,2) = -1.0_dp*U
+    D_R(4,2) = O
 
-    D_R(1,3) = O
+    D_R(1,3) = -1.0_dp*U
     D_R(2,3) = O
     D_R(3,3) = alpha%mass*(a*U + skew(alpha%omega))
-    D_R(4,3) = -a*skew(alpha%c) + skew(skew(alpha%c)*alpha%omega)  - alpha%mass*skew(alpha%V) - skew(alpha%omega)*skew(alpha%c)
+    D_R(4,3) = a*skew(alpha%c) + (skew(alpha%c) * skew(alpha%omega))
 
     D_R(1,4) = O
-    D_R(2,4) = O
-    D_R(3,4) = a*skew(alpha%c) + (skew(alpha%c) * skew(alpha%omega))
+    D_R(2,4) = -1.0_dp*U
+    D_R(3,4) = -a*skew(alpha%c) + skew(skew(alpha%c)*alpha%omega)  - alpha%mass*skew(alpha%V) - skew(alpha%omega)*skew(alpha%c)
     D_R(4,4) = a*alpha%J  + skew(alpha%omega)*alpha%J - skew(alpha%J*alpha%omega) -skew(alpha%c)*skew(alpha%V)
 
     !  real(dp)     :: OO(num_spat_dim,num_spat_dim) ! zero matrix
@@ -136,23 +136,23 @@ contains
     O = matrix(zeros(num_spat_dim))
 
     S_R(1,1) = O
-    S_R(2,1) = O
-    S_R(3,1) = O
-    S_R(4,1) = O
-
     S_R(1,2) = O
-    S_R(2,2) = O
-    S_R(3,2) = O
-    S_R(4,2) = O
-
     S_R(1,3) = O
-    S_R(2,3) = O
-    S_R(3,3) = O
-    S_R(4,3) = - skew(alpha%p*alpha%qs_dot)
-
     S_R(1,4) = O
+
+    S_R(2,1) = O
+    S_R(2,2) = O
+    S_R(2,3) = O
     S_R(2,4) = O
+
+    S_R(3,1) = O
+    S_R(3,2) = O
+    S_R(3,3) = O
     S_R(3,4) = - skew(alpha%p*alpha%qs_dot)
+
+    S_R(4,1) = O
+    S_R(4,2) = O
+    S_R(4,3) = - skew(alpha%p*alpha%qs_dot)
     S_R(4,4) = - skew(alpha%h*alpha%qs_dot)
 
   end function S_R
@@ -176,15 +176,15 @@ contains
 
     type(body)   :: alpha
     real(dp)     :: a, b
-    type(matrix) :: S_RS(4,1)
+    type(matrix) :: S_RS(1,4)
     type(matrix) :: O ! zero matrix
 
     O = matrix(zeros(num_spat_dim))
 
     S_RS(1,1) = O
-    S_RS(2,1) = O
-    S_RS(3,1) = b*alpha%p + a*skew(alpha%omega)*alpha%p !bp +a wx p
-    S_RS(4,1) = b*alpha%h + a*(skew(alpha%v)*alpha%p  + skew(alpha%omega)*alpha%h) !bh +a(vx p + wx h)
+    S_RS(1,2) = O
+    S_RS(1,3) = b*alpha%p + a*skew(alpha%omega)*alpha%p !bp +a wx p
+    S_RS(1,4) = b*alpha%h + a*(skew(alpha%v)*alpha%p  + skew(alpha%omega)*alpha%h) !bh +a(vx p + wx h)
 
   end function S_RS
 
@@ -194,15 +194,15 @@ contains
 
     type(body)   :: alpha
     real(dp)     :: a
-    type(matrix) :: S_SR(1,4)
+    type(matrix) :: S_SR(4,1)
     type(matrix) :: O ! zero matrix
 
     O = matrix(zeros(num_spat_dim))
 
     S_SR(1,1) = O
-    S_SR(1,2) = O
-    S_SR(1,3) = a * trans(alpha%p) !a p^T
-    S_SR(1,4) = a * trans(alpha%p) !a h^T
+    S_SR(2,1) = O
+    S_SR(3,1) = a * trans(alpha%p) !a p^T
+    S_SR(4,1) = a * trans(alpha%p) !a h^T
 
   end function S_SR
 
