@@ -53,7 +53,7 @@ contains
   ! returns the rigid body terms in the jacobian matrix
   !****************************************************
   function jac_rigid(alpha, a)
-
+    
     type(body)      :: alpha
     real(dp)        :: a
     real(dp)        :: jac_rigid(12,12)
@@ -71,7 +71,7 @@ contains
   ! find the jacobian of the equation of motion for the supplied BODY alpha
   !*************************************************************************
   function D_R(alpha, a)
-
+    use dispmodule
     type(body)    :: alpha
     real(dp)      :: a
     type(matrix)  :: D_R(4,4) ! where 4 is the state vector length
@@ -97,12 +97,12 @@ contains
 
     D_R(1,3) = O
     D_R(2,3) = O
-    D_R(3,3) = alpha%m*(a*U + skew(alpha%omega))
-    D_R(4,3) = -a*skew(alpha%c) + skew(skew(alpha%c)*alpha%omega)  - alpha%m*skew(alpha%V) - skew(alpha%omega)*skew(alpha%C)
+    D_R(3,3) = alpha%mass*(a*U + skew(alpha%omega))
+    D_R(4,3) = -a*skew(alpha%c) + skew(skew(alpha%c)*alpha%omega)  - alpha%mass*skew(alpha%V) - skew(alpha%omega)*skew(alpha%c)
 
     D_R(1,4) = O
     D_R(2,4) = O
-    D_R(3,4) = a*skew(alpha%C) + skew(alpha%C) * skew(alpha%omega)
+    D_R(3,4) = a*skew(alpha%c) + (skew(alpha%c) * skew(alpha%omega))
     D_R(4,4) = a*alpha%J  + skew(alpha%omega)*alpha%J - skew(alpha%J*alpha%omega) -skew(alpha%c)*skew(alpha%V)
 
     !  real(dp)     :: OO(num_spat_dim,num_spat_dim) ! zero matrix
