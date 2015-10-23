@@ -23,7 +23,11 @@ program pendulum
 
   external RES , JAC
 
-  write(*,*) "Setting up the test problem"
+  call disp("==================================")
+  call disp("-------Rigid body dynamics--------")
+  call disp("==================================")
+
+  call disp(" >> Setting up the test problem...")
 
   ! ******************************************************
   ! (1) create a pendulum body
@@ -53,7 +57,7 @@ program pendulum
 
   !  CALL DISP('   g0 =   ', g0, SEP=', ', ORIENT = 'ROW') 
   !  CALL DISP('   re =   ', re, SEP=', ', ORIENT = 'ROW') 
-  
+  call disp(" >> Creating a body...")
   call create_body(m, vector(g0), vector(re), Y, YPRIME, alpha)
 
 !!$  delta = get_vector_elements(R_rigid(alpha),4)

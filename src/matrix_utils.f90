@@ -153,7 +153,6 @@ contains
     SDOT(2,3) = 0.0_dp
     SDOT(3,3) = 0.0_dp
 
-    stop
   end function SDOT
 
   ! Returns the inverse of a matrix calculated by finding the LU
