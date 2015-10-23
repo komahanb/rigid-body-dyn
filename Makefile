@@ -34,7 +34,7 @@ BIN_DIR=bin
 #-----------------------------------------------------------------------
 # define any directories containing header files other than /usr/include
 #-----------------------------------------------------------------------
-INCLUDES = -I/usr/local/include #-I/home/newhall/include  -I../include
+INCLUDES = -I/usr/local/include -I./include  #-I/home/newhall/include  -I../include
 
 #-----------------------------------------------------------------------
 # define library paths in addition to /usr/lib
@@ -48,7 +48,7 @@ LIB_FLAGS = -L./lib #-L../lib #-L/home/newhall/lib  -L../lib
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname 
 #   option, something like (this will link in libmylib.so and libm.so:
 #-----------------------------------------------------------------------
-LIBS =  -ldl -lstdc++ -llapack -lblas lib/daesolve.a #-ldiffer #-lmylib -lm
+LIBS =  -ldl -lstdc++ -llapack -lblas lib/daesolve.a lib/liblis.a #-ldiffer #-lmylib -lm
 
 #--------------------------
 # define the C, C++, Fortran source files

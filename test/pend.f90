@@ -2,6 +2,9 @@
 ! program to run dynamics simulation of a physical pendulum
 !===========================================================
 program pendulum
+! include "lis.h"
+!  include "lisf.h"
+!  include "lis_config.h"
   use dispmodule 
   use constants
   use utils
@@ -10,16 +13,24 @@ program pendulum
   use jacobian_mod
 
   implicit none
-  real(dp)         :: delta(12)
-  real(dp)         :: pd(12,12)
+
+  real(dp)         :: delta(12) , dq(12)
+  real(dp)         :: pd(12,12), pdinv(12,12)
+
   ! solver related variables
   integer(sp)      :: neq,info(15),idid,lrw,liw,iwork(1000),ipar, my, ii
   real(dp)         :: t, y(12), yprime(12), tout, rtol(12),atol(12), rwork(1055), rpar
+
   ! state variables
-  real(dp)         :: r(num_spat_dim), theta(num_spat_dim), v(num_spat_dim), omega(num_spat_dim) ! state vars
-  real(dp)         :: r_dot(num_spat_dim), theta_dot(num_spat_dim), v_dot(num_spat_dim), omega_dot(num_spat_dim) ! state vars
+  real(dp)         :: r(num_spat_dim), theta(num_spat_dim), v(num_spat_dim), omega(num_spat_dim) 
+  real(dp)         :: r_dot(num_spat_dim), theta_dot(num_spat_dim), v_dot(num_spat_dim), omega_dot(num_spat_dim)
+
   ! other variables
   real(dp)         :: m, g0(num_spat_dim), re(num_spat_dim)
+
+!  type(LIS_MATRIX) AA
+!  LIS_VECTOR bb, xx
+!  LIS_SOLVER solver
 
   external RES , JAC
 
@@ -33,15 +44,15 @@ program pendulum
   ! (1) create a pendulum body
   ! ******************************************************
 
-  r       = (/ 1.0_dp, 2._dp, 3.0_dp /)
-  theta   = (/ deg2rad(10.0d0), deg2rad(-20.0d0), deg2rad(-40.0d0) /)
+  r       = (/ 1.0_dp, 2.0_dp, 0.0_dp /)
+  theta   = (/ deg2rad(0.0d0), deg2rad(0.0d0), deg2rad(0.0d0) /)
   v       = (/ 1.0d0, -2.0d0, 3.0d0 /)
   omega   = (/ -1.0d0, 3.0d0, -4.0d0 /)
 
-  r_dot       = (/ 1.0d0, -2.0d0, 3.0d0 /)
-  theta_dot   = (/ -1.0d0, 2.0d0, -1.0d0 /)
-  v_dot       = (/ 1.0d0, 2.0d0, -2.0d0 /)
-  omega_dot   = (/ -1.0d0, 4.0d0, -2.0d0 /)
+  r_dot       = (/ 0.0d0, 0.0d0, 0.0d0 /)
+  theta_dot   = (/ 0.0d0, 0.0d0, 0.0d0 /)
+  v_dot       = (/ 0.0d0, 0.0d0, 0.0d0 /)
+  omega_dot   = (/ 0.0d0, 0.0d0, 0.0d0 /)
 
   ! initial state values
   Y       = (/r, theta, v, omega /)
@@ -50,28 +61,37 @@ program pendulum
   !  call disp('   Y      =  ', Y)
   !  call disp('   Yprime =  ',yprime)
 
-  m  = 5.0d0
+  m  = 1.0d0
 
-  g0 = (/ -1.0d0, -1.0d0, -1.0d0/)
-  re = (/ -1.0d0, 2.0d0, 1.0d0/)
+  g0 = (/ 0.0d0, -1.0d0, 0.d0/)
+
+  re = (/ 1.0d-1, 1.0d-1, 2.0d-1/)
 
   !  CALL DISP('   g0 =   ', g0, SEP=', ', ORIENT = 'ROW') 
   !  CALL DISP('   re =   ', re, SEP=', ', ORIENT = 'ROW') 
+
   call disp(" >> Creating a body...")
   call create_body(m, vector(g0), vector(re), Y, YPRIME, alpha)
-
-!!$  delta = get_vector_elements(R_rigid(alpha),4)
-!!$  call print_body(alpha)
-!!$  call disp("   R   =   ", delta)
-!!$
-!!$  pd = jac_rigid (alpha, 2.0d0)
-!!$  call disp("   JAC =   ", pd)
-!!$
-!!$  stop
 
   ! ******************************************************
   ! (2) set the res and jacobian for the linear system
   ! ******************************************************
+
+  delta = get_vector_elements(R_rigid(alpha),4)
+  !  call print_body(alpha)
+  call disp("   R   =   ", delta)
+
+  pd = jac_rigid (alpha, 1.0d0)
+  call disp("   JAC =   ", pd)
+  
+  ! ******************************************************
+  ! (3) Solve the linear system and compute update delta_q
+  ! ******************************************************
+  dq = inv2(pd,delta,12)
+ 
+  print*,"dq=", dq
+
+  stop
 
   ! set number of equations to solve
   NEQ=12
@@ -96,7 +116,7 @@ program pendulum
   info(3)=1
 
   ! derivatives automatically by numerical differences
-  info(5) = 1   ! Yes - Set INFO(5)=0   ! No  - Set INFO(5)=1 ! provide JAC
+  info(5) = 0   ! Yes - Set INFO(5)=0   ! No  - Set INFO(5)=1 ! provide JAC
 
   info(11) = 0 ! 1 = Y and Y prime are consistent ; 0 = not consistent compute automatically
 
@@ -115,7 +135,6 @@ program pendulum
 
      call ddassl(res,neq,t,y,yprime,tout,info,rtol,atol,&
           & idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
-
      !     write(*,'(8f13.2)') t, y(1), y(2), y(3), y(4), y(5), y(6), y(7), y(8), y(9), y(10), y(11), y(12)
 
      call disp('      t, y(1:12) = ',(/ t, y/), SEP=', ', ORIENT = 'ROW')

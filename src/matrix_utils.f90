@@ -191,4 +191,37 @@ contains
     end if
   end function inv
 
+
+  ! Returns the inverse of a matrix calculated by finding the LU
+  ! decomposition.  Depends on LAPACK.
+  function inv2(A,b,n) result(x)
+    implicit none
+    integer n
+    real(dp) :: x(n),b(n)
+    real(dp) :: A(n,n)
+    real(dp) :: err
+    integer  :: i, info, lda, ldb, nrhs
+    integer  :: ipiv(n)
+
+!    external DGESV
+
+    nrhs = 1 ! number of right hand sides in b
+    lda = n  ! leading dimension of a
+    ldb = n  ! leading dimension of b
+
+    call dgesv(n, nrhs, a, lda, ipiv, b, ldb, info)
+    
+    if( info.gt.0 ) then
+       write(*,*)'The diagonal element of the triangular factor of a,'
+       write(*,*)'u(',info,',',info,') is zero, so that'
+       write(*,*)'a is singular; the solution could not be computed.'
+       stop
+    end if
+
+    ! Note: the solution is returned in b
+    ! and a has been changed.
+    x=b
+
+  end function inv2
+
 end module matrix_utils
