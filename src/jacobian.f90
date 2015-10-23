@@ -76,12 +76,12 @@ contains
     real(dp)      :: a
     type(matrix)  :: D_R(4,4) ! where 4 is the state vector length
     type(matrix)  :: O ! zero matrix
-    type(matrix)  :: U ! unit matrix
+!    type(matrix)  :: U ! unit matrix
     type(matrix)  :: I ! identity matrix
 
     ! some useful matrices
     O = matrix(zeros(num_spat_dim))
-    U = matrix(ones(num_spat_dim))
+!    U = matrix(ones(num_spat_dim))
     I = matrix(eye(num_spat_dim))
 
     ! assemble jacobian
@@ -95,13 +95,13 @@ contains
     D_R(3,2) = O
     D_R(4,2) = O
 
-    D_R(1,3) = -1.0_dp*U
+    D_R(1,3) = -1.0_dp*I
     D_R(2,3) = O
-    D_R(3,3) = alpha%mass*(a*U + skew(alpha%omega))
+    D_R(3,3) = alpha%mass*(a*I + skew(alpha%omega))
     D_R(4,3) = a*skew(alpha%c) + (skew(alpha%c) * skew(alpha%omega))
 
     D_R(1,4) = O
-    D_R(2,4) = -1.0_dp*U
+    D_R(2,4) = -1.0_dp*I
     D_R(3,4) = -a*skew(alpha%c) + skew(skew(alpha%c)*alpha%omega)  - alpha%mass*skew(alpha%V) - skew(alpha%omega)*skew(alpha%c)
     D_R(4,4) = a*alpha%J  + skew(alpha%omega)*alpha%J - skew(alpha%J*alpha%omega) -skew(alpha%c)*skew(alpha%V)
 

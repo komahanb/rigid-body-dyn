@@ -176,6 +176,7 @@ contains
     ! rotation and rate matrices
     alpha%C_mat     = matrix(CBI(theta)) !?
     alpha%S         = matrix(SIB(theta)) !?
+    alpha%S_dot     = matrix(SDOT(theta))
 
     ! mass of the body
     alpha%mass  = m
