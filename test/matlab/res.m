@@ -17,11 +17,12 @@ J = -skew(r)*skew(r)*m;
       
 C = rot(theta);
       
-S = angrate(theta);
+%S = angrate(theta);
 
 res(1:3)    =    C*r_dot' - v';
-res(4:6)    =    S*theta_dot' - omega';
-res(7:9)    =    m*v_dot - cross(c,omega_dot) + cross(omega, (m*v - cross(c,omega))) -m*g0;
+%res(4:6)    =    S*theta_dot' - omega';
+res(4:6)    =    getApproxOmega(theta,theta_dot)- omega';
+res(7:9)    =    m*v_dot - cross(c,omega_dot) + cross(omega, (m*v - cross(c,omega))) -sin(2*t);
 res(10:12)  =    cross(c, v_dot)' + J*omega_dot' + skew(c)*skew(omega)*v' + skew(omega)*J*omega' -J*omega_dot';
 
 end 

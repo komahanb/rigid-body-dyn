@@ -1,22 +1,22 @@
-function [jac] =jac(a, m, q, qdot)
+function [jac] =jac(a, m,re, q, qdot)
 
 r           = q(1:3);
 theta       = q(4:6);
 v           = q(7:9);
 omega       = q(10:12);
 
-r_dot       = qdot(1:3);
-theta_dot   = qdot(4:6);
+r_dot       = qdot(1:3);%v;
+theta_dot   = qdot(4:6); %omega;
 %v_dot       = qdot(7:9);
 %omega_dot   = qdot(10:12);
 
-c = r*m;
+c = re*m;
 
-J = -skew(r)*skew(r)*m;
+J = -skew(re)*skew(re)*m;
       
 C = rot(theta);
       
-S = angrate(theta);
+%S = angrate(theta);
 
 S_dot = sdot(theta);
 
