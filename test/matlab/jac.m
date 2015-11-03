@@ -16,7 +16,7 @@ J = -skew(re)*skew(re)*m;
       
 C = rot(theta);
       
-%S = angrate(theta);
+S = angrate(theta);
 
 S_dot = sdot(theta);
 

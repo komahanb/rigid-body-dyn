@@ -14,11 +14,15 @@ c = re*m;
 J = -skew(re)*skew(re)*m;
       
 C = rot(theta); 
-%S = angrate(theta);
+S = angrate(theta);
 
 res(1:3)    =    C*r_dot' - v';
-%res(4:6)    =    S*theta_dot' - omega';
-res(4:6)    =    getApproxOmega(theta,theta_dot)- omega';
+res(4:6)    =    S*theta_dot' - omega'
+res(4:6)    =    getApproxOmega(theta,theta_dot)'- omega'
+
+%max(S*theta_dot' - getApproxOmega(theta,theta_dot)')
+%if (max(S*theta_dot' - getApproxOmega(theta,theta_dot)') >= 1.0d-6 ) error('Problem');
+    
 res(7:9)    =    m*v_dot - cross(c,omega_dot) + cross(omega, (m*v - cross(c,omega)));
 res(10:12)  =    cross(c, v_dot)' + J*omega_dot' + skew(c)*skew(omega)*v' + skew(omega)*J*omega';
 

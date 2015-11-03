@@ -15,7 +15,7 @@ function [CBI] = rot(thetain)
          C(3,2) = 0.0d0;
          C(3,3) = 1.0d0;
     
-    CBI = C;
+         CBI = C;
       
 %     C(1,1) = 1.0d0;
 %     C(1,2) = 0.0d0;
