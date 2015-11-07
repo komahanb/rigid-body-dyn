@@ -1,3 +1,4 @@
+
 !=========================================================
 ! module that assembles the jacobian
 !=========================================================
@@ -16,7 +17,8 @@
 module jacobian
 
   use utils
-  use body_mod
+  use bodies
+  use joints
 
   implicit none
 
