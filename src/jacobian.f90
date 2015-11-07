@@ -63,7 +63,7 @@ contains
     DR1              = D_R(alpha, a)   
 
     ! now return in real-matrix form needed for computations
-    jac_rigid = get_matrix_2d(DR1,4,4)
+    jac_rigid       = matrix(DR1)
 
   end function jac_rigid
 

@@ -18,7 +18,9 @@ module global_constants
   integer(sp), parameter  :: NUM_SPAT_DIM = 3
 
   integer(sp), parameter  :: PRINT_LEVEL = 1 
-  integer(sp), parameter  :: MAX_NUM_BODIES = 1
+  integer(sp), parameter  :: NUM_BODIES = 1
+  integer(sp), parameter  :: NUM_JOINTS = 1
+
 
   integer(sp), parameter  :: MAX_TIME_STEPS = 100 ! for storing states
 
@@ -29,8 +31,9 @@ module global_constants
   ! number of governing equations in vector form
   integer(sp), parameter  :: NUM_GOV_EQN = NUM_DYNAM_EQN + NUM_ELAST_EQN + NUM_JOINT_EQN ! per body
 
-  ! number of state variables
-  integer(sp), parameter  :: NUM_STATES = NUM_GOV_EQN*NUM_SPAT_DIM
+  ! number of state variables  
+  integer(sp), parameter  :: NUM_STATES_PER_BODY = NUM_GOV_EQN*NUM_SPAT_DIM
+  integer(sp), parameter  :: NUM_STATES = NUM_STATES_PER_BODY*NUM_BODIES
   
   ! ****************************
   ! Define real  constants

@@ -44,15 +44,15 @@ module utils
   !**********************************
   ! constructor for VECTOR data type
   !**********************************
-  interface vector
-     module procedure get_array
-  end interface vector
+  interface array
+     module procedure get_array, get_array_1d
+  end interface array
 
   !**********************************
   ! constructor for MATRIX data type
   !**********************************
   interface matrix
-     module procedure new_matrix_from_array, get_matrix
+     module procedure new_matrix_from_array, get_matrix, get_matrix_2d
   end interface matrix
 
   ! some predefined useful matrices
@@ -189,7 +189,7 @@ contains
   function get_array(a)
 
     type(vector), intent(in) :: a
-    real(dp)                 :: get_array(num_spat_dim)
+    real(dp)                 :: get_array(NUM_SPAT_DIM)
 
     get_array=a%x
 
@@ -198,29 +198,34 @@ contains
   !*****************************************************
   ! get the entries of a VECTOR of VECTOR as an array
   !*****************************************************
-  function get_array_1d(a,n)
+  function get_array_1d(a)
 
-    integer                  :: n
-    type(vector), intent(in) :: a(n)
-    real(dp)                 :: get_array_1d(n*num_spat_dim)
-    integer                  :: j, is_j, ie_j
+    type(vector), dimension(:) :: a
+
+    real(dp)                 :: get_array_1d(NUM_SPAT_DIM*size(a))
+    integer                  :: j, is_j, ie_j, n
+
+    n = size(a)
 
     do j = 1, n
+
        call split(j,is_j,ie_j) ! split j index storage
+
        get_array_1d(is_j:ie_j) = get_array(a(j))
+
     end do
 
   end function get_array_1d
 
   !*******************************************************************************************************
-  ! constructor for a new matrix with entries supplied as an array (only num_spat_dim compatible matrices)
+  ! constructor for a new matrix with entries supplied as an array (only NUM_SPAT_DIM compatible matrices)
   !*******************************************************************************************************
   function new_matrix_from_array(a)
 
-    real(dp), intent(in) :: a(num_spat_dim**2)
+    real(dp), intent(in) :: a(NUM_SPAT_DIM**2)
     type(matrix)         :: new_matrix_from_array
 
-    new_matrix_from_array%ij = reshape(a, (/ num_spat_dim, num_spat_dim /))
+    new_matrix_from_array%ij = reshape(a, (/ NUM_SPAT_DIM, NUM_SPAT_DIM /))
 
   end function new_matrix_from_array
 
@@ -240,24 +245,30 @@ contains
   ! get the matrix entries as array
   function get_matrix(A)
     type(matrix), intent(in) :: A
-    real(dp)                 :: get_matrix(num_spat_dim, num_spat_dim)
+    real(dp)                 :: get_matrix(NUM_SPAT_DIM, NUM_SPAT_DIM)
     get_matrix = A%ij
   end function get_matrix
 
   ! unwraps a 2d matrix and stores as real numbers
-  function get_matrix_2d(A,m,n)
-    integer(sp) :: m,n
-    type(matrix), intent(in) :: A(m,n)
-    real(dp)    :: get_matrix_2d(m*num_spat_dim, n*num_spat_dim) 
-    integer(sp) :: i,j
+  function get_matrix_2d(A) result(mat)
+
+    type(matrix), dimension(:,:), intent(in) :: A
+
+    real(dp)    :: mat(size(A,1)*NUM_SPAT_DIM, size(A,2)*NUM_SPAT_DIM) 
+    integer(sp) :: i,j, m, n
     integer(sp) :: is_i, ie_i, is_j, ie_j
+
+    n =size(A,1)
+    m =size(A,2)
 
     do i = 1, n
        do j = 1, m
+
           call split(j,is_j,ie_j) ! split j index storage
           call split(i,is_i,ie_i) ! split i index storage
-          get_matrix_2d(is_j:ie_j,is_i:ie_i) = get_matrix(A(j,i))
-          !        print*, is_j,ie_j,is_i,ie_i,i,j
+
+          mat(is_j:ie_j,is_i:ie_i) = get_matrix(A(j,i))
+
        end do
     end do
 
@@ -267,7 +278,7 @@ contains
   function get_vector_elements(a,n)
     integer(sp) :: n
     type(vector), intent(in) :: a(n)
-    real(dp)    :: get_vector_elements(n*num_spat_dim) 
+    real(dp)    :: get_vector_elements(n*NUM_SPAT_DIM) 
     integer(sp) :: i
     integer(sp) :: is_i, ie_i
 
@@ -282,79 +293,90 @@ contains
   subroutine split(i,is,ie)
     integer(sp) :: i
     integer(sp ):: is, ie
-    is = (num_spat_dim*(i-1) ) + 1
-    ie = num_spat_dim*( (i-1) + 1)
-    !   print*, is,ie !,num_spat_dim,i
+    is = (NUM_SPAT_DIM*(i-1) ) + 1
+    ie = NUM_SPAT_DIM*( (i-1) + 1)
+    !   print*, is,ie !,NUM_SPAT_DIM,i
   end subroutine split
 
+  !------------------------
   ! transpose of a matrix
+  !------------------------
   function trans(A)
     type(matrix),intent(in) :: A
     type(matrix)            :: trans
     trans = matrix(transpose(get_matrix(A)))
   end function trans
 
-
-
+  !-------------------------------------------------------
   !returns the matrix addition of matrices of TYPE matrix
+  !-------------------------------------------------------x
   function add_matrices(A, B)
     type(matrix), intent(in) :: A, B
     type(matrix)  :: add_matrices
     add_matrices%ij = A%ij +B%ij
   end function add_matrices
 
-
-
+  !-------------------------------------------------------
   !returns the matrix addition of vectors of TYPE matrix
+  !-------------------------------------------------------
   function add_vectors(a, b)
     type(vector), intent(in) :: a, b
     type(vector)  :: add_vectors
     add_vectors%x = a%x + b%x
   end function add_vectors
 
-
+  !-------------------------------------------------------
   !returns the matrix subtraction of matrices of TYPE matrix
+  !-------------------------------------------------------
   function sub_matrices(A, B)
     type(matrix), intent(in)  :: A, B
     type(matrix)  :: sub_matrices
     sub_matrices%ij = A%ij -B%ij
   end function sub_matrices
 
-
-
+  !-------------------------------------------------------
   !returns the matrix addition of vectors of TYPE matrix
+  !-------------------------------------------------------
   function sub_vectors(a, b)
     type(vector), intent(in) :: a, b
     type(vector)  :: sub_vectors
     sub_vectors%x = a%x - b%x
   end function sub_vectors
 
-
+  !-------------------------------------------------------
   ! returns the negative of type matrix
+  !-------------------------------------------------------
   function negate_matrix(A)
     type(matrix), intent(in)  :: A
     type(matrix)  :: negate_matrix
     negate_matrix%ij = -A%ij
   end function negate_matrix
 
+  !-------------------------------------------------------
   ! returns the negative of type vector
+  !-------------------------------------------------------
   function negate_vector(a)
     type(vector), intent(in)  :: a
     type(vector)  :: negate_vector
     negate_vector%x = -a%x
   end function negate_vector
 
+  !-------------------------------------------------------
   ! convert from degree to radian
+  !-------------------------------------------------------
   function deg2rad(deg)
     real(dp) :: deg2rad,deg
     deg2rad  =  deg*DEG_IN_RAD
   end function deg2rad
 
+  !-------------------------------------------------------
   ! convert from radian to degree
+  !-------------------------------------------------------
   function rad2deg(rad)
     real(dp) :: rad2deg,rad
     rad2deg  =  rad*RAD_IN_DEG
   end function rad2deg
+
   !************************************************
   ! returns an identity matrix of size NUM_SPAT_DIM
   !************************************************
@@ -393,6 +415,7 @@ contains
        end do
     end do
   end function eye
+
   !************************************************
   ! generates a nxn zero matrix
   !************************************************
@@ -410,7 +433,6 @@ contains
     real(dp)    :: ones(n,n)
     ones        = 1.0_dp
   end function ones
-
 
   !------------------------------------------------------------
   ! a function that returns a new unit number for file handling

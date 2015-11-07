@@ -30,10 +30,13 @@ contains
 
     call disp('>> Performing initialization...')
 
-    ! load input files may be?
+    ! load input files may be and make appropriate settings?
+    
+    ! 
+    ! elastic = .true. ! set elastic to true if elastic DOFs are included
+
 
     initialized = .true.
-
     call disp('>> Initialization complete...')
 
   end subroutine init

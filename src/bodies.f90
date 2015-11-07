@@ -9,21 +9,26 @@ module bodies
   implicit none
 
   ! Default make everything private
-  !  private 
+  private 
 
   ! Expose only the needed variables and functions
-  !  public
+  public set_state, create_body, print_body
+  !  public get_rotation, get_rotation_dot
+  !  public get_angular_rate, get_angular_rate_dot
+
+  interface set_state
+     module procedure set_body_state
+  end interface set_state
 
 contains
-
 
   !****************************************************
   ! Takes the body and updates/sets the state variables
   !****************************************************
-  subroutine set_state(q, qdot, alpha)
+  subroutine set_body_state(q, qdot, alpha)
 
-    real(dp), intent(in)          :: q(NUM_STATES)
-    real(dp), intent(in)          :: qdot(NUM_STATES)
+    real(dp), intent(in)          :: q(NUM_STATES_PER_BODY)
+    real(dp), intent(in)          :: qdot(NUM_STATES_PER_BODY)
     type(body),intent(inout)      :: alpha
 
     ! set the state
@@ -38,13 +43,15 @@ contains
     alpha%v_dot     = vector(qdot(7:9))
     alpha%omega_dot = vector(qdot(10:12))
 
+!!$    if (NUM_ELAST_EQN .gt. 0 .and. elastic) then
+!!$
+!!$       ! set the elastic state variables in the body
+!!$       alpha%qs        = vector(qdot(13:15)) ! IS_QS:IE_QE
+!!$       alpha%qs_dot    = vector(qdot(13:15)) ! IS_QS:IE_QE
+!!$
+!!$    end if
 
-    ! set the elastic state variables in the body
-    !    alpha%qs        = vector(qdot(IS_QS:IE_QE))
-    !    alpha%qs_dot    = vector(qdot(IS_QS_DOT:IE_QS_DOT))
-
-
-  end subroutine set_state
+  end subroutine set_body_state
 
   ! ********************************************************
   ! routine that returns the rotation matrix (euler angles)
@@ -65,7 +72,7 @@ contains
 
     real(dp) :: theta(NUM_SPAT_DIM)
     type(matrix) :: get_rotation_dot
-    
+
     stop "dummy impl"
 
   end function get_rotation_dot
@@ -90,7 +97,7 @@ contains
 
     real(dp) :: theta(NUM_SPAT_DIM)
     type(matrix) :: get_angular_rate_dot
-    
+
     stop "dummy impl"
 
   end function get_angular_rate_dot
