@@ -2,93 +2,97 @@
 ! program to run dynamics simulation of a physical pendulum
 !===========================================================
 program pendulum
-! include "lis.h"
-!  include "lisf.h"
-!  include "lis_config.h"
-  use dispmodule 
-  use constants
-  use utils
-  use body_mod
-  use matrix_utils
-  use jacobian_mod
 
+  ! import the necessary modules
+  use global_constants
+  use global_variables
+  use types
+  
   implicit none
 
-  real(dp)         :: delta(12) , dq(12)
-  real(dp)         :: pd(12,12), pdinv(12,12)
+  real(dp), dimension(NUM_SPAT_DIM)      :: re    ! position of the point of interest in the body in the body frame
+  real(dp)                               :: mass ! mass
 
-  ! solver related variables
-  integer(sp)      :: neq,info(15),idid,lrw,liw,iwork(1000),ipar, my, ii
-  real(dp)         :: t, y(12), yprime(12), tout, rtol(12),atol(12), rwork(1055), rpar
+  real(dp), dimension(NUM_STATES)        :: qr(NUM_STATES) = 0.0_dp    
+  real(dp), dimension(NUM_STATES)        :: qr_dot(NUM_STATES) = 0.0_dp    
 
-  ! state variables
-  real(dp)         :: r(num_spat_dim), theta(num_spat_dim), v(num_spat_dim), omega(num_spat_dim) 
-  real(dp)         :: r_dot(num_spat_dim), theta_dot(num_spat_dim), v_dot(num_spat_dim), omega_dot(num_spat_dim)
-
-  ! other variables
-  real(dp)         :: m, g0(num_spat_dim), re(num_spat_dim)
-
-!  type(LIS_MATRIX) AA
-!  LIS_VECTOR bb, xx
-!  LIS_SOLVER solver
-
-  external RES , JAC
+  !type(body), dimension(MAX_NUM_BODIES)  :: body
+  type(body)                              :: body
 
   call disp("==================================")
   call disp("-------Rigid body dynamics--------")
   call disp("==================================")
 
+  ! ******************************************************
+  ! (1) set the initial states and attributes of the body
+  ! ******************************************************
+
   call disp(" >> Setting up the test problem...")
 
+  ! define the initial states
+  qr(1:3)    = (/ 0.0d0, 0.0d0, 0.0d0 /)
+  qr(4:6)    = (/ deg2rad(0.0d0), deg2rad(0.0d0), deg2rad(45.0d0) /)
+  qr(7:9)    = (/ 0.0d0,  0.0d0, 0.0d0 /)
+  qr(10:12)  = (/ 0.0d0, 0.0d0, 0.0d0 /)
+
+  ! define the intial time derivative of state
+  qr_dot(1:3)   = (/ 0.0d0, 0.0d0, 0.0d0 /)
+  qr_dot(4:6)   = (/ 0.0d0, 0.0d0, 0.0d0 /)
+  qr_dot(7:9)   = (/ 0.0d0, 0.0d0, 0.0d0 /)
+  qr_dot(10:12) = (/ 0.0d0, 0.0d0, 0.0d0 /)
+
+  ! define the attributes of the body
+  mass      = 1.0d0
+  re        = (/ 0.0d0, 0.0d0, 0.0d0  /)  
+
   ! ******************************************************
-  ! (1) create a pendulum body
+  ! (2) create a pendulum body using the state and attrs
   ! ******************************************************
-
-  r       = (/ 1.0_dp, 2.0_dp, 0.0_dp /)
-  theta   = (/ deg2rad(0.0d0), deg2rad(0.0d0), deg2rad(0.0d0) /)
-  v       = (/ 1.0d0, -2.0d0, 3.0d0 /)
-  omega   = (/ -1.0d0, 3.0d0, -4.0d0 /)
-
-  r_dot       = (/ 0.0d0, 0.0d0, 0.0d0 /)
-  theta_dot   = (/ 0.0d0, 0.0d0, 0.0d0 /)
-  v_dot       = (/ 0.0d0, 0.0d0, 0.0d0 /)
-  omega_dot   = (/ 0.0d0, 0.0d0, 0.0d0 /)
-
-  ! initial state values
-  Y       = (/r, theta, v, omega /)
-  YPRIME  = (/r_dot, theta_dot, v_dot, omega_dot /)
-
-  !  call disp('   Y      =  ', Y)
-  !  call disp('   Yprime =  ',yprime)
-
-  m  = 1.0d0
-
-  g0 = (/ 0.0d0, -1.0d0, 0.d0/)
-
-  re = (/ 1.0d-1, 1.0d-1, 2.0d-1/)
-
-  !  CALL DISP('   g0 =   ', g0, SEP=', ', ORIENT = 'ROW') 
-  !  CALL DISP('   re =   ', re, SEP=', ', ORIENT = 'ROW') 
 
   call disp(" >> Creating a body...")
-  call create_body(m, vector(g0), vector(re), Y, YPRIME, alpha)
+
+  !  call create_body(m, vector(g), vector(r), q, qr, alpha)
+
+  ! we can just create an array of bodies for multiple bodies
+  body1 = create_body(mass, vector(re), qr, qr_dot)
 
   ! ******************************************************
-  ! (2) set the res and jacobian for the linear system
+  ! (3) Assemble the residual and jacobian using the body
   ! ******************************************************
 
-  delta = get_vector_elements(R_rigid(alpha),4)
-  !  call print_body(alpha)
-  call disp("   R   =   ", delta)
+  call disp(" >> Assembling the residuals...")
 
-  pd = jac_rigid (alpha, 1.0d0)
-  call disp("   JAC =   ", pd)
-  
+  res  = assembleResidual(body1)
+
+  call disp(" >> Residual assembly complete...")
+  !  call disp("   R   =   ", res)
+
+  call disp(" >> Assembling the Jacobian...")
+
+  jac  = assembleJacobian(body1)
+
+  call disp(" >> Jacobian assembly complete...")
+  !  call disp("   JAC =   ",jac)
+
   ! ******************************************************
   ! (3) Solve the linear system and compute update delta_q
   ! ******************************************************
-  dq = inv2(pd,delta,12)
- 
+
+  call disp(" >> Solving the linear system...")
+
+  dq = linear_solve(jac,-res,'GMRES')
+
+  ! ******************************************************
+  ! (4) Update the state variables and then update the body
+  ! ******************************************************
+
+  ! update the state
+  q = q + dq;
+  qdot = qdot + a *dq;   
+
+  call update_body_state(q, qr, body1)
+
+
   print*,"dq=", dq
 
   stop
@@ -124,20 +128,8 @@ program pendulum
   liw=1000;  lrw=1055 ;
 
   ! (3) call the solver
-  write(*,*) '************************************************************************************&
-       &*************************************************************************************'
-  write(*,*) '       Time', '            q1', '           q2', '          q3', '            q4', &
-       &'          q5', '            q6', '           q7', '          q8',&
-       & '          q9', '           q10', '         q11',  '           q12'
-  write(*,*) '************************************************************************************&
-       &*************************************************************************************'
   do while (t .le. tout) 
 
-     call ddassl(res,neq,t,y,yprime,tout,info,rtol,atol,&
-          & idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
-     !     write(*,'(8f13.2)') t, y(1), y(2), y(3), y(4), y(5), y(6), y(7), y(8), y(9), y(10), y(11), y(12)
-
-     call disp('      t, y(1:12) = ',(/ t, y/), SEP=', ', ORIENT = 'ROW')
 
   end do
 
@@ -170,7 +162,8 @@ subroutine res(t,y,yprime,delta,ires,rpar,ipar)
 !!$  end do
 
   ! option to compute yprime by itself
-  call SetStateVars(Y, YPRIME, alpha)
+  call update_state_vars(Y, YPRIME, alpha)
+
   !?? get the residual
   delta = get_vector_elements(R_rigid(alpha),4)
   !  call print_body(alpha)
@@ -187,72 +180,10 @@ end subroutine res
 ! implementation of the jacobian
 !********************************
 subroutine jac(t,y,yprime,pd,cj,rpar,ipar)
-!!$C  to define the matrix of partial derivatives
-!!$C             PD=DG/DY+CJ*DG/DYPRIME
-!!$C         CJ is a scalar which is input to JAC.
-!!$C         For the given values of T,Y,YPRIME, the
-!!$C         subroutine must evaluate the non-zero partial
-!!$C         derivatives for each equation and each solution
-!!$C         component, and store these values in the
-!!$C         matrix PD.  The elements of PD are set to zero
-!!$C         before each call to JAC so only non-zero elements
-!!$C         need to be defined.
-!!$C
-!!$C         Subroutine JAC must not alter T,Y,(*),YPRIME(*), or CJ.
-!!$C         You must declare the name JAC in an EXTERNAL statement in
-!!$C         your program that calls DDASSL.  You must dimension Y,
-!!$C         YPRIME and PD in JAC.
-  use dispmodule 
-  use constants,only:dp,sp
-  use utils,only:disp_mat
-  use body_mod
-  use jacobian_mod,only:jac_rigid
-  implicit none
 
-  real(dp)     :: cj
-  real(dp)     :: t
-  real(dp)     :: y(12)
-  real(dp)     :: yprime(12)
-  integer(sp)  :: ires
-  real(dp)     :: rpar(*)
-  integer(sp)  :: ipar(*)
-  real(dp)     :: pd(12,12)
-  integer(sp)  :: i,j,k
-
-  !  print*,"a=", cj
-  !  cj = 1.0d-1
   call SetStateVars(Y, YPRIME, alpha)
   pd = jac_rigid (alpha, cj)
   call disp("   JAC =   ", pd)
-  !  print*, "body =" , alpha
-  !  call print_body(alpha)
-  ! print*, "jacobian matrix ="
-  ! call disp_mat(t, pd, 12, 12)
-  ! stop"where is the impl"
+
   return
 end subroutine jac
-
-!  frame_A%rot_mat     = rotmat(frame_A%theta_alpha)
-!  body_A%v_alpha   = matmul(frame_A%rot_mat, frame_A%v_alpha)
-
-!  print*, frame_A%v_alpha
-!  print*, body_A%v_alpha
-!  print*, ""
-
-!!$
-!!$  real(dp), parameter       :: t0=0, t_final=1
-!!$  real(dp)                  :: current_time
-!!$  integer, parameter        :: nSteps=10 ! number of time steps
-!!$  integer                   :: i,j,k
-!!$  real(dp)                  :: q0(dim_q)
-!!$  real(dp)                  :: q(0:nSteps,dim_q)
-!!$  real(dp)                  :: q_dot(0:nSteps,dim_q)
-!!$  real(dp)                  :: q_double_dot(0:nSteps, dim_q)  ! state variable, its first and second derivatives
-!!$  real(dp), parameter       :: tol = 1.0d-8
-!!$  real(dp)                  :: residual
-!!$  real(dp)                  :: del_q(dim_q)
-!!$  
-!!$  type(body)                :: body_A
-!!$  type(body_fixed_frame)    :: frame_A
-!!$  type(matrix) :: test(1,1)
-!!$  type(vector) ::dd(2)

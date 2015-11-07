@@ -4,7 +4,6 @@
 ! Terms in the jacobian come from 
 !     (a) body 
 !     (b) joints
-!     (c)
 !=========================================================
 ! Contains the function that assemble the below matrices:
 !=========================================================
@@ -14,10 +13,9 @@
 !!$   type(matrix) :: S_RS(4,1)
 !!$   type(matrix) :: S_SR(1,4)
 !=========================================================
-module jacobian_mod
+module jacobian
 
   use utils
-  use matrix_utils
   use body_mod
 
   implicit none
@@ -32,7 +30,7 @@ contains
   !****************************************************
   ! returns the FULL jacobian matrix terms
   !****************************************************
-   function jac_full(alpha, a) !?! may be more inputs e.g. joint
+  function jac_full(alpha, a) !?! may be more inputs e.g. joint
 
     type(body)      :: alpha
     real(dp)        :: a
@@ -53,7 +51,7 @@ contains
   ! returns the rigid body terms in the jacobian matrix
   !****************************************************
   function jac_rigid(alpha, a)
-    
+
     type(body)      :: alpha
     real(dp)        :: a
     real(dp)        :: jac_rigid(12,12)
@@ -61,7 +59,7 @@ contains
 
     ! assemble the jacobian of type(matrix)
     DR1              = D_R(alpha, a)   
-    
+
     ! now return in real-matrix form needed for computations
     jac_rigid = get_matrix_2d(DR1,4,4)
 
@@ -76,12 +74,12 @@ contains
     real(dp)      :: a
     type(matrix)  :: D_R(4,4) ! where 4 is the state vector length
     type(matrix)  :: O ! zero matrix
-!    type(matrix)  :: U ! unit matrix
+    !    type(matrix)  :: U ! unit matrix
     type(matrix)  :: I ! identity matrix
 
     ! some useful matrices
     O = matrix(zeros(num_spat_dim))
-!    U = matrix(ones(num_spat_dim))
+    !    U = matrix(ones(num_spat_dim))
     I = matrix(eye(num_spat_dim))
 
     ! assemble jacobian
@@ -104,22 +102,6 @@ contains
     D_R(2,4) = -1.0_dp*I
     D_R(3,4) = -a*skew(alpha%c) + skew(skew(alpha%c)*alpha%omega)  - alpha%mass*skew(alpha%V) - skew(alpha%omega)*skew(alpha%c)
     D_R(4,4) = a*alpha%J  + skew(alpha%omega)*alpha%J - skew(alpha%J*alpha%omega) -skew(alpha%c)*skew(alpha%V)
-
-    !  real(dp)     :: OO(num_spat_dim,num_spat_dim) ! zero matrix
-    !  real(dp)     :: UU(num_spat_dim,num_spat_dim) ! unit matrix
-    !  real(dp)     :: II(num_spat_dim,num_spat_dim) ! identity matrix
-    !  type(vector) :: vec
-
-    !  vec = matrix_vector(B%C_mat,B%r_dot)
-    !  print*, skew() * B%S)
-
-    !  print*,matrix(skew(vec))
-    !  print*, matrix(B%S)
-    !  print*, matrix_matrix(skew(vec) ,B%S )
-    ! print*, skew(vec) * B%S
-    !  print*, skew(B%C_mat * B%r_dot) * B%S !! correct as of now
-    !  print*, cross(B%C_mat * B%r_dot, B%S)
-    !  print*, B%C_mat * B%r_dot * B%S ! vector right now should be matrix
 
   end function D_R
 
@@ -206,4 +188,4 @@ contains
 
   end function S_SR
 
-end module jacobian_mod
+end module jacobian
