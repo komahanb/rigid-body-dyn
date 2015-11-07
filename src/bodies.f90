@@ -20,10 +20,21 @@ module bodies
      module procedure set_body_state
   end interface set_state
 
+  !------------------------------------------------------------------
+  ! a common interface for different ways of getting rotation matrix
+  ! get_rotation_from_angles -- > user supplies theta(3)
+  ! get_rotation_from_cosines -- > use supplies direction cosines and sines
+  ! get_rotation_from_state_vector --> compiler threw ambiguity error, so I have commented this impl
+  !------------------------------------------------------------------
+  interface get_rotation
+     module procedure get_rotation_from_angles, get_rotation_from_cosines
+     ! get_rotation_from_state_vector
+  end interface get_rotation
+
 contains
 
   !****************************************************
-  ! Takes the body and updates/sets the state variables
+  ! Takes the body (alpha) and updates/sets the state variables
   !****************************************************
   subroutine set_body_state(q, qdot, alpha)
 
@@ -31,13 +42,13 @@ contains
     real(dp), intent(in)          :: qdot(NUM_STATES_PER_BODY)
     type(body),intent(inout)      :: alpha
 
-    ! set the state
+    ! set the state into the body
     alpha%r         = vector(q(1:3))
     alpha%theta     = vector(q(4:6))
     alpha%v         = vector(q(7:9))
     alpha%omega     = vector(q(10:12))
 
-    ! set the time derivatives of state
+    ! set the time derivatives of state into the body
     alpha%r_dot     = vector(qdot(1:3))
     alpha%theta_dot = vector(qdot(4:6))
     alpha%v_dot     = vector(qdot(7:9))
@@ -52,18 +63,59 @@ contains
 !!$    end if
 
   end subroutine set_body_state
+!!$
+!!$ ! ********************************************************
+!!$  ! routine that returns the rotation matrix (euler angles)
+!!$  ! based on the angles
+!!$  ! ********************************************************
+!!$  function get_rotation_from_state_vector(qr) result(CMAT)
+!!$
+!!$    real(dp), intent(in)       :: qr(NUM_STATES_PER_BODY)    
+!!$    type(matrix), intent(out)  :: CMAT
+!!$
+!!$    CMAT = get_rotation_from_angles(qr(4:6)) ! angles are stored in indices 4:6
+!!$
+!!$  end function get_rotation_from_state_vector
 
   ! ********************************************************
   ! routine that returns the rotation matrix (euler angles)
+  ! based on the angles
   ! ********************************************************
-  function get_rotation(theta)
+  function get_rotation_from_angles(theta) result(CMAT)
 
-    real(dp)     :: theta(NUM_SPAT_DIM)    
-    type(matrix) :: get_rotation
+    real(dp), intent(in)       :: theta(NUM_SPAT_DIM)    
+    type(matrix)               :: CMAT
+    real(dp)                   :: c1, c2, c3, s1, s2, s3
 
-    stop "dummy impl"
+    ! Compute the sin/cos of the Euler angles
+    c1 = cos(theta(1))
+    s1 = sin(theta(1))
 
-  end function get_rotation
+    c2 = cos(theta(2))
+    s2 = sin(theta(2))
+
+    c3 = cos(theta(3))
+    s3 = sin(theta(3))
+
+    CMAT = get_rotation_from_cosines(c1, c2, c3, s1, s2, s3)
+
+  end function get_rotation_from_angles
+
+  ! ********************************************************
+  ! routine that returns the rotation matrix (euler angles)
+  ! based on the sines and cosines of the euler angles
+  ! ********************************************************
+  function get_rotation_from_cosines(c1, c2, c3, s1, s2, s3) result(CMAT)
+
+    real(dp), intent(in)       :: c1, c2, c3, s1, s2, s3
+    type(matrix)               :: CMAT
+
+    CMAT = matrix((/ c2*c3, c2*s3, -s2,&
+         & s1*s2*c3 - c1*s3, s1*s2*s3 + c1*c3, s1*c2,&
+         & c1*s2*c3 + s1*s3, c1*s2*s3 - s1*c3, c1*c2 /))
+
+  end function get_rotation_from_cosines
+
 
   ! **************************************************************************
   ! routine that returns the time derivative of rotation matrix (euler angles)
@@ -116,6 +168,7 @@ contains
 
     call set_state(q, qdot, alpha)
 
+    ! make a local copy
     theta = q(4:6)
 
     ! rotation and rate matrices
@@ -133,10 +186,10 @@ contains
     alpha%c  = mass*re
 
     ! reaction force 
-    alpha%fr = mass*GRAV
+    alpha%fr = mass*GRAV !? check
 
     ! reaction torque
-    alpha%gr = alpha%J*alpha%omega_dot
+    alpha%gr = alpha%J*alpha%omega_dot !? check
 
     !   call print_body(alpha)
 
