@@ -34,7 +34,7 @@ BIN_DIR=bin
 #-----------------------------------------------------------------------
 # define any directories containing header files other than /usr/include
 #-----------------------------------------------------------------------
-INCLUDES = -I/usr/local/include -I./include  #-I/home/newhall/include  -I../include
+INCLUDES = -I/usr/local/include #-I./include  #-I/home/newhall/include  -I../include
 
 #-----------------------------------------------------------------------
 # define library paths in addition to /usr/lib
@@ -48,7 +48,7 @@ LIB_FLAGS = -L./lib #-L../lib #-L/home/newhall/lib  -L../lib
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname 
 #   option, something like (this will link in libmylib.so and libm.so:
 #-----------------------------------------------------------------------
-LIBS =  -ldl -lstdc++ -llapack -lblas lib/daesolve.a lib/liblis.a #-ldiffer #-lmylib -lm
+LIBS =  -ldl -lstdc++ -llapack -lblas #lib/daesolve.a #lib/liblis.a #-ldiffer #-lmylib -lm
 
 #--------------------------
 # define the C, C++, Fortran source files
@@ -61,7 +61,7 @@ LIBS =  -ldl -lstdc++ -llapack -lblas lib/daesolve.a lib/liblis.a #-ldiffer #-lm
 #SRC := $(wildcard src/*.f90 src/*.c src/*.cpp)
 SRC  := src/dispmodule.f90 src/global_constants.f90 src/types.f90 src/global_variables.f90 \
 	src/utils.f90 src/differ.f90 \
-	src/linear_system.f90 src/bodies.f90 src/joints.f90 src/residual.f90 src/jacobian.f90 src/solver_utils.f90 
+	src/linear_system.f90 src/bodies.f90 src/joints.f90 src/residual.f90 src/jacobian.f90 src/solver_utils.f90 test/pend.f90
 
 #src/main.f90
 
