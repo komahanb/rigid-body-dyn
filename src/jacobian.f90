@@ -28,14 +28,14 @@ module jacobian
   ! only required functions are exposed to the calling program
   public get_jacobian
   
-  ! The calling program will use get_jacobian as the interface to get the assembled resid
+  ! The calling program will use get_jacobian as the interface to get the assembled jacobian
   interface get_jacobian
      module procedure jac_rigid
   end interface get_jacobian
 
 contains
 
-    !****************************************************
+  !****************************************************
   ! returns the rigid body terms in the jacobian matrix
   !****************************************************
   function jac_rigid(alpha)

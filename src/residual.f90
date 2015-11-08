@@ -19,7 +19,7 @@ module residual
   !  Function to be called by the end-programs to get the residual
   !---------------------------------------------------------------
   interface get_residual
-     module procedure get_residual_body_joint, get_body_residual, get_joint_residual
+     module procedure get_body_residual, get_joint_residual, get_residual_body_joint
   end interface get_residual
 
 contains
@@ -33,15 +33,15 @@ contains
     type(body), dimension(:)                 :: body_array
     type(joint), dimension(:), optional      :: joint_array
     real(dp), dimension(NUM_STATES)          :: res
-
     integer(sp)                              :: j, njnt, nbdy, is, ie 
+
     !    type(vector)                             :: get_body_residual, get_joint_residual
 
     ! first parse the bodies and extract the residual
     nbdy = size(body_array)
     do j = 1, nbdy
        call split(j,is,ie) ! split j index storage
-       res(is:ie) = array(get_body_residual(body_array(j)))
+       res(is:ie) = get_body_residual(body_array(j))
     end do
 
 
@@ -52,7 +52,7 @@ contains
        njnt = size(joint_array)
        do j = 1, njnt
           call split(nbdy+j,is,ie) ! split j index storage
-          res(is:ie) = array(get_joint_residual(joint_array(j)))
+          res(is:ie) = get_joint_residual(joint_array(j))
        end do
 
     end if
@@ -62,10 +62,11 @@ contains
   !---------------------------------------------------------
   ! Returns the residual terms coming from joint equations
   !---------------------------------------------------------
-  function  get_joint_residual( jnt) result(res_joint)
+  function  get_joint_residual( jnt) result(res)
 
     type(vector) :: res_joint(NUM_JOINT_EQN)
     type(joint)  :: jnt
+    real(dp), dimension(NUM_STATES)          :: res
 
     stop "dummy impl"
 
@@ -75,16 +76,20 @@ contains
   ! returns the assembled residual vector for the given body
   ! Joint residual terms are implemented in the JOINT module
   ! ********************************************************
-  function  get_body_residual(alpha) result(res_body)
+  function  get_body_residual(alpha) result(res)
 
     type(body)   :: alpha
     type(vector) :: res_body(NUM_GOV_EQN)
+    real(dp), dimension(NUM_STATES)          :: res
 
     res_body(1:NUM_DYNAM_EQN)  = get_dynamics_residual(alpha)
 
-    if (NUM_ELAST_EQN .gt. 0 .and. elastic) then
-       res_body(NUM_DYNAM_EQN+1:NUM_ELAST_EQN)   = get_elastic_residual(alpha)  
-    end if
+!!$    if (NUM_ELAST_EQN .gt. 0 .and. elastic) then
+!!$       res_body(NUM_DYNAM_EQN+1:NUM_ELAST_EQN)   = get_elastic_residual(alpha)  
+!!$    end if
+
+    res=array(res_body)
+
 
   end function get_body_residual
 

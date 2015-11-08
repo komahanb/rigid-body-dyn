@@ -209,12 +209,12 @@ contains
   !**************************************************************
   ! create a body using the supplied state and other parameters
   !**************************************************************
-  subroutine create_body(mass, re, q, qdot, alpha)
+  function create_body(mass, re, q, qdot) result(alpha)
 
     real(dp), intent(in)        :: mass 
     type(vector), intent(in)    :: re 
     real(dp), intent(in)        :: q(NUM_STATES), qdot(NUM_STATES)
-    type(body), intent(out)     :: alpha
+    type(body)                  :: alpha
     real(dp)                    :: theta(NUM_SPAT_DIM)
 
     call set_state(q, qdot, alpha)
@@ -244,7 +244,7 @@ contains
 
     !   call print_body(alpha)
 
-  end subroutine create_body
+  end function create_body
 
 
   ! ********************************************************
