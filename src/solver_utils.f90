@@ -79,7 +79,6 @@ integer(sp)                :: n             ! number of points needed for the re
 real(dp)                   :: c(d+m)        ! vector of coefficients used to approximate derivate
 real(dp)                   :: x(d+m)        ! vector of evaluation points (not needed here)
 real(dp), parameter        :: h = 1._dp     ! if we set h=dT we will get the scaled coeffs
-integer(sp)                :: i
 
 n = m +d                                    ! number of points needed for the reqd accuracy and degree
 call differ_backward ( h, d, m, c, x )      ! calling a library function

@@ -413,7 +413,7 @@ subroutine differ_solve ( n, stencil, order, c )
   real ( kind = 8 ) a(n,n)
   real ( kind = 8 ) b(n)
   real ( kind = 8 ) c(n)
-  integer ( kind = 4 ) i
+!  integer ( kind = 4 ) i
   integer ( kind = 4 ) info
   integer ( kind = 4 ) order
   real ( kind = 8 ) stencil(n)
@@ -487,7 +487,7 @@ subroutine differ_stencil ( x0, o, p, x, c )
   real ( kind = 8 ) b(o+p)
   real ( kind = 8 ) c(o+p)
   real ( kind = 8 ) dx(o+p)
-  integer ( kind = 4 ) i
+!  integer ( kind = 4 ) i
   integer ( kind = 4 ) info
   integer ( kind = 4 ) job
   integer ( kind = 4 ) n
@@ -677,7 +677,7 @@ subroutine r8mat_fs ( n, a, b, info )
   integer ( kind = 4 ) i
   integer ( kind = 4 ) info
   integer ( kind = 4 ) ipiv
-  integer ( kind = 4 ) j
+!  integer ( kind = 4 ) j
   integer ( kind = 4 ) jcol
   real ( kind = 8 ) piv
   real ( kind = 8 ) row(n)

@@ -60,8 +60,7 @@ contains
     integer n
     real(dp) :: x(n),b(n)
     real(dp) :: A(n,n)
-    real(dp) :: err
-    integer  :: i, info, lda, ldb, nrhs
+    integer  :: info, lda, ldb, nrhs
     integer  :: ipiv(n)
 
     external DGESV
