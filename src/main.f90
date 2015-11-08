@@ -40,7 +40,7 @@ program second_order
   
 
   frame_A%r_alpha     = (/ 1._dp, 1._dp, 1._dp /)
-  frame_A%theta_alpha = (/ 30.0d0, 60.0d0, 0.0d0 /)/rad_to_deg
+  frame_A%theta_alpha = (/ 30.0_dp, 60.0_dp, 0.0_dp /)/rad_to_deg
   frame_A%v_alpha     = (/ 1._dp, 1._dp, 1._dp /)
   frame_A%omega_alpha = (/ 1._dp, 1._dp, 1._dp /)
   frame_A%rot_mat     = rotate_to_body_frame(frame_A%theta_alpha)

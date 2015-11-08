@@ -39,9 +39,9 @@ module global_constants
   ! Define real  constants
   ! ****************************
 
-  real(dp), parameter     :: PI = 22.0d0/7.0d0
-  real(dp), parameter     :: DEG_IN_RAD = 180.0d0/PI
-  real(dp), parameter     :: RAD_IN_DEG = PI/180.0d0
-  real(dp), parameter     :: ZERO = 0.0d0
+  real(dp), parameter     :: PI = 22.0_dp/7.0_dp
+  real(dp), parameter     :: DEG_IN_RAD = 180.0_dp/PI
+  real(dp), parameter     :: RAD_IN_DEG = PI/180.0_dp
+  real(dp), parameter     :: ZERO = 0.0_dp
 
 end module global_constants

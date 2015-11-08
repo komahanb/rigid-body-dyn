@@ -86,7 +86,7 @@
 !
 !        zero pivot implies this column already triangularized
 !
-         if (a(l,k) .eq. 0.0d0) go to 40
+         if (a(l,k) .eq. 0.0_dp) go to 40
 !
 !           interchange if necessary
 !
@@ -98,7 +98,7 @@
 !
 !           compute multipliers
 !
-            t = -1.0d0/a(k,k)
+            t = -1.0_dp/a(k,k)
             call dscal(n-k,t,a(k+1,k),1)
 !
 !           row elimination with column indexing
@@ -118,7 +118,7 @@
    60 continue
    70 continue
       ipvt(n) = n
-      if (a(n,n) .eq. 0.0d0) info = n
+      if (a(n,n) .eq. 0.0_dp) info = n
       return
       end
 
