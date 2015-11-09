@@ -47,7 +47,9 @@ real(dp), intent(in)           :: del_q(TOT_NDOF)
 real(dp), intent(in)           :: old_q_dot(TOT_NDOF)
 real(dp)                       :: new_q_dot(size(old_q_dot))
 
-new_q_dot(:) = old_q_dot(:) + aa*del_q(:)/dT
+!aa=alpha0/dT (globally set)
+
+new_q_dot(:) = old_q_dot(:) + aa*del_q(:)   
 
 end function get_updated_q_dot
 
@@ -60,7 +62,9 @@ real(dp), intent(in)           :: del_q(TOT_NDOF)
 real(dp), intent(in)           :: old_q_double_dot(TOT_NDOF)
 real(dp)                       :: new_q_double_dot(TOT_NDOF)
 
-new_q_double_dot(:) = old_q_double_dot(:) + bb*del_q(:)/dT**2
+!bb=beta0/dT**2 (globally set)
+
+new_q_double_dot(:) = old_q_double_dot(:) + bb*del_q(:)
 
 end function get_updated_q_double_dot
 

@@ -9,6 +9,7 @@ program pendulum
   use global_variables
   use types
   use utils
+  use solver_utils
   use bodies, only: create_body
   use residual, only: get_residual
   use jacobian, only: get_jacobian
@@ -86,15 +87,17 @@ program pendulum
 
   call disp(" >> Calling the linear solver...") 
 
-  !  dq = linear_solve(jac,-res,'GMRES')
+  !dq = linear_solve(jac,-res,'GMRES')
 
   call disp(" >> Update to residual is computed...") 
-
 
   !-------------------------------------------------------------------!
   ! (4) Update the state variables and then update the body
   !-------------------------------------------------------------------!
-
+  
+  q            = get_updated_q(q, dq)
+  q_dot        = get_updated_q_dot(q_dot, dq)
+  !  q_double_dot = get_updated_q_double_dot(q_double_dot, dq)
 
 
 end program pendulum
