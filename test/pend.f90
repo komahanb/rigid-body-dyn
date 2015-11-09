@@ -10,7 +10,7 @@ program pendulum
   use types
   use utils
   use solver_utils
-  use bodies, only: create_body
+  use bodies, only: create_body, set_state
   use residual, only: get_residual
   use jacobian, only: get_jacobian
 
@@ -84,11 +84,11 @@ program pendulum
 
   ! The defaults are already set in global_varaibles.f90.
   ! The user is free to change here too.
-
+  
 !!$  dT         = 0.01_dp
 !!$  start_time = 0.0_dp
 !!$  end_time   = 1.0_dp
-
+  
   aa   = 1.0_dp/dT    ! used in jacobian assembly and state update
   bb   = 1.0_dp/dt**2 ! used in jacobian assembly and state update
 
@@ -102,6 +102,11 @@ program pendulum
      newton: do k = 1, MAX_NEWTON_ITER
 
         ! (3) Assemble the residual and jacobian using the body
+        
+        ! call this method to update the state for every other iter
+        if (k .gt. 1) then
+           call set_state(q, q_dot, body1)
+        end if
 
         ! residual assembly
         call disp(" >> Assembling the residuals...")

@@ -18,6 +18,7 @@ module bodies
   use global_constants
   use global_variables
   use utils
+  use dispmodule,only:disp
 
   implicit none
 
@@ -85,6 +86,10 @@ contains
 
   !*******************************************************************!
   ! create a body using the supplied state and other parameters
+  !-------------------------------------------------------------------!
+  ! q, qdot: state vector and time derivatives
+  ! mass   : mass of the body
+  ! re     : interested point on the body measure in body frame
   !*******************************************************************!
   function create_body(mass, re, q, qdot) result(alpha)
 
@@ -150,6 +155,8 @@ contains
     real(dp), intent(in)          :: q(NDOF_PBODY)
     real(dp), intent(in)          :: qdot(NDOF_PBODY)
     type(body),intent(inout)      :: alpha
+
+    call disp(" >> Setting state variables into the body...")
 
     ! set the state into the body
     alpha%r         = vector(q(1:3))
@@ -430,39 +437,39 @@ contains
     call disp('---------------------BODY----------------------------')
     call disp('-----------------------------------------------------')
     call disp('')
-    call disp('   r          =   ', get_array(alpha%r), SEP=', ', &
+    call disp('   r          =   ', array(alpha%r), SEP=', ', &
          &ORIENT = 'ROW')
-    call disp('   theta      =   ', get_array(alpha%theta), SEP=', ',&
+    call disp('   theta      =   ', array(alpha%theta), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   v          =   ', get_array(alpha%r), SEP=', ', &
+    call disp('   v          =   ', array(alpha%r), SEP=', ', &
          &ORIENT = 'ROW')
-    call disp('   omega      =   ', get_array(alpha%theta), SEP=', ',&
+    call disp('   omega      =   ', array(alpha%theta), SEP=', ',&
          & ORIENT = 'ROW')
     call DISP('')
-    call disp('   r_dot      =   ', get_array(alpha%r), SEP=', ',&
+    call disp('   r_dot      =   ', array(alpha%r), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   theta_dot  =   ', get_array(alpha%theta), SEP=', ',&
+    call disp('   theta_dot  =   ', array(alpha%theta), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   v_dot      =   ', get_array(alpha%r), SEP=', ',&
+    call disp('   v_dot      =   ', array(alpha%r), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   omega_dot  =   ', get_array(alpha%theta), SEP=', ',&
+    call disp('   omega_dot  =   ', array(alpha%theta), SEP=', ',&
          &ORIENT = 'ROW')
     call DISP('')
-    call disp('   c          =   ', get_array(alpha%c), SEP=', ',&
+    call disp('   c          =   ', array(alpha%c), SEP=', ',&
          & ORIENT = 'ROW')
     call DISP('')
-    call disp('   J          =   ', get_matrix(alpha%J))
+    call disp('   J          =   ', matrix(alpha%J))
     call DISP('')
-    call disp('   C          =   ', get_matrix(alpha%C_mat))
+    call disp('   C          =   ', matrix(alpha%C_mat))
     call DISP('')
-    call disp('   S          =   ', get_matrix(alpha%S))
+    call disp('   S          =   ', matrix(alpha%S))
     call DISP('')
-    call disp('   S_dot      =   ', get_matrix(alpha%S_dot))
+    call disp('   S_dot      =   ', matrix(alpha%S_dot))
     call DISP('')
-    call disp('   fr         =   ', get_array(alpha%fr), SEP=', ', &
+    call disp('   fr         =   ', array(alpha%fr), SEP=', ', &
          &ORIENT = 'ROW')
 
-    call disp('   gr         =   ', get_array(alpha%gr), SEP=', ', &
+    call disp('   gr         =   ', array(alpha%gr), SEP=', ', &
          &ORIENT = 'ROW')
     call DISP('-------------- ENERGY BALANCE ------------------------')
     call disp('   PE         =   ', alpha%PE)
