@@ -49,8 +49,8 @@ module bodies
   ! (c) get_rotation_from_state_vector --> not functional currently
   !*******************************************************************!
   interface get_rotation
-     module procedure get_rotation_from_angles,&
-          & get_rotation_from_cosines
+     module procedure get_rotation_from_angles_array, &
+          &get_rotation_from_angles_vec, get_rotation_from_cosines
      ! get_rotation_from_state_vector
   end interface get_rotation
 
@@ -158,8 +158,14 @@ contains
 
   !*******************************************************************!
   ! Returns the rotation matrix based on the euler angles
+  ! Compute the 3-2-1 Euler angle rotation
+
+  ! C = C1(theta_1)*C2(theta_2)*C3(theta_3)
+  !
+  ! Input: theta as an array
+  ! Output: CMAT of type MATRIX
   !*******************************************************************!
-  function get_rotation_from_angles(theta) result(CMAT)
+  function get_rotation_from_angles_array(theta) result(CMAT)
 
     real(dp), intent(in)       :: theta(NUM_SPAT_DIM)    
     type(matrix)               :: CMAT
@@ -177,7 +183,31 @@ contains
 
     CMAT = get_rotation_from_cosines(c1, c2, c3, s1, s2, s3)
 
-  end function get_rotation_from_angles
+  end function get_rotation_from_angles_array
+  
+  !*******************************************************************!
+  ! Returns the rotation matrix based on the euler angles
+  ! Compute the 3-2-1 Euler angle rotation
+  !
+  ! CMAT = C1(theta_1)*C2(theta_2)*C3(theta_3)
+  !
+  ! Input: theta of type VECTOR
+  ! Output: CMAT of type MATRIX
+  !*******************************************************************!
+  function get_rotation_from_angles_vec(thetain) result(CMAT)
+
+    type(vector), intent(in)   :: thetain
+    real(dp)                   :: theta(NUM_SPAT_DIM)
+    type(matrix)               :: CMAT
+    real(dp)                   :: c1, c2, c3, s1, s2, s3
+
+    ! covert to array form
+    theta = array(thetain)
+
+    ! call the method that takes angles array
+    CMAT  =  get_rotation_from_angles_array(theta)
+
+  end function get_rotation_from_angles_vec
 
   !*******************************************************************!
   ! Returns the rotation matrix (euler angles) based on the sines and 
