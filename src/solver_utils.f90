@@ -1,14 +1,25 @@
+!=====================================================================!
+! Module that contains helper functions used while solving time-
+! integration problem. 
+!---------------------------------------------------------------------!
+! Contains functionst to:
+! (a) compute the extrapolations of state based on previous values
+! (b) update the state, its first and second time derivatives
+! (c) get the coefficients for BDF
+!=====================================================================!
 module solver_utils
 
-use global_constants
-use global_variables
+use global_constants, only: sp, dp, TOT_NDOF
+use global_variables, only: dt, aa, bb
 !use utils
 
 implicit none
 
-private                                                               ! makes all functions default by private
+! makes all functions default by private
+private                                                               
 
-public get_updated_q, get_updated_q_dot, get_updated_q_double_dot,&   ! expose only the functions that are needed outside the module
+! expose only the functions that are needed outside the module
+public get_updated_q, get_updated_q_dot, get_updated_q_double_dot,&   
      & get_extrapolated_q, get_bdf_coeffs , get_approximated_q_dot,&
      & get_approximated_q_double_dot
 
@@ -19,9 +30,9 @@ contains
 !----------------------------------------------------
 function get_updated_q(old_q, del_q) result(new_q)
 
-real(dp), intent(in)           :: del_q(NUM_STATES)
-real(dp), intent(in)           :: old_q(NUM_STATES)
-real(dp)                       :: new_q(NUM_STATES)
+real(dp), intent(in)           :: del_q(TOT_NDOF)
+real(dp), intent(in)           :: old_q(TOT_NDOF)
+real(dp)                       :: new_q(TOT_NDOF)
 
 new_q(:) = old_q(:) + del_q(:)
 
@@ -32,8 +43,8 @@ end function get_updated_q
 !--------------------------------------------------------
 function get_updated_q_dot(old_q_dot, del_q) result(new_q_dot)
 
-real(dp), intent(in)           :: del_q(NUM_STATES)
-real(dp), intent(in)           :: old_q_dot(NUM_STATES)
+real(dp), intent(in)           :: del_q(TOT_NDOF)
+real(dp), intent(in)           :: old_q_dot(TOT_NDOF)
 real(dp)                       :: new_q_dot(size(old_q_dot))
 
 new_q_dot(:) = old_q_dot(:) + aa*del_q(:)/dT
@@ -43,10 +54,11 @@ end function get_updated_q_dot
 !---------------------------------------------------------------
 ! updates the q_double_dot vector value with the computed update
 !---------------------------------------------------------------
-function get_updated_q_double_dot(old_q_double_dot, del_q) result(new_q_double_dot)
-real(dp), intent(in)           :: del_q(NUM_STATES)
-real(dp), intent(in)           :: old_q_double_dot(NUM_STATES)
-real(dp)                       :: new_q_double_dot(NUM_STATES)
+function get_updated_q_double_dot(old_q_double_dot, del_q)&
+     & result(new_q_double_dot)
+real(dp), intent(in)           :: del_q(TOT_NDOF)
+real(dp), intent(in)           :: old_q_double_dot(TOT_NDOF)
+real(dp)                       :: new_q_double_dot(TOT_NDOF)
 
 new_q_double_dot(:) = old_q_double_dot(:) + bb*del_q(:)/dT**2
 
@@ -56,13 +68,15 @@ end function get_updated_q_double_dot
 !--------------------------------------------------------------------------
 ! returns the extrapolated value of q based on first and second derivatives
 !-------------------------------------------------------------------------
-function get_extrapolated_q(old_q, old_q_dot, old_q_double_dot) result(new_q)
-real(dp), intent(in)           :: old_q(NUM_STATES), old_q_dot(NUM_STATES)
-real(dp), intent(in), optional :: old_q_double_dot(NUM_STATES)
-real(dp)                       :: new_q(NUM_STATES)
+function get_extrapolated_q(old_q, old_q_dot, old_q_double_dot) &
+     &result(new_q)
+real(dp), intent(in)           :: old_q(TOT_NDOF), old_q_dot(TOT_NDOF)
+real(dp), intent(in), optional :: old_q_double_dot(TOT_NDOF)
+real(dp)                       :: new_q(TOT_NDOF)
 
 if (present(old_q_double_dot)) then
-   new_q(:) = old_q(:) + dT*old_q_dot(:) + dT**2*old_q_double_dot(:)/2._dp
+   new_q(:) = old_q(:) + dT*old_q_dot(:) &
+        &+ dT**2*old_q_double_dot(:)/2.0_dp
 else 
    new_q(:) = old_q(:) + dT*old_q_dot(:)
 end if
@@ -95,17 +109,17 @@ end function get_bdf_coeffs
 !--------------------------------------------------------
 function get_approximated_q_dot(q, m) result(q_dot)
 !************************************************
-! q = [t= 0                , (q1, q2, q_{NUM_STATES}), 
-!      t= 0+dT          , (q1, q2, q_{NUM_STATES}),
+! q = [t= 0                , (q1, q2, q_{TOT_NDOF}), 
+!      t= 0+dT          , (q1, q2, q_{TOT_NDOF}),
 !         .                ,          .         ,
 !         .                ,          .         ,
-!      t= 0+k*dT        , (q1, q2, q_{NUM_STATES})]
+!      t= 0+k*dT        , (q1, q2, q_{TOT_NDOF})]
 !************************************************
 integer(sp), parameter   :: degree = 1           ! since we are approximating first derivative
 integer(sp)              :: cnt                  ! cnt = m + degree -1
 integer(sp), intent(in)  :: m                    ! m = order of accuracy of sought derivative
-real(dp), intent(in)     :: q(0:degree+m-1,NUM_STATES)! matrix whose structure is drawn above
-real(dp)                 :: q_dot(NUM_STATES)         ! output first derivative vector
+real(dp), intent(in)     :: q(0:degree+m-1,TOT_NDOF)! matrix whose structure is drawn above
+real(dp)                 :: q_dot(TOT_NDOF)         ! output first derivative vector
 real(dp)                 :: alpha(0:m+degree-1)  ! should always be based on the reqd. accuracy (not on the total available data like alpha(0 to k))
 integer(sp)              :: i
 
@@ -131,17 +145,17 @@ end function get_approximated_q_dot
 !--------------------------------------------------------
 function get_approximated_q_double_dot(q, m) result(q_double_dot)
 !------------------------------------------------------
-! q = [t= 0                , (q1, q2, q_{NUM_STATES}), 
-!      t= 0+dT          , (q1, q2, q_{NUM_STATES}),
+! q = [t= 0                , (q1, q2, q_{TOT_NDOF}), 
+!      t= 0+dT          , (q1, q2, q_{TOT_NDOF}),
 !         .                ,          .         ,
 !         .                ,          .         ,
-!      t= 0+k*dT        , (q1, q2, q_{NUM_STATES})]
+!      t= 0+k*dT        , (q1, q2, q_{TOT_NDOF})]
 !-----------------------------------------------------
 integer(sp), parameter   :: degree = 2           ! since we are approximating second derivative
 integer(sp)              :: cnt                  ! cnt = m + degree -1
 integer(sp), intent(in)  :: m                    ! m = order of accuracy of sought derivative
-real(dp), intent(in)     :: q(0:degree+m-1,NUM_STATES)! matrix whose structure is drawn above
-real(dp)                 :: q_double_dot(NUM_STATES)  ! output second derivative vector
+real(dp), intent(in)     :: q(0:degree+m-1,TOT_NDOF)! matrix whose structure is drawn above
+real(dp)                 :: q_double_dot(TOT_NDOF)  ! output second derivative vector
 real(dp)                 :: beta(0:m+degree-1)   ! should always be based on the reqd. accuracy (not on the total available data like beta(0 to k))
 integer(sp)              :: i
 

@@ -1,7 +1,5 @@
 !*******************************************************************
 ! Module that helps share global variables across compilation units
-! 
-! 
 !*******************************************************************
 module global_variables
 
@@ -11,37 +9,50 @@ module global_variables
 
   implicit none
 
-  type(vector), parameter :: GRAV = vector((/ ZERO, -1.0_dp, ZERO /)) ! acceleration due to gravity
-  type(vector), parameter :: unitV = vector((/ ZERO, ZERO, ZERO /)) ! unit vector
-  type(vector), parameter :: zeroV = vector((/ ZERO, ZERO, ZERO /)) ! zero vector
+  ! acceleration due to gravity
+  type(vector), parameter :: GRAV = vector((/ ZERO, -1.0_dp, ZERO /))
 
-  logical  :: elastic = .false.
+  ! unit vector
+  type(vector), parameter :: unitV = vector((/ ZERO, ZERO, ZERO /))
+
+  ! zero vector
+  type(vector), parameter :: zeroV = vector((/ ZERO, ZERO, ZERO /)) 
+
   logical  :: initialized = .false.
 
-  real(dp), dimension(NUM_STATES, MAX_TIME_STEPS) :: q_save=0.0_dp, qdot_save=0.0_dp ! time history of states and their time derivative
+  ! multiplicative factor in assembling the jacobian
+  real(dp) :: aa = 1.0_dp, bb = 1.0_dp
 
-  real(dp), dimension(NUM_STATES, MAX_TIME_STEPS) :: res_save = 0.0_dp
+  ! integration time step
+  real(dp) :: dT 
 
-  real(dp), dimension(NUM_STATES, MAX_TIME_STEPS) :: dq_save = 0.0_dp
-  real(dp), dimension(NUM_STATES, NUM_STATES, MAX_TIME_STEPS) :: jac_save = 0.0_dp ! time history of states and their time derivative
-
-  real(dp) :: aa = 1.0_dp, bb = 1.0_dp ! multiplicative factor in assembling te jacobian
-
-  real(dp) :: dT ! integration time step
+  ! time history of states and their time derivative
+  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: q_save =0.0_dp
+  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: q_dot_save = 0.0_dp
+  ! time history of residual
+  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: res_save = 0.0_dp
+  ! time history of residual update
+  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: dq_save = 0.0_dp
+  ! time history of jacobian
+  real(dp), dimension(TOT_NDOF, TOT_NDOF, MAX_TIME_STEPS) ::  &
+       &jac_save = 0.0_dp 
 
 contains
-
+  
+  !*******************************************************************!
+  ! Performs initialization tasks such as loading input files and 
+  ! sanity checks on the user supplied settings in global_constants
+  !*******************************************************************!
   subroutine init()
 
     call disp('>> Performing initialization...')
 
-    ! load input files may be and make appropriate settings?
-    
-    ! 
-    ! elastic = .true. ! set elastic to true if elastic DOFs are included
+    ! load input files may be and make appropriate settings
 
+    ! implement logic to check if the user entered settings are good
 
     initialized = .true.
+
     call disp('>> Initialization complete...')
 
   end subroutine init

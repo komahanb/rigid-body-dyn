@@ -17,7 +17,8 @@ module utils
   ! overload * for cross product and other matrix-vector operations
   !****************************************************************
   interface operator (*)
-     module procedure cross, scal_vec, scal_matrix, vector_matrix, matrix_vector, matrix_matrix
+     module procedure cross, scal_vec, scal_matrix, vector_matrix, &
+          &matrix_vector, matrix_matrix
   end interface operator (*)
 
   !****************************************************************
@@ -31,7 +32,8 @@ module utils
   ! overload (-) for negation of VECTOR and MATRIX  data types
   !****************************************************************
   interface operator (-)
-     module procedure sub_matrices, sub_vectors, negate_vector, negate_matrix
+     module procedure sub_matrices, sub_vectors, negate_vector, &
+          &negate_matrix
   end interface operator (-)
 
   !***********************************************************
@@ -131,7 +133,8 @@ contains
     type(vector), intent(in)           :: a
     type(matrix)                       :: skew
 
-    skew = matrix((/ 0.0_dp, a%x(3), -a%x(2), -a%x(3), 0.0_dp, a%x(1),  a%x(2), -a%x(1), 0.0_dp /))
+    skew = matrix((/ 0.0_dp, a%x(3), -a%x(2), -a%x(3), 0.0_dp, a%x(1),&
+         &  a%x(2), -a%x(1), 0.0_dp /))
 
   end function skew
 
@@ -225,7 +228,8 @@ contains
     real(dp), intent(in) :: a(NUM_SPAT_DIM**2)
     type(matrix)         :: new_matrix_from_array
 
-    new_matrix_from_array%ij = reshape(a, (/ NUM_SPAT_DIM, NUM_SPAT_DIM /))
+    new_matrix_from_array%ij = &
+         &reshape(a, (/ NUM_SPAT_DIM, NUM_SPAT_DIM /))
 
   end function new_matrix_from_array
 

@@ -1,55 +1,75 @@
-!*********************************************************************************
-! Module that contains all the user defined data types that are used in the code
+!*********************************************************************!
+! Module that contains all the user defined data types
 !
 ! Any new data types that are defined go here
 !
-!*********************************************************************************
+!*********************************************************************!
 module types
 
   use global_constants, only: sp, dp, NUM_SPAT_DIM
 
   implicit none
 
-  !*********************************************************************************
-  ! VECTOR datatype can be used for arrays that are represented in three spatial dimensions
-  ! example gravity, acceleration, velocity, position, orientation etc
-  !*********************************************************************************
+  !*******************************************************************!
+  ! VECTOR datatype can be used for arrays that are represented in 
+  ! three spatial dimensions, for example gravity, acceleration, 
+  ! velocity, position, orientation etc
+  !*******************************************************************!
   type vector
      real(dp)    :: x(NUM_SPAT_DIM) = 0.0_dp
   end type vector
 
-  !*********************************************************************************
-  ! MATRIX datatype can be used for matrices involved within spatial dimensions
-  ! example moment of inertia (J), rotation matrix(C, Cdot), angular rates (S, Sdot)
-  !*********************************************************************************
+  !*******************************************************************!
+  ! MATRIX datatype can be used for matrices involved within spatial 
+  ! dimensions, for example moment of inertia (J), rotation matrix(C, 
+  ! Cdot), angular rates (S, Sdot)
+  !*******************************************************************!
   type matrix
      real(dp)    :: ij(NUM_SPAT_DIM, NUM_SPAT_DIM) = 0.0_dp
   end type matrix
 
-  !*********************************************************************************
-  ! BODY datatype can be used to fully characterize the STATE and ATTRIBUTES of a dynamic body
+  !*******************************************************************!
+  ! BODY datatype can be used to fully characterize the STATE and 
+  ! ATTRIBUTES of a dynamic body .
   ! A body object contains virtually everything about the body 
-  !*********************************************************************************
+  !*******************************************************************!
   type body
-
+     
+     !----------------------------------------------------------------!
      ! rigid body state variables
-     type(vector) :: r              ! origin of the body frame
-     type(vector) :: theta          ! orientation of the body frame with inertial (euler angles)
-     type(vector) :: v              ! velocity of the origin with respect to inertial
-     type(vector) :: omega          ! angular velocity of the body frame with respect to inertial
+     !----------------------------------------------------------------!
 
+     ! origin of the body frame
+     type(vector) :: r              
+
+     ! orientation of the body frame with inertial (euler angles)
+     type(vector) :: theta          
+
+     ! velocity of the origin with respect to inertial
+     type(vector) :: v              
+
+     ! angular velocity of the body frame with respect to inertial
+     type(vector) :: omega          
+
+     !----------------------------------------------------------------!
      ! time derivative of states
+     !----------------------------------------------------------------!
      type(vector) :: r_dot
      type(vector) :: theta_dot
      type(vector) :: v_dot
      type(vector) :: omega_dot
 
-     ! elatic state variables
+     !----------------------------------------------------------------!
+     ! elatic state variables and time derivatives
+     !----------------------------------------------------------------!
      type(vector) :: qs
      type(vector) :: qs_dot
      type(vector) :: qs_double_dot
 
-     ! other body Attributes
+     !----------------------------------------------------------------!
+     ! Body Attributes
+     !----------------------------------------------------------------!
+     
      real(dp)     :: mass           ! mass (denoted m in paper)   
      type(vector) :: c              ! first moment of inertia
      type(matrix) :: J              ! second moment of inertia
@@ -67,16 +87,23 @@ module types
      type(vector) :: fr             ! external/reaction force
      type(vector) :: gr             ! external/reaction torque
 
+     type(vector) :: f              ! elastic force
+
   end type body
 
-  ! ********************************************************************
-  ! JOINT datatype is used to characterize the joints between two bodies
-  ! ********************************************************************
+  ! ******************************************************************!
+  ! JOINT datatype  characterizes the joints between two bodies
+  ! ******************************************************************!
   type joint
 
-     character(len=10) :: type              ! spherical, revolute, prismatic, planar
-     type(body)        :: a , b             ! the two interacting bodies
-     type(vector)      :: aPoint, bPoint    ! point of interaction as measured in their body axes
+     ! spherical, revolute, prismatic, planar
+     character(len=10) :: type              
+
+     ! the two interacting bodies
+     type(body)        :: a , b             
+
+     ! point of interaction as measured in their body axes
+     type(vector)      :: aPoint, bPoint    
 
   end type joint
 
