@@ -199,8 +199,8 @@ contains
     type(joint)  :: jnt ! input joint
     type(vector) :: res_jnt(NUM_JOINT_EQN) ! residual of the joint
 
-    res_jnt(1) = zeroV
-    res_jnt(2) = zeroV
+!    res_jnt(1) = zeroV
+!    res_jnt(2) = zeroV
 
     stop "dummy impl"
 
@@ -323,8 +323,8 @@ contains
 
     ! include elastic eqn (5 terms)
     if (ELASTIC) then
-       res_dyn(5) = trans(p)*v + trans(h)*omega_dot + M*qs_double_dot &
-            &+K*qs - f
+!       res_dyn(5) = trans(p)*v + trans(h)*omega_dot + M*qs_double_dot &
+!            &+K*qs - f
     end if
 
   end function get_body_residual_vec
