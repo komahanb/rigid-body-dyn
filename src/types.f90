@@ -71,7 +71,15 @@ module types
      !----------------------------------------------------------------!
      
      real(dp)     :: mass           ! mass (denoted m in paper)   
+
+     !     The format for c is: (in body frame)
+     !     c = [ cx,  cy,  cz ]
      type(vector) :: c              ! first moment of inertia
+
+     !  The format for J is: (in body frame)
+     !  J = [ Jxx,  Jxy,  Jxz ] = [ J[0],  J[1],  J[2] ]
+     !  . = [    ,  Jyy,  Jyz ] = [     ,  J[3],  J[4] ]
+     !  . = [    ,     ,  Jzz ] = [     ,      ,  J[5] ]
      type(matrix) :: J              ! second moment of inertia
 
      type(matrix) :: p              ! 
