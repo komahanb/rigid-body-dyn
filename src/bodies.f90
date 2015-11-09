@@ -118,11 +118,11 @@ contains
 
     ! mass of the body
     alpha%mass  = mass
-
-    ! mass moment of intertia (second moment)
+    
+    ! moment of inertia in body-fixed frame
     alpha%J = -mass*skew(re)*skew(re)
-
-    ! first moment of mass
+    
+    !first moment of inertia in body-fixed frame: mass*(cg location)
     alpha%c  = mass*re
 
     ! reaction force 
@@ -136,7 +136,7 @@ contains
     ! Assuming the body axis to be at the centre of mass of the body
     ! Inertial or body frame?
     alpha%KE = 0.5_dp*(mass * alpha%v *  alpha%v &
-         & + alpha%omega*alpha%J* alpha%omega)
+         & + alpha%omega*alpha%J* alpha%omega) 
 
     ! potential energy due to position
     ! include strain energy later
@@ -446,13 +446,13 @@ contains
     call disp('   omega      =   ', array(alpha%theta), SEP=', ',&
          & ORIENT = 'ROW')
     call DISP('')
-    call disp('   r_dot      =   ', array(alpha%r), SEP=', ',&
+    call disp('   r_dot      =   ', array(alpha%r_dot), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   theta_dot  =   ', array(alpha%theta), SEP=', ',&
+    call disp('   theta_dot  =   ', array(alpha%theta_dot), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   v_dot      =   ', array(alpha%r), SEP=', ',&
+    call disp('   v_dot      =   ', array(alpha%r_dot), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   omega_dot  =   ', array(alpha%theta), SEP=', ',&
+    call disp('   omega_dot  =   ', array(alpha%theta_dot), SEP=', ',&
          &ORIENT = 'ROW')
     call DISP('')
     call disp('   c          =   ', array(alpha%c), SEP=', ',&
