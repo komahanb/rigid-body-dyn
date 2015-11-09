@@ -56,7 +56,7 @@ module residual
   private
 
   ! Expose only the needed functions. 
-  public get_residual
+  public get_residual, get_q, get_qdot
 
   !*******************************************************************!
   !  Function to be called by the end-programs to get the residual
@@ -226,11 +226,42 @@ contains
 
     ! output
     real(dp), dimension(NDOF_PBODY)    :: res_dyn_arr
+    real(dp), dimension(NDOF_PBODY) :: q
 
     res_dyn_arr = array(get_body_residual_vec(alpha))
 
   end function get_body_residual
 
+  !*******************************************************************!
+  ! Function that returns the state from the body
+  !-------------------------------------------------------------------!
+  ! Input: The body alpha
+  ! Output: The state q
+  !*******************************************************************!
+  function get_q(alpha) result(q)
+    
+    type(body), intent(in)          :: alpha
+    real(dp), dimension(NDOF_PBODY) :: q
+    
+    q=  array((/alpha%r , alpha%theta, alpha%v, alpha%omega /))
+
+  end function get_q
+
+  !*******************************************************************!
+  ! Function that returns the time-derivative of state from the body
+  !-------------------------------------------------------------------!
+  ! Input: The body alpha
+  ! Output: The state derivative with time qdot
+  !*******************************************************************!
+  function get_qdot(alpha) result(qdot)
+
+    type(body), intent(in)          :: alpha
+    real(dp), dimension(NDOF_PBODY) :: qdot
+
+    qdot=  array((/alpha%r_dot , alpha%theta_dot, &
+         &alpha%v_dot, alpha%omega_dot /))
+    
+  end function get_qdot
 
   !*******************************************************************!
   ! Actual function that assembles the residual vector for the body 
