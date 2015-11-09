@@ -20,7 +20,7 @@ module global_constants
   private
  
   ! expose double params
-  public PI, DEG_IN_RAD, RAD_IN_DEG, ZERO
+  public PI, DEG_PER_RAD, RAD_PER_DEG, ZERO
 
   ! expose integer params
   public sp,dp
@@ -175,8 +175,8 @@ module global_constants
   ! Define double constants [TUNABLE]
   !-------------------------------------------------------------------!
   real(dp), parameter     :: PI = 22.0_dp/7.0_dp
-  real(dp), parameter     :: DEG_IN_RAD = 180.0_dp/PI
-  real(dp), parameter     :: RAD_IN_DEG = PI/180.0_dp
+  real(dp), parameter     :: DEG_PER_RAD = 180.0_dp/PI
+  real(dp), parameter     :: RAD_PER_DEG = PI/180.0_dp
   real(dp), parameter     :: ZERO = 0.0_dp
 
 end module global_constants

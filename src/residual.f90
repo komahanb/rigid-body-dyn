@@ -182,6 +182,8 @@ contains
        is = ie + 1
     end do
 
+    stop"Incomplete Impl"
+
   end function residual_assembler_vec
 
   !*******************************************************************!
@@ -314,7 +316,7 @@ contains
 
     ! dynamics eqn-1 (7 terms)
     res_dyn(3)  = mass*v_dot - skew(c)*omega_dot +p*qs_double_dot &
-         &+ skew(omega)*(mass*v - c*omega + p*qs_dot) - fr
+         &+ skew(omega)*(mass*v - skew(c)*omega + p*qs_dot) - fr
 
     ! dynamics eqn 2 (8-terms)
     res_dyn(4)  = skew(c)*v_dot + J*omega_dot + h*qs_double_dot & 

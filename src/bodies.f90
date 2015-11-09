@@ -83,7 +83,7 @@ contains
     type(body)                  :: alpha
 
     ! local variables
-    real(dp)                    :: theta(NUM_SPAT_DIM)
+    real(dp), dimension(NUM_SPAT_DIM):: theta
 
     !  sets the state of the body and its time derivatives
     call set_state(q, qdot, alpha)
@@ -110,9 +110,21 @@ contains
 
     ! reaction torque
     alpha%gr = zeroV !alpha%J*alpha%omega_dot !? check
+    
+    ! translational + rotational KE = 0.5mV^2 + 0.5*wJw
+    ! (*) between two vectors does a dot product (see utils.f90)
+    ! Assuming the body axis to be at the centre of mass of the body
+    ! Inertial or body frame?
+    alpha%KE = 0.5_dp*(mass * alpha%v *  alpha%v &
+         & + alpha%omega*alpha%J* alpha%omega)
 
+    ! potential energy due to position
+    ! include strain energy later
+    ! Inertial or body frame?
+    alpha%PE = mass*GRAV*alpha%r
+    
     call print_body(alpha)
-
+    
   end function create_body
 
   !*******************************************************************!
@@ -292,8 +304,13 @@ contains
     call DISP('')
     call disp('   fr         =   ', get_array(alpha%fr), SEP=', ', &
          &ORIENT = 'ROW')
+
     call disp('   gr         =   ', get_array(alpha%gr), SEP=', ', &
          &ORIENT = 'ROW')
+    call DISP('-------------- ENERGY BALANCE ------------------------')
+    call disp('   PE         =   ', alpha%PE)
+    call disp('   KE         =   ', alpha%KE)
+    call disp('   TE         =   ', alpha%KE + alpha%PE)
     call disp('-----------------------------------------------------')
     call disp('')
 

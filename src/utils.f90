@@ -1,10 +1,11 @@
-!===============================================================================================
-! Module that contains important vector and matrix operations that are used throughout the code
-!==============================================================================================
+!=====================================================================!
+! Module that contains important vector and matrix operations that are 
+! used throughout the code
+!=====================================================================!
 ! dot product, cross product, skew symmetric matrix
 !
 !
-!
+!=====================================================================!
 module utils
 
   use global_constants
@@ -13,51 +14,54 @@ module utils
 
   implicit none
 
-  !****************************************************************
-  ! overload * for cross product and other matrix-vector operations
+  !*******************************************************************!
+  ! overload * for dot product and other matrix-vector operations
+  !-------------------------------------------------------------------!
+  ! square(xx), dot(xx, xx), xx*xx      -- > all does DOT product
+  ! cross product of two vectors a and b --> skew(a)*b
+  ! Other scenarios where (*) is used are:
+  ! 2.0*a, 2.0*A, a*A, A*a, A*A
   !****************************************************************
   interface operator (*)
-     module procedure cross, scal_vec, scal_matrix, vector_matrix, &
+     module procedure dot, scal_vec, scal_matrix, vector_matrix, &
           &matrix_vector, matrix_matrix
   end interface operator (*)
 
-  !****************************************************************
+  !*******************************************************************!
   ! overload (+) for addition of VECTOR and MATRIX  data types
-  !****************************************************************
+  !*******************************************************************!
   interface operator (+)
      module procedure add_matrices, add_vectors
   end interface operator (+)
 
-  !****************************************************************
+  !*******************************************************************!
   ! overload (-) for negation of VECTOR and MATRIX  data types
-  !****************************************************************
+  !*******************************************************************!
   interface operator (-)
      module procedure sub_matrices, sub_vectors, negate_vector, &
           &negate_matrix
   end interface operator (-)
 
-  !***********************************************************
+  !*******************************************************************!
   ! overload to get the absolute value of the VECTOR data type
-  !***********************************************************
-  interface abs
-     module procedure abs_vec
-  end interface abs
+  !*******************************************************************!
+  interface norm
+     module procedure norm_vec
+  end interface norm
 
-  !**********************************
-  ! constructor for VECTOR data type
-  !**********************************
+  !*******************************************************************!
+  ! Gets plain array from VECTOR data type
+  !*******************************************************************!
   interface array
      module procedure get_array, get_array_1d
   end interface array
 
-  !**********************************
-  ! constructor for MATRIX data type
-  !**********************************
+  !*******************************************************************!
+  ! Gets a multidimensional array from MATRIX data type
+  !*******************************************************************1
   interface matrix
      module procedure new_matrix_from_array, get_matrix, get_matrix_2d
   end interface matrix
-
-  ! some predefined useful matrices
 
 contains
 
@@ -158,21 +162,21 @@ contains
     type (vector), intent (in) :: a, b
     real(dp)                   :: dot
 
-    dot = norm2(a%x*b%x)
+    dot = sum(a%x*b%x)
 
   end function dot
 
   !*****************************************************
-  ! returns the magnitude of a vector (also can use DOT)
+  ! returns the magnitude of a vector
   !****************************************************
-  function abs_vec(a)
+  function norm_vec(a)
 
     type (vector), intent (in) :: a
-    real(dp)                   :: abs_vec  
+    real(dp)                   :: norm_vec  
 
-    abs_vec = norm2(a%x(:)**2)
+    norm_vec = norm2(a%x(:))
 
-  end function abs_vec
+  end function norm_vec
 
   !****************************************
   ! returns the square of the given vector
@@ -180,9 +184,9 @@ contains
   function square(a)
 
     type(vector), intent (in) :: a
-    type(vector)              :: square
+    real(dp)                  :: square
 
-    square = vector(a%x(:)**2)
+    square =    sum(a%x(:)**2)
 
   end function square
 
@@ -369,16 +373,16 @@ contains
   ! convert from degree to radian
   !-------------------------------------------------------
   function deg2rad(deg)
-    real(dp) :: deg2rad,deg
-    deg2rad  =  deg*DEG_IN_RAD
+    real(dp) :: deg2rad, deg
+    deg2rad  =  deg*RAD_PER_DEG
   end function deg2rad
 
   !-------------------------------------------------------
   ! convert from radian to degree
   !-------------------------------------------------------
   function rad2deg(rad)
-    real(dp) :: rad2deg,rad
-    rad2deg  =  rad*RAD_IN_DEG
+    real(dp) :: rad2deg, rad
+    rad2deg  =  rad*DEG_PER_RAD
   end function rad2deg
 
   !************************************************

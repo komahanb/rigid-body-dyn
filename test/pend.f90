@@ -28,6 +28,10 @@ program pendulum
   call disp("-------Rigid body dynamics--------")
   call disp("==================================")
 
+  
+  ! init method that has sanity check on the input settings
+  call init()
+
   !-------------------------------------------------------------------!
   ! (1) set the initial states and attributes of the body
   !-------------------------------------------------------------------!
@@ -35,8 +39,8 @@ program pendulum
   call disp(" >> Setting up the test problem...")
 
   ! define the initial states
-  q(1:3)    = (/ 1.0d0, 1.0d0, 1.0d0 /)
-  q(4:6)    = (/ deg2rad(20.0d0), deg2rad(22.0d0), deg2rad(45.0d0) /)
+  q(1:3)    = (/ 1.0d0, 2.0d0, 3.0d0 /)
+  q(4:6)    = (/ deg2rad(0.0d0), deg2rad(0.0d0), deg2rad(20.0d0) /)
   q(7:9)    = (/ 1.0d0,  2.0d0, 1.0d0 /)
   q(10:12)  = (/ 2.0d0, 4.0d0, 5.0d0 /)
 
@@ -48,7 +52,7 @@ program pendulum
 
   ! define the attributes of the body
   mass      = 2.0d0
-  re        = (/ 1.0d0, 1.0d0, 1.0d0 /)  
+  re        = (/ 0.0d0, 0.0d0, 1.0d0 /)  
 
   !-------------------------------------------------------------------!
   ! (2) create a pendulum body using the state and attr
@@ -65,7 +69,7 @@ program pendulum
   !-------------------------------------------------------------------!
 
   call disp(" >> Assembling the residuals...")
-  !  res  = get_residual(body1)
+  res  = get_residual(body1)
   call disp(" >> Residual assembly complete...")
 
   call disp("   R   =   ", res)

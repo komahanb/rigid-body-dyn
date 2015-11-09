@@ -88,6 +88,9 @@ module types
      type(vector) :: gr             ! external/reaction torque
 
      type(vector) :: f              ! elastic force
+     
+     real(dp)     :: KE             ! kinetic energy of the body
+     real(dp)     :: PE             ! potential energy of the body
 
   end type body
 
