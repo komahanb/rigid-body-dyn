@@ -9,6 +9,7 @@ module global_variables
 
   implicit none
 
+  integer(sp)  :: MAX_NEWTON_ITER = 50
   ! acceleration due to gravity
   type(vector), parameter :: GRAV = vector((/ ZERO, -1.0_dp, ZERO /))
 
@@ -20,19 +21,22 @@ module global_variables
 
   logical  :: initialized = .false.
 
-  ! multiplicative factor in assembling the jacobian
-  real(dp) :: aa = 1.0_dp, bb = 1.0_dp
+  ! integration time step and other times (these are just defaults)
+  real(dp) :: dT         = 0.01_dp
+  real(dp) :: start_time = 0.0_dp
+  real(dp) :: end_time   = 1.0_dp
 
-  ! integration time step
-  real(dp) :: dT 
+  ! multiplicative factor in assembling the jacobian
+  real(dp) :: aa != 1.0_dp/dT     ! default value
+  real(dp) :: bb != 1.0_dp/dT**2  ! default value
 
   ! time history of states and their time derivative
-  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: q_save =0.0_dp
+  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: q_save     = 0.0_dp
   real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: q_dot_save = 0.0_dp
   ! time history of residual
-  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: res_save = 0.0_dp
+  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: res_save   = 0.0_dp
   ! time history of residual update
-  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: dq_save = 0.0_dp
+  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: dq_save    = 0.0_dp
   ! time history of jacobian
   real(dp), dimension(TOT_NDOF, TOT_NDOF, MAX_TIME_STEPS) ::  &
        &jac_save = 0.0_dp 

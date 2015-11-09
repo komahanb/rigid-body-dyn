@@ -31,6 +31,7 @@ module global_constants
   public NDOF_PBODY, NDOF_PJOINT     
   public TOT_NDOF_BODIES, TOT_NDOF_JOINTS, TOT_NDOF
   public ELASTIC, MBODY, CMPLX_JOINT
+  public ABS_TOL, REL_TOL
   
   !=================== START OF TUNABLE PARAMS ======================!
 
@@ -178,5 +179,9 @@ module global_constants
   real(dp), parameter     :: DEG_PER_RAD = 180.0_dp/PI
   real(dp), parameter     :: RAD_PER_DEG = PI/180.0_dp
   real(dp), parameter     :: ZERO = 0.0_dp
+  
+  ! tolerances used in time-integration
+  real(dp), parameter     :: REL_TOL = 1.e-6_dp
+  real(dp), parameter     :: ABS_TOL = 1.e-6_dp
 
 end module global_constants
