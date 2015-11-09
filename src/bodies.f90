@@ -44,27 +44,42 @@ module bodies
   !*******************************************************************!
   ! A common interface for different ways of getting rotation matrix
   !-------------------------------------------------------------------!
-  ! (a) get_rotation_from_angles -- > input theta(3)
-  ! (b) get_rotation_from_cosines -- > input dir cosines and sines
-  ! (c) get_rotation_from_state_vector --> not functional currently
+  ! (a) get_rotation_from_angles_vec   -- > input theta as VECTOR
+  ! (b) get_rotation_from_angles_array -- > input theta(3) as array
+  ! (c) get_rotation_from_cosines -- > input dir cosines and sines
   !*******************************************************************!
   interface get_rotation
      module procedure get_rotation_from_angles_array, &
           &get_rotation_from_angles_vec, get_rotation_from_cosines
-     ! get_rotation_from_state_vector
   end interface get_rotation
 
   !*******************************************************************!
-  ! A common interface for different ways of getting rotation matrix
+  ! A common interface for different ways of getting ang rate  matrix
   !-------------------------------------------------------------------!
-  ! (a) get_angrate_from_angles -- > input theta(3)
-  ! (b) get_angrate_from_cosines -- > input dir cosines and sines
-  ! (c) get_angrate_from_state_vector --> not functional currently
+  ! (a) get_angrate_from_angles_vec    -- > input VECTOR theta
+  ! (b) get_angrate_from_angles_array  -- > input theta(3)
+  ! (c) get_angrate_from_cosines       -- > input dir cosines and sines
+
   !*******************************************************************!
   interface get_angrate
-     module procedure get_angrate_from_angles, get_angrate_from_cosines
-     ! get_angrate_from_state_vector
+     module procedure get_angrate_from_angles_vec, &
+          &get_angrate_from_angles_array, get_angrate_from_cosines
   end interface get_angrate
+
+
+
+  !*******************************************************************!
+  ! A common interface for different ways of getting the time 
+  ! derivative of the ang rate matrix
+  !-------------------------------------------------------------------!
+  ! (a) get_angrate_dot_vec -- > input VECTOR theta, theta_dot
+  ! (b) get_angrate_dot_array -- > input theta(3), theta_dot(3)
+  ! (c) get_angrate_dot_cosines  -- > input dir cosines and sines
+  !*******************************************************************!
+  interface get_angrate_dot
+     module procedure  get_angrate_dot_array, &
+          &get_angrate_dot_vec, get_angrate_dot_cosines
+  end interface get_angrate_dot
 
 contains
 
@@ -110,7 +125,7 @@ contains
 
     ! reaction torque
     alpha%gr = zeroV !alpha%J*alpha%omega_dot !? check
-    
+
     ! translational + rotational KE = 0.5mV^2 + 0.5*wJw
     ! (*) between two vectors does a dot product (see utils.f90)
     ! Assuming the body axis to be at the centre of mass of the body
@@ -122,9 +137,9 @@ contains
     ! include strain energy later
     ! Inertial or body frame?
     alpha%PE = mass*GRAV*alpha%r
-    
+
     call print_body(alpha)
-    
+
   end function create_body
 
   !*******************************************************************!
@@ -147,11 +162,11 @@ contains
     alpha%theta_dot = vector(qdot(4:6))
     alpha%v_dot     = vector(qdot(7:9))
     alpha%omega_dot = vector(qdot(10:12))
-    
+
     if (ELASTIC) then
        ! set the elastic state variables in the body
-!       alpha%qs        = vector(q(13:15))    ! IS_QS:IE_QE
-!       alpha%qs_dot    = vector(qdot(13:15)) ! IS_QS:IE_QE
+       !       alpha%qs        = vector(q(13:15))    ! IS_QS:IE_QE
+       !       alpha%qs_dot    = vector(qdot(13:15)) ! IS_QS:IE_QE
     end if
 
   end subroutine set_body_state
@@ -164,6 +179,8 @@ contains
   !
   ! Input: theta as an array
   ! Output: CMAT of type MATRIX
+  ! 
+  ! Ref: Section 2.2 Eq. 18/19 Hughes
   !*******************************************************************!
   function get_rotation_from_angles_array(theta) result(CMAT)
 
@@ -184,22 +201,24 @@ contains
     CMAT = get_rotation_from_cosines(c1, c2, c3, s1, s2, s3)
 
   end function get_rotation_from_angles_array
-  
+
   !*******************************************************************!
   ! Returns the rotation matrix based on the euler angles
+  !
   ! Compute the 3-2-1 Euler angle rotation
   !
   ! CMAT = C1(theta_1)*C2(theta_2)*C3(theta_3)
   !
   ! Input: theta of type VECTOR
   ! Output: CMAT of type MATRIX
+  ! 
+  ! Ref: Section 2.2 Eq. 18/19 Hughes
   !*******************************************************************!
   function get_rotation_from_angles_vec(thetain) result(CMAT)
 
     type(vector), intent(in)   :: thetain
     real(dp)                   :: theta(NUM_SPAT_DIM)
     type(matrix)               :: CMAT
-    real(dp)                   :: c1, c2, c3, s1, s2, s3
 
     ! covert to array form
     theta = array(thetain)
@@ -212,6 +231,13 @@ contains
   !*******************************************************************!
   ! Returns the rotation matrix (euler angles) based on the sines and 
   ! cosines of the euler angles
+  !
+  ! Compute the 3-2-1 Euler angle rotation
+
+  ! Input: sines and cosines of the euler angles
+  ! Output: CMAT of type MATRIX
+  !
+  ! Ref: Section 2.2 Eq. 18/19 Hughes
   !*******************************************************************!
   function get_rotation_from_cosines(c1,c2,c3,s1,s2,s3) result(CMAT)
 
@@ -224,14 +250,50 @@ contains
 
   end function get_rotation_from_cosines
 
-  ! ********************************************************
-  ! routine that returns the ang rate matrix (euler angles)
-  ! ********************************************************
-  function get_angrate_from_angles(theta) result(SMAT)
 
-    real(dp) :: theta(NUM_SPAT_DIM)    
+  !*******************************************************************!
+  ! Returns the ang rate matrix from the supplied euler angles
+  !
+  ! Compute the 3-2-1 Euler angle rotation. The S matrix does not 
+  ! depend on c3/s3, however we keep these as inputs in case we ever
+  ! want to change the Euler sequence.
+  !
+  ! Input : theta of type VECTOR
+  ! Output: SMAT  of type MATRIX
+  ! 
+  ! Ref: Section 2.3 Eq. 24/25 Hughes
+  ! ******************************************************************!
+  function get_angrate_from_angles_vec(thetain) result(SMAT)
+
+    type(vector) :: thetain
+    real(dp)     :: theta(NUM_SPAT_DIM)    
     type(matrix) :: SMAT
-    real(dp)                   :: c1, c2, c3, s1, s2, s3
+
+    ! convert to array
+    theta = array(thetain)
+
+    ! call the function with array signature
+    SMAT = get_angrate_from_angles_array(theta)
+
+  end function get_angrate_from_angles_vec
+
+  !*******************************************************************!
+  ! Returns the ang rate matrix from the supplied euler angles
+  !
+  ! Compute the 3-2-1 Euler angle rotation. The S matrix does not 
+  ! depend on c3/s3, however we keep these as inputs in case we ever
+  ! want to change the Euler sequence.
+  !
+  ! Input : theta as an array
+  ! Output: SMAT  of type MATRIX
+  ! 
+  ! Ref: Section 2.3 Eq. 24/25 Hughes
+  ! ******************************************************************!
+  function get_angrate_from_angles_array(theta) result(SMAT)
+
+    real(dp)     :: theta(NUM_SPAT_DIM)    
+    type(matrix) :: SMAT
+    real(dp)     :: c1, c2, c3, s1, s2, s3
 
     ! Compute the sin/cos of the Euler angles
     c1 = cos(theta(1))
@@ -245,12 +307,21 @@ contains
 
     SMAT = get_angrate_from_cosines(c1, c2, c3, s1, s2, s3)
 
-  end function get_angrate_from_angles
+  end function get_angrate_from_angles_array
 
-  ! ********************************************************
-  ! routine that returns the rotation matrix (euler angles)
-  ! based on the sines and cosines of the euler angles
-  ! ********************************************************
+  !*******************************************************************!
+  ! Returns the rotation matrix (euler angles) based on the sines and 
+  ! cosines of the euler angles
+  !
+  ! Compute the 3-2-1 Euler angle rotation. The S matrix does not 
+  ! depend on c3/s3, however we keep these as inputs in case we ever
+  ! want to change the Euler sequence.
+  !
+  ! Input : sines and cosines of euler angles
+  ! Output: SMAT of type MATRIX
+  ! 
+  ! Ref: Section 2.3 Eq. 24/25 Hughes
+  !*******************************************************************!
   function get_angrate_from_cosines(c1,c2,c3,s1,s2,s3) result(SMAT)
 
     real(dp), intent(in)       :: c1, c2, c3, s1, s2, s3
@@ -263,17 +334,51 @@ contains
   end function get_angrate_from_cosines
 
   !-----------------------------------------------------------
+  ! Returns the time derivative of angular rate matrix
+  !
   ! we use the 3-2-1 Euler angles, the S matrix does not depend
   ! on c3/s3, however we keep these as inputs in case we ever  
   ! want to change the Euler sequence.
+  !
+  ! Input : the euler angles and time derivatives as VECTOR
+  ! Output: SMAT_DOT
+  !
   !-----------------------------------------------------------
-  function get_angrate_dot(theta, dtheta) result(SMAT_DOT)
+  function get_angrate_dot_vec(thetain, dthetain) result(SMAT_DOT)
+
+    type(vector) :: thetain, dthetain
+    type(matrix) :: SMAT_DOT
+
+    real(dp)     :: theta(NUM_SPAT_DIM), dtheta(NUM_SPAT_DIM)
+    
+    ! convert vec to array
+    theta = array(thetain); dtheta=array(dthetain);   
+
+    ! call the function matching array signature
+    SMAT_DOT = get_angrate_dot_array(theta,dtheta)
+
+  end function get_angrate_dot_vec
+
+
+  !-----------------------------------------------------------
+  ! Returns the time derivative of angular rate matrix
+  !
+  ! we use the 3-2-1 Euler angles, the S matrix does not depend
+  ! on c3/s3, however we keep these as inputs in case we ever  
+  ! want to change the Euler sequence.
+  !
+  ! Input : the euler angles and time derivatives as arrays
+  ! Output: SMAT_DOT
+  !
+  !-----------------------------------------------------------
+  function get_angrate_dot_array(theta, dtheta) result(SMAT_DOT)
 
     real(dp)     :: theta(NUM_SPAT_DIM), dtheta(NUM_SPAT_DIM)
     type(matrix) :: SMAT_DOT
     real(dp)     :: c1, c2, c3, s1, s2, s3
 
     ! Compute the sin/cos of the Euler angles
+
     c1 = cos(theta(1))
     s1 = sin(theta(1))
 
@@ -282,13 +387,35 @@ contains
 
     c3 = cos(theta(3))
     s3 = sin(theta(3))
-    
+
+    SMAT_DOT = get_angrate_dot_cosines( c1, c2, c3, s1, s2, s3, dtheta)
+
+  end function get_angrate_dot_array
+
+
+  !-----------------------------------------------------------
+  ! Returns the time derivative of angular rate matrix
+  !
+  ! we use the 3-2-1 Euler angles, the S matrix does not depend
+  ! on c3/s3, however we keep these as inputs in case we ever  
+  ! want to change the Euler sequence.
+  !
+  ! Input : The sines and cosines of euler angles
+  ! Output: SMAT_DOT
+  !
+  !-----------------------------------------------------------
+  function get_angrate_dot_cosines( c1, c2, c3, s1, s2, s3, dtheta) &
+       &result(SMAT_DOT)
+
+    real(dp)     :: dtheta(NUM_SPAT_DIM) 
+    real(dp)     :: c1, c2, c3, s1, s2, s3
+    type(matrix) :: SMAT_DOT
+
     SMAT_DOT= matrix( (/ 0.0_dp,  0.0_dp,  -c2*dtheta(2), &
          & 0.0_dp, -s1*dtheta(1), c1*c2*dtheta(1)-s1*s2*dtheta(2),&
-         & 0.0_dp, -c1*dtheta(1), -s1*c2*dtheta(1)-c1*s2*dtheta(2) /))
+         & 0.0_dp, -c1*dtheta(1), -s1*c2*dtheta(1)-c1*s2*dtheta(2)/))
 
-  end function get_angrate_dot
-
+  end function get_angrate_dot_cosines
 
   ! ********************************************************
   ! routine that prints the state and properties of the body
@@ -352,9 +479,9 @@ end module bodies
 !!$  ! routine that returns the rotation matrix (euler angles)
 !!$  ! based on the angles
 
-  ! compiler threw ambiguity 
-  ! error so I have commented out this impl for now and will explore
-  ! later
+! compiler threw ambiguity 
+! error so I have commented out this impl for now and will explore
+! later
 !!$  ! ********************************************************
 !!$  function get_rotation_from_state_vector(qr) result(CMAT)
 !!$
