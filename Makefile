@@ -14,7 +14,7 @@
 #------------------------------
 CC = mpicc
 CX = mpicxx
-FC = gfortran
+FC = mpif90
 
 #------------------------------
 # define any compile-time flags
