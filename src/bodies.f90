@@ -82,6 +82,20 @@ module bodies
           &get_angrate_dot_vec, get_angrate_dot_cosines
   end interface get_angrate_dot
 
+  !*******************************************************************!
+  ! A common interface for different ways of getting the inverse
+  ! of the ang rate matrix
+  !-------------------------------------------------------------------!
+  ! (a) get_angrate_inv_vec -- > input VECTOR theta, theta_dot
+  ! (b) get_angrate_inv_array -- > input theta(3), theta_dot(3)
+  ! (c) get_angrate_inv_cosines  -- > input dir cosines and sines
+  !*******************************************************************!
+  interface get_angrate_inv
+     module procedure get_angrate_inv_vec, &
+          &get_angrate_inv_array, &
+          &get_angrate_inv_cosines
+  end interface get_angrate_inv
+
 contains
 
   !*******************************************************************!
@@ -91,14 +105,13 @@ contains
   ! mass   : mass of the body
   ! re     : interested point on the body measure in body frame
   !*******************************************************************!
-  function create_body(mass, re, q, qdotin) result(alpha)
+  function create_body(mass, re, q, qdot) result(alpha)
 
     ! inputs
     real(dp), intent(in)        :: mass 
     type(vector), intent(in)    :: re 
     real(dp), intent(in)        :: q(NDOF_PBODY)
-    real(dp), intent(in)        :: qdotin(NDOF_PBODY)
-    real(dp)                   :: qdot(NDOF_PBODY)
+    real(dp), intent(in)        :: qdot(NDOF_PBODY)
     ! output
     type(body)                  :: alpha
 
@@ -113,13 +126,9 @@ contains
     alpha%S         = get_angrate(theta)
     alpha%S_dot     = get_angrate_dot(theta, qdot(4:6))
 
-    qdot =qdotin
-
-    qdot(1:3) = array( trans(get_rotation(theta)) * vector(q(7:9)) )
-
-    !   trans(get_rotation(theta))
-
-    !    qdot(4:6) = array(  * vector(q(10:12)) )
+    !qdot =qdotin
+    !qdot(1:3) = array(trans(get_rotation(theta)) * vector(q(7:9)))
+    !qdot(4:6) = array(get_angrate_inv(theta) * vector(q(10:12)))
 
     !  sets the state of the body and its time derivatives
     call set_state(q, qdot, alpha)
@@ -432,11 +441,55 @@ contains
 
   end function get_angrate_dot_cosines
 
+
+  ! ******************************************************************!
+  ! Returns the inverse of the angular rate matrix for the supplied
+  ! theta vector
+  ! ******************************************************************!
+  function get_angrate_inv_vec(thetain) &
+       &result(SMAT_INV)
+
+    type(vector) :: thetain
+    type(matrix) :: SMAT_INV
+    real(dp)     :: theta(NUM_SPAT_DIM)
+    
+    ! decompose the vector into array
+    theta = array(thetain)
+
+    ! call the method that takes array as input
+    SMAT_INV =  get_angrate_inv_array(theta)
+
+  end function get_angrate_inv_vec
+  
+  ! ******************************************************************!
+  ! Returns the inverse of the angular rate matrix for the supplied
+  ! theta array
+  ! ******************************************************************!
+  function get_angrate_inv_array(theta) &
+       &result(SMAT_INV)
+
+    real(dp)     :: theta(NUM_SPAT_DIM)
+    real(dp)     :: c1, c2, c3, s1, s2, s3
+    type(matrix) :: SMAT_INV
+
+    c1 = cos(theta(1))
+    s1 = sin(theta(1))
+
+    c2 = cos(theta(2))
+    s2 = sin(theta(2))
+
+    c3 = cos(theta(3))
+    s3 = sin(theta(3))
+
+    SMAT_INV =  get_angrate_inv_cosines(  c1, c2, c3, s1, s2, s3)
+
+  end function get_angrate_inv_array
+
   ! ******************************************************************!
   ! Returns the inverse of the angular rate matrix for the supplied
   ! direction cosines
   ! ******************************************************************!
-  function get_angrate_inv( c1, c2, c3, s1, s2, s3) &
+  function get_angrate_inv_cosines( c1, c2, c3, s1, s2, s3) &
        &result(SMAT_INV)
 
     real(dp)     :: c1, c2, c3, s1, s2, s3
@@ -445,8 +498,8 @@ contains
     SMAT_INV= matrix( (/  1.0_dp, s1*s2/c2, c1*s2/c2, &
          &0.0_dp, c1, -s1, 0.0_dp,&
          & s1/c2, c1/c2 /))
-
-  end function get_angrate_inv
+    
+  end function get_angrate_inv_cosines
 
   !*******************************************************************!
   ! routine that prints the state and properties of the body
