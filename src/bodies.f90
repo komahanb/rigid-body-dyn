@@ -28,7 +28,7 @@ module bodies
   ! Expose only the needed variables and functions
   public create_body, set_state 
   public get_rotation
-  public get_angrate, get_angrate_dot
+  public get_angrate, get_angrate_dot, get_angrate_inv
   public print_body
 
   !*******************************************************************!
@@ -91,22 +91,19 @@ contains
   ! mass   : mass of the body
   ! re     : interested point on the body measure in body frame
   !*******************************************************************!
-  function create_body(mass, re, q, qdot) result(alpha)
+  function create_body(mass, re, q, qdotin) result(alpha)
 
     ! inputs
     real(dp), intent(in)        :: mass 
     type(vector), intent(in)    :: re 
     real(dp), intent(in)        :: q(NDOF_PBODY)
-    real(dp), intent(in)        :: qdot(NDOF_PBODY)
-
+    real(dp), intent(in)        :: qdotin(NDOF_PBODY)
+    real(dp)                   :: qdot(NDOF_PBODY)
     ! output
     type(body)                  :: alpha
 
     ! local variables
     real(dp), dimension(NUM_SPAT_DIM):: theta
-
-    !  sets the state of the body and its time derivatives
-    call set_state(q, qdot, alpha)
 
     ! make a local copy
     theta = q(4:6)
@@ -116,12 +113,23 @@ contains
     alpha%S         = get_angrate(theta)
     alpha%S_dot     = get_angrate_dot(theta, qdot(4:6))
 
+    qdot =qdotin
+
+    qdot(1:3) = array( trans(get_rotation(theta)) * vector(q(7:9)) )
+
+    !   trans(get_rotation(theta))
+
+    !    qdot(4:6) = array(  * vector(q(10:12)) )
+
+    !  sets the state of the body and its time derivatives
+    call set_state(q, qdot, alpha)
+
     ! mass of the body
     alpha%mass  = mass
-    
+
     ! moment of inertia in body-fixed frame
     alpha%J = -mass*skew(re)*skew(re)
-    
+
     !first moment of inertia in body-fixed frame: mass*(cg location)
     alpha%c  = mass*re
 
@@ -136,7 +144,7 @@ contains
     ! Assuming the body axis to be at the centre of mass of the body
     ! Inertial or body frame?
     alpha%KE = 0.5_dp*(mass * alpha%v *  alpha%v &
-         & + alpha%omega*alpha%J* alpha%omega) 
+         & + alpha%omega*alpha%J* alpha%omega) ! + coupling term
 
     ! potential energy due to position
     ! include strain energy later
@@ -357,7 +365,7 @@ contains
     type(matrix) :: SMAT_DOT
 
     real(dp)     :: theta(NUM_SPAT_DIM), dtheta(NUM_SPAT_DIM)
-    
+
     ! convert vec to array
     theta = array(thetain); dtheta=array(dthetain);   
 
@@ -424,9 +432,25 @@ contains
 
   end function get_angrate_dot_cosines
 
-  ! ********************************************************
+  ! ******************************************************************!
+  ! Returns the inverse of the angular rate matrix for the supplied
+  ! direction cosines
+  ! ******************************************************************!
+  function get_angrate_inv( c1, c2, c3, s1, s2, s3) &
+       &result(SMAT_INV)
+
+    real(dp)     :: c1, c2, c3, s1, s2, s3
+    type(matrix) :: SMAT_INV
+
+    SMAT_INV= matrix( (/  1.0_dp, s1*s2/c2, c1*s2/c2, &
+         &0.0_dp, c1, -s1, 0.0_dp,&
+         & s1/c2, c1/c2 /))
+
+  end function get_angrate_inv
+
+  !*******************************************************************!
   ! routine that prints the state and properties of the body
-  ! ********************************************************
+  !* *****************************************************************!
   subroutine print_body(alpha)
 
     use dispmodule
