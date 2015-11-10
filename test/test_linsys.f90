@@ -58,7 +58,7 @@ program test_linsys
   body1 = create_body(mass, vector(re), q, q_dot);
 
   ! co-eff for jacobian
-  aa = 2.0d0 
+  aa = 1.0d0 
   
   jac = get_jacobian(body1) !actual
   jac2 = finite_difference2(q, q_dot, aa, 1.0d-6) !finite diff
