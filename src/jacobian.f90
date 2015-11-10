@@ -160,7 +160,7 @@ contains
     D_R(1,3) = -1.0_dp*I
     D_R(2,3) = O
     D_R(3,3) = mass*(aa*I + skew(omega))
-    D_R(4,3) = aa*skew(c) + (skew(c) * skew(omega))
+    D_R(4,3) = aa*skew(c) + skew(c) * skew(omega)
 
     D_R(1,4) = O
     D_R(2,4) = -1.0_dp*I
