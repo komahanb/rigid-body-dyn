@@ -230,6 +230,11 @@ contains
 
     res_dyn_arr = array(get_body_residual_vec(alpha))
 
+    !q = get_q(alpha)
+    ! dummy test residual
+    !res_dyn_arr = (/ sin(q(1))*sin(q(3)), sin(q(2)), sin(q(3)), sin(q(4)), sin(q(5)), sin(q(6)), &
+    !    &sin(q(7)), sin(q(8)), sin(q(9)), sin(q(10)), sin(q(11)), sin(q(12)*sin(q(1))) /)
+
   end function get_body_residual
 
   !*******************************************************************!

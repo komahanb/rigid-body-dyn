@@ -145,7 +145,7 @@ contains
     O = matrix(zeros(NUM_SPAT_DIM))
     !    U = matrix(ones(NUM_SPAT_DIM))
     I = matrix(eye(NUM_SPAT_DIM))
-    
+
     ! assemble jacobian below
     D_R(1,1) = aa * C_mat
     D_R(2,1) = O
