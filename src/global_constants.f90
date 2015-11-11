@@ -181,7 +181,7 @@ module global_constants
   real(dp), parameter     :: ZERO = 0.0_dp
   
   ! tolerances used in time-integration
-  real(dp), parameter     :: REL_TOL = 1.e-6_dp
-  real(dp), parameter     :: ABS_TOL = 1.e-6_dp
+  real(dp), parameter     :: REL_TOL = 1.e-7_dp
+  real(dp), parameter     :: ABS_TOL = 1.e-7_dp
 
 end module global_constants
