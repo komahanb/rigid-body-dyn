@@ -365,7 +365,7 @@ contains
     ! m (v_dot - C_mat*g) - c x omega_dot + omega x (m v - c x omega 
     ! + p qs_dot) + p qs_double_dot - fr
     !-----------------------------------------------------------------!
-    res_dyn(3)  = mass*(v_dot - C_mat*GRAV) - skew(c)*omega_dot &
+    res_dyn(3)  = mass*(v_dot - alpha%g) - skew(c)*omega_dot &
          & + skew(omega)*(mass*v - skew(c)*omega + p*qs_dot) &
          & +p*qs_double_dot - fr
     
@@ -377,7 +377,7 @@ contains
     ! - c x C_mat*g
     !-----------------------------------------------------------------!
     res_dyn(4)  = skew(c)*v_dot + J*omega_dot + skew(c)*skew(omega)*v &
-         & + skew(omega)*J*omega - skew(c)*C_mat*GRAV &
+         & + skew(omega)*J*omega - skew(c)*alpha%g &
          & + skew(v)*p*qs_dot + skew(omega)*h*qs_dot + h*qs_double_dot&
          & - gr
     !-----------------------------------------------------------------!

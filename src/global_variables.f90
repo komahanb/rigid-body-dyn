@@ -14,7 +14,7 @@ module global_variables
   integer(sp)  :: MAX_NEWTON_ITER = 50
 
   ! acceleration due to gravity (inertial frame)
-  type(vector), parameter :: GRAV = vector((/ 0.5_dp,-1.0_dp, 1.3_dp/))
+  type(vector), parameter :: GRAV = vector((/ 1.0_dp, -9.8_dp, 2.0_dp/))
 
   ! unit vector
   type(vector), parameter :: unitV = vector((/ ZERO, ZERO, ZERO /))

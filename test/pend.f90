@@ -4,23 +4,24 @@
 program pendulum
 
   ! import the necessary modules
-  !  use iso_c_binding ! to use tripan
-  use global_constants
-  use global_variables
-  use types
-  use utils
-  use solver_utils
+  
+  use global_constants, only: sp, dp, NUM_SPAT_DIM, TOT_NDOF
+  use global_variables,only: ABS_TOL, REL_TOL, start_time, dT, &
+       &end_time, aa, bb, REL_TOL, ABS_TOL, MAX_NEWTON_ITER, fcnt,&
+       &init
+  use utils,only:deg2rad
+  use types, only: body, vector
+  use solver_utils, only: get_updated_q, get_updated_q_dot,&
+       & get_updated_q_double_dot
   use bodies, only: create_body, set_state
   use residual, only: get_residual
   use jacobian, only: get_jacobian
-  use finite_diff
-  use linear_system
-  use bodies
+  use finite_diff, only:finite_difference2
+  use linear_system,only:direct_solve
+  use bodies,only:print_body, create_body
+  use dispmodule,only:disp
+ 
   implicit none
-
-  !#include "finclude/petsc.h90"
-  !#include "finclude/slepcsys.h"
-  !#include "finclude/slepceps.h"
 
   ! position of the point of interest on the body measured in body frame
   real(dp), dimension(NUM_SPAT_DIM)  :: re    
@@ -30,20 +31,15 @@ program pendulum
 
   ! the state
   real(dp)                           :: q(TOT_NDOF)= 0.0_dp
-  real(dp)                           :: qtmp(TOT_NDOF)= 0.0_dp
 
   ! time derivative of state
   real(dp)                           :: q_dot(TOT_NDOF) = 0.0_dp
-  real(dp)                           :: q_dot_tmp(TOT_NDOF) = 0.0_dp
 
   ! residual
   real(dp)                           :: res(TOT_NDOF)
 
-  real(dp)                           :: res2(TOT_NDOF)
-
   ! jacobian
   real(dp)                           :: jac(TOT_NDOF, TOT_NDOF)
-  real(dp)                           :: jac2(TOT_NDOF, TOT_NDOF)
 
   ! update from newton iterations
   real(dp)                           :: dq(TOT_NDOF) = 0.0_dp
@@ -52,11 +48,10 @@ program pendulum
   type(body)                         :: body1
 
   ! time, and norms to stop integration
-  real(dp)                           :: time, update_norm, res_norm, dh
+  real(dp)                           :: time, update_norm, res_norm
 
   ! loop variable
   integer(sp)                        :: k, newton_cnt
-
 
   call disp("========================================================")
   call disp("'                 Rigid body dynamics                  '")
@@ -75,22 +70,35 @@ program pendulum
   !-------------------------------------------------------------------!
   ! set the initial states and attributes of the body
   !-------------------------------------------------------------------!
-  call disp(" >> Random initial state...")
-  call random_seed(); call random_number(q);call random_number(q_dot);
+  call disp(" >> Setting initial state of the body...")
+
+  !call random_seed(); call random_number(q);call random_number(q_dot);
 
   mass = 2.0_dp
   re   = (/ 0.1_dp, 0.2_dp, 0.3_dp /)
 
+  ! define the initial states
+  q(1:3)    = (/ 1.0_dp, 2.0_dp, 3.0_dp /)
+  q(4:6)    = (/ deg2rad(20.0_dp), deg2rad(0.0_dp), deg2rad(20.0_dp)/)
+  q(7:9)    = (/ 1.0_dp,  2.0_dp, 1.0_dp /)
+  q(10:12)  = (/ 2.0_dp, 4.0_dp, 5.0_dp /)
+
+  ! define the intial time derivative of state
+  q_dot(1:3)   = (/ 2.0_dp, 2.0_dp, 2.0_dp /)
+  q_dot(4:6)   = (/ 0.25_dp, 0.0_dp, 0.0_dp /)
+  q_dot(7:9)   = (/ 0.0_dp, 0.0_dp, 0.0_dp /)
+  q_dot(10:12) = (/ 0.0_dp, 0.0_dp, 0.0_dp /)
   !-------------------------------------------------------------------!
   ! create a pendulum body using the state and attr above
   !-------------------------------------------------------------------!
 
   call disp(" >> Creating a body...")
+
   body1 = create_body(mass, vector(re), q, q_dot)
 
   call print_body(body1)
 
-  !  call disp(" >> Body created successfully...")
+
   !  call disp("   q0  =   ", q)
   !  call disp("   qdot0  =   ", q_dot)
 
@@ -144,11 +152,11 @@ program pendulum
         !call disp(" >> Assembling the residuals...")
         res  = get_residual(body1)
         !call disp(" >> Residual assembly complete...")
-
+        !jac = get_jacobian(body1) 
         jac = finite_difference2(q, q_dot, aa, 1.0d-6) !finite diff
 
         !-------------------------------------------------------------!
-        !  Solve the linear system and compute update delta_q
+        ! Solve the linear system and compute update delta_q
         !-------------------------------------------------------------!
         !call disp(" >> Calling the linear solver...") 
         !dq = linear_solve(jac,-res,'GMRES')
@@ -162,7 +170,7 @@ program pendulum
         !       call disp(" >> Infty-Norm of the update :", res_norm)
 
         !-------------------------------------------------------------!
-        ! (4) Update the state variables and then update the body
+        ! Update the state variables and then update the body
         !-------------------------------------------------------------!
 
         q            = get_updated_q(q, dq)
@@ -170,7 +178,7 @@ program pendulum
         ! q_double_dot = get_updated_q_double_dot(q_double_dot, dq) 
 
         !-------------------------------------------------------------!
-        ! (5) Check for convergence and stop is necessary
+        ! Check for convergence and stop is necessary
         !-------------------------------------------------------------!
         if ( update_norm .le. REL_TOL .AND. res_norm .le. REL_TOL) &
              & exit newton
@@ -211,17 +219,13 @@ subroutine residual2(q, qdot, f)
   real(dp)   :: mass
   type(body) :: body1
 
+  ! we use these params in this problem
   mass  = 2.0_dp;   re   = (/ 0.1_dp, 0.2_dp, 0.3_dp /);
 
   body1 = create_body(mass, vector(re), q, qdot);
 
   f = get_residual(body1);  
 
-!!$  f = (/ sin(q(1))*sin(q(3)), sin(q(2)), sin(q(3)), sin(q(4)),&
-!!$       & sin(q(5)), sin(q(6)), &
-!!$       &sin(q(7)), sin(q(8)), sin(q(9)), &
-!!$       &sin(q(10)), sin(q(11)), sin(q(12)*sin(q(1))) /)
-!!$
 
 end subroutine residual2
 
@@ -235,12 +239,12 @@ subroutine residual(q, f)
   real(dp), intent(in), dimension(TOT_NDOF)  :: q
   real(dp), intent(out), dimension(TOT_NDOF) :: f
 
-  !  f = get_residual();  
-
   f = (/ sin(q(1))*sin(q(3)), sin(q(2)), sin(q(3)), sin(q(4)),&
        & sin(q(5)), sin(q(6)), &
        &sin(q(7)), sin(q(8)), sin(q(9)), &
        &sin(q(10)), sin(q(11)), sin(q(12)*sin(q(1))) /)
+
+  stop"dummy impl"
 
 end subroutine residual
 

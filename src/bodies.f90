@@ -136,6 +136,9 @@ contains
     ! mass of the body
     alpha%mass  = mass
 
+    ! set the gravity vector in body frame
+    alpha%g = alpha%C_mat*GRAV
+
     ! moment of inertia in body-fixed frame
     alpha%J = -mass*skew(re)*skew(re)
 
@@ -158,7 +161,7 @@ contains
     ! potential energy due to position
     ! include strain energy later
     ! Inertial or body frame?
-    alpha%PE = mass*GRAV*alpha%r
+    alpha%PE = mass*alpha%g*alpha%r
 
     !call print_body(alpha)
 
@@ -166,6 +169,9 @@ contains
 
   !*******************************************************************!
   ! Takes the body (alpha) and updates/sets the state variables
+  !-------------------------------------------------------------------!
+  ! Note: 
+  ! Everything changes except the inertial properties of the body
   !*******************************************************************!
   subroutine set_body_state(q, qdot, alpha)
 
@@ -186,6 +192,21 @@ contains
     alpha%theta_dot = vector(qdot(4:6))
     alpha%v_dot     = vector(qdot(7:9))
     alpha%omega_dot = vector(qdot(10:12))
+
+    ! update the rotation and angular rate matrices
+    alpha%C_mat     = get_rotation(alpha%theta)
+    alpha%S         = get_angrate(alpha%theta)
+    alpha%S_dot     = get_angrate_dot(alpha%theta, alpha%theta_dot)
+    
+    ! update the new direction of the gravity vector in body frame
+    alpha%g = alpha%C_mat*GRAV
+
+    ! update the kinetic energy
+    alpha%KE = 0.5_dp*(alpha%mass * alpha%v *  alpha%v &
+         & + alpha%omega*alpha%J* alpha%omega) ! + coupling term
+
+    ! update potential energy
+    alpha%PE = alpha%mass*alpha%g*alpha%r
 
     if (ELASTIC) then
        ! set the elastic state variables in the body
@@ -547,6 +568,9 @@ contains
 
     call disp('   > gr         =   ', array(alpha%gr), SEP=', ', &
          &ORIENT = 'ROW')
+    call disp('')
+    call disp('   > gravity    =   ', array(alpha%g), SEP=', ',&
+         & ORIENT = 'ROW')
     call disp('')
     call disp('   > Pot Energy =   ', alpha%PE)
     call disp('   > Kin Energy =   ', alpha%KE)
