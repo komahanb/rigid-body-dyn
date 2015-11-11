@@ -1,4 +1,14 @@
-# Object files
+# Compiled objects and modules
 *.o
 *.mod
+*.log
+*.out
+
+# Compiler python objects
+*.pyc
+
+# emacs backups
+*~
+
+# Other binaries files
 bin/test
