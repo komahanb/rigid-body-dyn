@@ -14,7 +14,7 @@ module global_variables
   integer(sp)  :: MAX_NEWTON_ITER = 50
 
   ! acceleration due to gravity (inertial frame)
-  type(vector), parameter :: GRAV = vector((/ 1.0_dp, -9.8_dp, 2.0_dp/))
+  type(vector), parameter :: GRAV = vector((/ 0.0_dp, -9.8_dp, 0.0_dp/))
 
   ! unit vector
   type(vector), parameter :: unitV = vector((/ ZERO, ZERO, ZERO /))
@@ -26,6 +26,7 @@ module global_variables
 
   ! integration time step and other times (these are just defaults)
   real(dp) :: dT         = 0.01_dp
+  real(dp) :: time       = 0.0_dp
   real(dp) :: start_time = 0.0_dp
   real(dp) :: end_time   = 1.0_dp
 

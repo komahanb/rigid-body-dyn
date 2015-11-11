@@ -163,6 +163,7 @@ contains
     ! Inertial or body frame?
     alpha%PE = mass*alpha%g*alpha%r
 
+!    alpha%fr =  vector( (/ sin(q(10)*time ), sin(q(11)*time), sin(q(12)*time ) /) )
     !call print_body(alpha)
 
   end function create_body
@@ -207,6 +208,8 @@ contains
 
     ! update potential energy
     alpha%PE = alpha%mass*alpha%g*alpha%r
+
+!    alpha%fr =  vector( (/ sin(q(10)*time ), sin(q(11)*time), sin(q(12)*time ) /) )
 
     if (ELASTIC) then
        ! set the elastic state variables in the body
