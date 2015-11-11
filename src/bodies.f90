@@ -160,7 +160,7 @@ contains
     ! Inertial or body frame?
     alpha%PE = mass*GRAV*alpha%r
 
-    call print_body(alpha)
+    !call print_body(alpha)
 
   end function create_body
 
@@ -173,7 +173,7 @@ contains
     real(dp), intent(in)          :: qdot(NDOF_PBODY)
     type(body),intent(inout)      :: alpha
 
-    call disp(" >> Setting state variables into the body...")
+    !    call disp(" >> Setting state variables into the body...")
 
     ! set the state into the body
     alpha%r         = vector(q(1:3))

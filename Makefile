@@ -14,7 +14,7 @@
 #------------------------------
 CC = mpicc
 CX = mpicxx
-FC = mpif90
+FC = gfortran
 
 #------------------------------
 # define any compile-time flags
@@ -34,8 +34,10 @@ BIN_DIR=bin
 #-----------------------------------------------------------------------
 # define any directories containing header files other than /usr/include
 #-----------------------------------------------------------------------
-INCLUDES = -I/usr/local/include #-I./include  #-I/home/newhall/include  -I../include
+INCLUDES = -I/usr/local/include -I/usr/lib/petscdir/3.4.2/include #-I./include  #-I/home/newhall/include  -I../include
 
+#export PETSC_DIR=/home/balay/petsc-3.2-p0
+#export PETSC_ARCH=linux-gnu-c-debug        
 #-----------------------------------------------------------------------
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify
@@ -59,7 +61,7 @@ LIBS =  -ldl -lstdc++ -llapack -lblas #lib/lsqr.a #lib/libdisp.a #daesolve.a #li
 
 #SRCS = hey.f90 hello.f90 hello1.f90
 #SRC := $(wildcard src/*.f90 src/*.c src/*.cpp)
-SRC  := src/dispmodule.f90 src/global_constants.f90 \
+SRC  :=	src/dispmodule.f90 src/global_constants.f90 \
 	src/types.f90 \
 	src/global_variables.f90 src/utils.f90 src/differ.f90 \
 	src/linear_system.f90 src/bodies.f90 src/joints.f90 \

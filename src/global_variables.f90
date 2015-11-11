@@ -8,6 +8,8 @@ module global_variables
   use dispmodule, only: disp
 
   implicit none
+  
+  integer(sp)  :: fcnt=0, fgcnt=0 ! count the number of function and jacobian calls made
 
   integer(sp)  :: MAX_NEWTON_ITER = 50
 

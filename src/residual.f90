@@ -281,7 +281,7 @@ contains
   ! res_vec = get_body_residual_vec(body1)
   !*******************************************************************!
   function get_body_residual_vec(alpha) result(res_dyn)
-
+    use global_variables, only:fcnt
     ! input
     type(body), intent(in)   :: alpha
 
@@ -297,6 +297,7 @@ contains
     type(matrix) :: J, p, h, K, M, C_mat, S, S_dot
     real(dp)     :: mass
 
+    fcnt = fcnt + 1 
     !--------------------------------------
     ! set the values for local variables
     !--------------------------------------

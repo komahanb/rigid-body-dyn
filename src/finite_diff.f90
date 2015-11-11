@@ -91,10 +91,10 @@ contains
     !-----------------------------------------------------------------!
     if (present(dh_in)) then ! if the step is supplied
        dh = dh_in
-       write(*,*) "Using the supplied step-size: ", dh
+       !write(*,*) "Using the supplied step-size: ", dh
     else ! if the step is not supplied
        dh = 1.0e-10_dp
-       write(*,*) "Using the default time step-size: ", dh
+       !write(*,*) "Using the default time step-size: ", dh
     end if
 
     if (dh.eq.0.0_dp) stop " >> Wrong FD step-size! Please check!"
