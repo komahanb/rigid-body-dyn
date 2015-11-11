@@ -344,22 +344,44 @@ contains
     ! array(res_vector).
     !-----------------------------------------------------------------!
 
-    ! kineamtics eqn-1 (2 terms)
+    !-----------------------------------------------------------------!
+    ! Kinematics eqn-1 (2 terms)
+    !-----------------------------------------------------------------!
+    ! C r_dot - v
+    !-----------------------------------------------------------------!
     res_dyn(1)  = C_mat*r_dot - v
 
-    ! kinematics eqn-2 (2 terms)
+    !-----------------------------------------------------------------!
+    ! Kinematics eqn-2 (2 terms)
+    !-----------------------------------------------------------------!
+    ! S theta_dot - omega
+    !-----------------------------------------------------------------!
     res_dyn(2)  = S*theta_dot - omega
 
-    ! dynamics eqn-1 (7 terms)
-    res_dyn(3)  = mass*v_dot - skew(c)*omega_dot +p*qs_double_dot &
-         &+ skew(omega)*(mass*v - skew(c)*omega + p*qs_dot) - fr
-
-    ! dynamics eqn 2 (8-terms)
-    res_dyn(4)  = skew(c)*v_dot + J*omega_dot + h*qs_double_dot & 
-         &+ skew(c)*skew(omega)*v + skew(omega)*J*omega &
-         &+ skew(v)*p*qs_dot + skew(omega)*h*qs_dot -gr
-
+    !-----------------------------------------------------------------!
+    ! Dynamics eqn-1 (8 terms)
+    !-----------------------------------------------------------------!
+    ! m (v_dot - C_mat*g) - c x omega_dot + omega x (m v - c x omega 
+    ! + p qs_dot) + p qs_double_dot - fr
+    !-----------------------------------------------------------------!
+    res_dyn(3)  = mass*(v_dot - C_mat*GRAV) - skew(c)*omega_dot &
+         & + skew(omega)*(mass*v - skew(c)*omega + p*qs_dot) &
+         & +p*qs_double_dot - fr
+    
+    !-----------------------------------------------------------------!
+    ! Dynamics eqn 2 (9-terms)
+    !-----------------------------------------------------------------!
+    ! c x v_dot + J omega_dot  + c x omega x v + omega x J omega 
+    ! + v x p qs_dot + omega x h ws_dot + h qs_double_dot - gr
+    ! - c x C_mat*g
+    !-----------------------------------------------------------------!
+    res_dyn(4)  = skew(c)*v_dot + J*omega_dot + skew(c)*skew(omega)*v &
+         & + skew(omega)*J*omega - skew(c)*C_mat*GRAV &
+         & + skew(v)*p*qs_dot + skew(omega)*h*qs_dot + h*qs_double_dot&
+         & - gr
+    !-----------------------------------------------------------------!
     ! include elastic eqn (5 terms)
+    !-----------------------------------------------------------------!
     if (ELASTIC) then
 !       res_dyn(5) = trans(p)*v + trans(h)*omega_dot + M*qs_double_dot &
 !            &+K*qs - f
