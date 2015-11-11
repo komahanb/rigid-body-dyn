@@ -59,8 +59,12 @@ program test_linsys
 
   ! co-eff for jacobian
   aa = 1.0d0 
-  
+
+  call disp('R=',get_residual(body1))
+stop
+
   jac = get_jacobian(body1) !actual
+
   jac2 = finite_difference2(q, q_dot, aa, 1.0d-6) !finite diff
   
 
@@ -95,5 +99,6 @@ subroutine residual2(q, qdot, f)
 
 end subroutine residual2
 
+! dummy routine needed for Finite Diff module
 subroutine residual()
 end subroutine residual
