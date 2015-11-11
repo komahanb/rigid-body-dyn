@@ -7,8 +7,7 @@ program pendulum
   
   use global_constants, only: sp, dp, NUM_SPAT_DIM, TOT_NDOF
   use global_variables,only: ABS_TOL, REL_TOL, start_time, dT, &
-       &end_time, aa, bb, REL_TOL, ABS_TOL, MAX_NEWTON_ITER, fcnt,&
-       &init
+       &end_time, aa, bb, MAX_NEWTON_ITER, fcnt, init
   use utils,only:deg2rad
   use types, only: body, vector
   use solver_utils, only: get_updated_q, get_updated_q_dot,&
