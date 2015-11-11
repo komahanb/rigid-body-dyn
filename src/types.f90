@@ -34,7 +34,7 @@ module types
   ! A body object contains virtually everything about the body 
   !*******************************************************************!
   type body
-     
+
      !----------------------------------------------------------------!
      ! rigid body state variables
      !----------------------------------------------------------------!
@@ -69,7 +69,7 @@ module types
      !----------------------------------------------------------------!
      ! Body Attributes
      !----------------------------------------------------------------!
-     
+
      real(dp)     :: mass           ! mass (denoted m in paper)   
 
      !     The format for c is: (in body frame)
@@ -96,7 +96,7 @@ module types
      type(vector) :: gr             ! external/reaction torque
 
      type(vector) :: f              ! elastic force
-     
+
      real(dp)     :: KE             ! kinetic energy of the body
      real(dp)     :: PE             ! potential energy of the body
 
@@ -117,5 +117,17 @@ module types
      type(vector)      :: aPoint, bPoint    
 
   end type joint
+
+
+  !-------------------------------------------------------------------!
+  ! Type that stores the jacobian in sparse matrix format
+  !-------------------------------------------------------------------!
+  type jac_mat
+     integer(sp) :: n
+     integer(sp) :: nz
+     real(dp),allocatable :: row(:)
+     real(dp),allocatable :: col(:)
+     real(dp),allocatable :: val(:)
+  end type jac_mat
 
 end module types
