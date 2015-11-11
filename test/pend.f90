@@ -18,8 +18,10 @@ program pendulum
 
   ! position of the point of interest on the body measured in body frame
   real(dp), dimension(NUM_SPAT_DIM)  :: re    
+
   ! mass of the body
   real(dp)                           :: mass 
+
   ! the state
   real(dp)                           :: q(TOT_NDOF)= 0.0_dp
   real(dp)                           :: qtmp(TOT_NDOF)= 0.0_dp
@@ -39,10 +41,13 @@ program pendulum
 
   ! update from newton iterations
   real(dp)                           :: dq(TOT_NDOF) = 0.0_dp
+
   ! body -- single pendulum
   type(body)                         :: body1
+
   ! time, and norms to stop integration
   real(dp)                           :: time,l2_norm, linf_norm, dh
+
   ! loop variable
   integer(sp)                        :: k
 
@@ -51,36 +56,28 @@ program pendulum
   call disp("                 Rigid body dynamics                    ")
   call disp("========================================================")
 
-  ! init routine that has sanity check on the input settings
-  ! has nothing as of now, we can use to load input files, python etc
+  !-------------------------------------------------------------------!
+  ! Init routine that has sanity check on the input settings
+  !-------------------------------------------------------------------!
+  ! Note: 
+  !
+  ! Has nothing as of now, we can use to:
+  ! Load input files, external calls etc
+  !-------------------------------------------------------------------!
   call init() 
 
   !-------------------------------------------------------------------!
   ! (1) set the initial states and attributes of the body
   !-------------------------------------------------------------------!
+  ! configure random number generator
+  call random_seed()
 
-  call disp(" >> Setting up the test problem...")
-
-!!$  ! define the initial states
-!!$  q(1:3)    = (/ 1.0_dp, 2.0_dp, 3.0_dp /)
-!!$  q(4:6)    = (/ deg2rad(20.0_dp), deg2rad(0.0_dp), deg2rad(20.0_dp) /)
-!!$  q(7:9)    = (/ 1.0_dp,  2.0_dp, 1.0_dp /)
-!!$  q(10:12)  = (/ 2.0_dp, 4.0_dp, 5.0_dp /)
-!!$
-!!$  ! define the intial time derivative of state
-!!$  q_dot(1:3)   = (/ 2.0_dp, 2.0_dp, 2.0_dp /)
-!!$  q_dot(4:6)   = (/ 0.25_dp, 0.0_dp, 0.0_dp /)
-!!$  q_dot(7:9)   = (/ 0.0_dp, 0.0_dp, 0.0_dp /)
-!!$  q_dot(10:12) = (/ 0.0_dp, 0.0_dp, 0.0_dp /)
-
-  !  CALL init_random_seed()         ! see example of RANDOM_SEED
-  CALL RANDOM_NUMBER(q)
-  CALL RANDOM_NUMBER(q_dot)  
-  q_dot = q_dot*q_dot+1.0_dp
+  ! guess values
+  call random_number(q)
+  call random_number(q_dot)
 
   ! define the attributes of the body
   mass      = 2.0_dp
-
   ! point of interest on the body
   CALL RANDOM_NUMBER(re)
   !  re        = (/ 0.0_dp, 0.0_dp, 0.0_dp /)   
@@ -90,18 +87,15 @@ program pendulum
   !-------------------------------------------------------------------!
 
   !  call disp(" >> Creating a body...")
-
   body1 = create_body(mass, vector(re), q, q_dot)
-
   !call disp(" >> Body created successfully...")
 
   !-------------------------------------------------------------------!
   ! Settings for time-integration
   !-------------------------------------------------------------------!
 
-  ! The defaults are already set in global_varaibles.f90.
-  ! The user is free to change here too.
-
+!!$! The following defaults are already set in global_varaibles.f90.
+!!$! The user is free to change here too.
 !!$  dT         = 0.01_dp
 !!$  start_time = 0.0_dp
 !!$  end_time   = 1.0_dp
@@ -121,6 +115,7 @@ program pendulum
         ! (3) Assemble the residual and jacobian using the body
 
         ! call this method to update the state for every other iter
+        ! we don't have to create a whole new body again
         if (k .gt. 1) then
            call set_state(q, q_dot, body1)
         end if
@@ -149,8 +144,8 @@ program pendulum
 
         l2_norm   = norm2(dq); linf_norm =  maxval(abs(dq));
 
-        call disp(" >> L2-Norm of the update    :", l2_norm) 
-        call disp(" >> Infty-Norm of the update :", linf_norm)
+        ! call disp(" >> L2-Norm of the update    :", l2_norm) 
+        ! call disp(" >> Infty-Norm of the update :", linf_norm)
 
         !-------------------------------------------------------------!
         ! (4) Update the state variables and then update the body
@@ -158,9 +153,10 @@ program pendulum
 
         q            = get_updated_q(q, dq)
         q_dot        = get_updated_q_dot(q_dot, dq)
+
         ! q_double_dot = get_updated_q_double_dot(q_double_dot, dq)
 
-        call disp("   q      =   ", q)
+        ! call disp("   q      =   ", q)
         ! call disp("   qdot   =   ", q_dot)
 
         if (l2_norm .le. REL_TOL .OR. linf_norm.le. ABS_TOL) &
@@ -278,3 +274,164 @@ end subroutine residual
 !!$
 !!$
 !!$  stop"stopped"
+!!$  ! define the initial states
+!!$  q(1:3)    = (/ 1.0_dp, 2.0_dp, 3.0_dp /)
+!!$  q(4:6)    = (/ deg2rad(20.0_dp), deg2rad(0.0_dp), deg2rad(20.0_dp) /)
+!!$  q(7:9)    = (/ 1.0_dp,  2.0_dp, 1.0_dp /)
+!!$  q(10:12)  = (/ 2.0_dp, 4.0_dp, 5.0_dp /)
+!!$
+!!$  ! define the intial time derivative of state
+!!$  q_dot(1:3)   = (/ 2.0_dp, 2.0_dp, 2.0_dp /)
+!!$  q_dot(4:6)   = (/ 0.25_dp, 0.0_dp, 0.0_dp /)
+!!$  q_dot(7:9)   = (/ 0.0_dp, 0.0_dp, 0.0_dp /)
+!!$  q_dot(10:12) = (/ 0.0_dp, 0.0_dp, 0.0_dp /)
+
+
+subroutine matset_triad ( n, mode, nelt, ia, ja, a )
+
+  !*****************************************************************************80
+  !
+  !! MATSET_TRIAD sets the data structure for a sparse matrix.
+  !
+  !  Licensing:
+  !
+  !    This code is distributed under the GNU LGPL license.
+  !
+  !  Modified:
+  !
+  !    21 July 2004
+  !
+  !  Author:
+  !
+  !    John Burkardt
+  !
+  !  Parameters:
+  !
+  !    Input, integer N, the number of elements in the vectors.
+  !
+  !    Input, integer MODE.
+  !    0, setup mode.  Count the number of nonzero elements.
+  !    1, assignment mode.  NELT is set.  Set the matrix entries.
+  !
+  !    Input/output, integer NELT, the number of nonzero entries.
+  !    On call with MODE = 0, this is an output quantity.
+  !    On call with MODE = 1, this is an input quantity.
+  !
+  !    Output, integer IA(NELT), JA(NELT), real ( kind = 8 ) A(NELT), the data
+  !    structure storing the sparse matrix.  These values are only
+  !    set on a call with MODE = 1.
+  !
+  implicit none
+
+  integer ( kind = 4 ) n
+  integer ( kind = 4 ) nelt
+
+  real ( kind = 8 ) a(nelt)
+  integer ( kind = 4 ) i
+  integer ( kind = 4 ) ia(nelt)
+  integer ( kind = 4 ) ja(nelt)
+  integer ( kind = 4 ) mode
+  integer ( kind = 4 ) k
+
+  k = 0
+  do i = 1, n
+
+     if ( 1 < i ) then
+        k = k + 1
+        if ( mode == 1 ) then
+           ia(k) = i
+           ja(k) = i-1
+           a(k) = -1.0D+00
+        end if
+     end if
+
+     k = k + 1
+     if ( mode == 1 ) then
+        ia(k) = i
+        ja(k) = i
+        a(k) = 2.0D+00
+     end if
+
+     if ( i < n ) then
+        k = k + 1
+        if ( mode == 1 ) then
+           ia(k) = i
+           ja(k) = i+1
+           a(k) = -1.0D+00
+        end if
+     end if
+
+  end do
+
+  if ( mode == 0 ) then
+     nelt = k
+  end if
+
+  return
+end subroutine matset_triad
+subroutine msolve_identity ( n, r, z, nelt, ia, ja, a, isym, rwork, iwork )
+
+  !*****************************************************************************80
+  !
+  !! MSOLVE_IDENTITY applies the identity matrix preconditioner.
+  !
+  !  Discussion:
+  !
+  !    Most SLAP solver routines require a preconditioner routine
+  !    that can solve M * Z = R.  If no preconditioning is required,
+  !    then you can simply behave as though the preconditioning matrix
+  !    M was the identity matrix.
+  !
+  !  Licensing:
+  !
+  !    This code is distributed under the GNU LGPL license.
+  !
+  !  Modified:
+  !
+  !    21 July 2004
+  !
+  !  Author:
+  !
+  !    John Burkardt
+  !
+  !  Parameters:
+  !
+  !    Input, integer ( kind = 4 ) N, the number of elements in the vectors.
+  !
+  !    Input, real ( kind = 8 ) R(N), the right hand side.
+  !
+  !    Output, real ( kind = 8 ) Z(N), the solution of M * Z = R.
+  !
+  !    Input, integer ( kind = 4 ) NELT, the number of nonzero entries in A.
+  !
+  !    Input, integer ( kind = 4 ) IA(NELT), JA(NELT), real ( kind = 8 ) A(NELT), 
+  !    the data structure storing the sparse matrix.
+  !
+  !    Input, integer ( kind = 4 ) ISYM, is 0 if all nonzero entries of the matrix
+  !    are stored, and 1 if only the diagonal and upper or lower triangle
+  !    are stored.
+  !
+  !    Input, real ( kind = 8 ) RWORK(*), a real array that
+  !    can be used to pass information to the preconditioner.
+  !
+  !    Input, integer ( kind = 4 ) IWORK(*), an integer array that
+  !    can be used to pass information to the preconditioner.
+  !
+  implicit none
+
+  integer ( kind = 4 ) n
+  integer ( kind = 4 ) nelt
+
+  real ( kind = 8 ) a(nelt)
+  integer ( kind = 4 ) ia(nelt)
+  integer ( kind = 4 ) isym
+  integer ( kind = 4 ) iwork(*)
+  integer ( kind = 4 ) ja(nelt)
+  real ( kind = 8 ) r(n)
+  real ( kind = 8 ) rwork(*)
+  real ( kind = 8 ) z(n)
+
+  z(1:n) = r(1:n)
+
+  return
+end subroutine msolve_identity
