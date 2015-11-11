@@ -66,7 +66,7 @@ SRC  :=	src/dispmodule.f90 src/global_constants.f90 \
 	src/global_variables.f90 src/utils.f90 src/differ.f90 \
 	src/linear_system.f90 src/bodies.f90 src/joints.f90 \
 	src/residual.f90 src/jacobian.f90 src/solver_utils.f90 \
-	src/finite_diff.f90 test/pend.f90
+	src/finite_diff.f90 examples/pendulum.f90
 
 #test/test_linsys.f90
 #test/pend.f90 
