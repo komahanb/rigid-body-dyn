@@ -509,52 +509,49 @@ contains
     use dispmodule
 
     type(body):: alpha
-
-    call disp('-----------------------------------------------------')
+    call disp('======================================================')
     call disp('---------------------BODY----------------------------')
-    call disp('-----------------------------------------------------')
+    call disp('======================================================')
     call disp('')
-    call disp('   r          =   ', array(alpha%r), SEP=', ', &
+    call disp('   > r          =   ', array(alpha%r), SEP=', ', &
          &ORIENT = 'ROW')
-    call disp('   theta      =   ', array(alpha%theta), SEP=', ',&
+    call disp('   > theta      =   ', array(alpha%theta), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   v          =   ', array(alpha%r), SEP=', ', &
+    call disp('   > v          =   ', array(alpha%r), SEP=', ', &
          &ORIENT = 'ROW')
-    call disp('   omega      =   ', array(alpha%theta), SEP=', ',&
+    call disp('   > omega      =   ', array(alpha%theta), SEP=', ',&
          & ORIENT = 'ROW')
     call DISP('')
-    call disp('   r_dot      =   ', array(alpha%r_dot), SEP=', ',&
+    call disp('   > r_dot      =   ', array(alpha%r_dot), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   theta_dot  =   ', array(alpha%theta_dot), SEP=', ',&
+    call disp('   > theta_dot  =   ', array(alpha%theta_dot), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   v_dot      =   ', array(alpha%r_dot), SEP=', ',&
+    call disp('   > v_dot      =   ', array(alpha%r_dot), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   omega_dot  =   ', array(alpha%theta_dot), SEP=', ',&
+    call disp('   > omega_dot  =   ', array(alpha%theta_dot), SEP=', ',&
          &ORIENT = 'ROW')
     call DISP('')
-    call disp('   c          =   ', array(alpha%c), SEP=', ',&
+    call disp('   > c          =   ', array(alpha%c), SEP=', ',&
          & ORIENT = 'ROW')
     call DISP('')
-    call disp('   J          =   ', matrix(alpha%J))
+    call disp('   > J          =   ', matrix(alpha%J))
     call DISP('')
-    call disp('   C          =   ', matrix(alpha%C_mat))
+    call disp('   > Rot Mat    =   ', matrix(alpha%C_mat))
     call DISP('')
-    call disp('   S          =   ', matrix(alpha%S))
+    call disp('   > Angrt Mat  =   ', matrix(alpha%S))
     call DISP('')
-    call disp('   S_dot      =   ', matrix(alpha%S_dot))
+    call disp('   > S_dot      =   ', matrix(alpha%S_dot))
     call DISP('')
-    call disp('   fr         =   ', array(alpha%fr), SEP=', ', &
+    call disp('   > fr         =   ', array(alpha%fr), SEP=', ', &
          &ORIENT = 'ROW')
 
-    call disp('   gr         =   ', array(alpha%gr), SEP=', ', &
+    call disp('   > gr         =   ', array(alpha%gr), SEP=', ', &
          &ORIENT = 'ROW')
-    call DISP('-------------- ENERGY BALANCE ------------------------')
-    call disp('   PE         =   ', alpha%PE)
-    call disp('   KE         =   ', alpha%KE)
-    call disp('   TE         =   ', alpha%KE + alpha%PE)
-    call disp('-----------------------------------------------------')
     call disp('')
-
+    call disp('   > Pot Energy =   ', alpha%PE)
+    call disp('   > Kin Energy =   ', alpha%KE)
+    call disp('   > Tot Energy =   ', alpha%KE + alpha%PE)
+    call disp('======================================================')
   end subroutine print_body
 
 end module bodies
