@@ -70,8 +70,12 @@ program pendulum
 
   call random_seed(); call random_number(q);call random_number(q_dot);
   q_dot = q_dot + 1.0_dp
+
+  ! mass of the body
   mass = 2.0_dp
-  re   = (/ 0.1_dp, 0.2_dp, 0.3_dp /)
+  
+  ! used to calculate the inertial properties J and C
+  re   = (/ 0.1_dp, 0.2_dp, 0.3_dp /) 
 
 !!$  ! define the initial states
 !!$  q(1:3)    = (/ 1.0_dp, 2.0_dp, 3.0_dp /)
@@ -104,7 +108,7 @@ program pendulum
 
   ! The following defaults are already set in global_varaibles.f90.
   ! The user is free to change here too.
-  dT         = 0.001_dp
+  dT         = 0.1_dp
   start_time = 0.0_dp
   end_time   = 1.0_dp
 
@@ -134,8 +138,6 @@ program pendulum
 
   time_march: do while ( time .le. end_time)  ! loop for time-marching
 
-     time = time + dT ! update the time
-
      !----------------------------------------------------------------!
      ! Newton iteration loop
      !----------------------------------------------------------------!
@@ -146,27 +148,37 @@ program pendulum
 
         newton_cnt = newton_cnt + 1
 
-        ! call this method to update the state for every other iter
-        ! we don't have to create a new body again
+        !-------------------------------------------------------------!
+        ! Update the state for every other iteration that first
+        !-------------------------------------------------------------!
         if (k .gt. 1)  call set_state(q, q_dot, body1)
 
-        ! Residuals are assembled next
+        !-------------------------------------------------------------!
+        !---------------------RESIDUAL ASSEMBLY-----------------------!
+        !-------------------------------------------------------------!
         res  = get_residual(body1)
 
-        ! Jacobian is assembled next
+        !-------------------------------------------------------------!
+        !---------------------JACOBIAN ASSEMBLY-----------------------!
+        ! (A) Actual jacobian
+        ! (B) Finite difference approxiamtion to Jacobian
+        !-------------------------------------------------------------!
+
         !jac = get_jacobian(body1)  ! actual jacobian
+        
         jac = finite_difference2(q, q_dot, aa, 1.0d-6) !finite diff
-
+        
         !-------------------------------------------------------------!
-        ! Solve the linear system and compute update delta_q
+        !--------------------SOLUTION TO LINEAR SYSTEM ---------------!
+        ! (a) Direct solution
+        ! (b) LU decomposition
+        ! (c) Iterative solution (should implement)
         !-------------------------------------------------------------!
-        !call disp(" >> Calling the linear solver...") 
-        !dq = linear_solve(jac,-res,'GMRES')
 
-        !jac = direct_solve(jac)
-        !dq = matmul(jac, -res)
+        !jac = direct_solve(jac); dq = matmul(jac, -res);
+        
         dq = direct_solve(jac, -res, TOT_NDOF)
-
+        
         !-------------------------------------------------------------!
         ! Calcualte residual tolratances                    
         !-------------------------------------------------------------!
@@ -185,14 +197,17 @@ program pendulum
         ! Check for convergence and stop is necessary
         !-------------------------------------------------------------!
 
+        !is converged?
         if ( update_norm .le. ABS_TOL .AND. res_norm .le. ABS_TOL) &
              & exit newton
-
+        
+        ! is disverged?
         if ( update_norm .ge. 1.0d5 .AND. res_norm .le. 1.0d5) then
            call disp(" > Solution diverging - aborting time integrtn")
            exit newton
         end if
-
+        
+        !? max iters reached
         if (k .eq. MAX_NEWTON_ITER) then
            call disp(" >> Newton solution failed in ", k , "iterations")
            call print_body(body1)
@@ -208,11 +223,7 @@ program pendulum
           &time, update_norm, res_norm, body1%KE, body1%PE, &
           & body1%KE + body1%PE, newton_cnt, fcnt
 
-!!$     !----------------------------------------------------------------!     
-!!$     ! extrapolate to next time step
-!!$     !-----------------------------------------------------------------!
-!!$     dq     = get_approx_q(q,q_dot)
-!!$     q_dot  = get_approx_q_dot(q,1)
+     time = time + dT ! update the time
 
   end do time_march
 
@@ -265,4 +276,11 @@ subroutine residual(q, f)
   stop"dummy impl"
 
 end subroutine residual
+
+
+!!$     !----------------------------------------------------------------!     
+!!$     ! extrapolate to next time step
+!!$     !-----------------------------------------------------------------!
+!!$     dq     = get_approx_q(q,q_dot)
+!!$     q_dot  = get_approx_q_dot(q,1)
 

@@ -541,18 +541,18 @@ contains
          &ORIENT = 'ROW')
     call disp('   > theta      =   ', array(alpha%theta), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   > v          =   ', array(alpha%r), SEP=', ', &
+    call disp('   > v          =   ', array(alpha%v), SEP=', ', &
          &ORIENT = 'ROW')
-    call disp('   > omega      =   ', array(alpha%theta), SEP=', ',&
+    call disp('   > omega      =   ', array(alpha%omega), SEP=', ',&
          & ORIENT = 'ROW')
     call DISP('')
     call disp('   > r_dot      =   ', array(alpha%r_dot), SEP=', ',&
          & ORIENT = 'ROW')
     call disp('   > theta_dot  =   ', array(alpha%theta_dot), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   > v_dot      =   ', array(alpha%r_dot), SEP=', ',&
+    call disp('   > v_dot      =   ', array(alpha%v_dot), SEP=', ',&
          & ORIENT = 'ROW')
-    call disp('   > omega_dot  =   ', array(alpha%theta_dot), SEP=', ',&
+    call disp('   > omega_dot  =   ', array(alpha%omega_dot), SEP=', ',&
          &ORIENT = 'ROW')
     call DISP('')
     call disp('   > c          =   ', array(alpha%c), SEP=', ',&
