@@ -106,7 +106,7 @@ program pendulum
   ! The user is free to change here too.
   dT         = 0.01_dp
   start_time = 0.0_dp
-  end_time   = 100.0_dp
+  end_time   = 1.0_dp
 
   aa   = 1.0_dp/dT       ! used in jacobian assembly and state update
   bb   = 1.0_dp/dT**2 ! used in jacobian assembly and state update
@@ -130,6 +130,8 @@ program pendulum
   time = start_time
 
   time_march: do while ( time .le. end_time)  ! loop for time-marching
+
+     time = time + dT ! update the time
 
      ! Newton iterations
      newton_cnt = 0
@@ -159,10 +161,6 @@ program pendulum
         !dq = matmul(jac, -res)
         dq = direct_solve(jac, -res, TOT_NDOF)
 
-!        call disp("dq =", dq)
-!        call disp("res =", res)
-        !stop
-
         update_norm  =  maxval(abs(dq));
         res_norm     =  maxval(abs(res));
 
@@ -176,7 +174,7 @@ program pendulum
         !-------------------------------------------------------------!
         ! Check for convergence and stop is necessary
         !-------------------------------------------------------------!
-        if ( update_norm .le. REL_TOL .AND. res_norm .le. REL_TOL) &
+        if ( update_norm .le. ABS_TOL .AND. res_norm .le. ABS_TOL) &
              & exit newton
 
         if (k .eq. MAX_NEWTON_ITER) then
@@ -192,7 +190,6 @@ program pendulum
           &time, update_norm, res_norm, body1%KE, body1%PE, &
           & body1%KE + body1%PE, newton_cnt, fcnt
 
-     time = time + dT ! update the time
      
   end do time_march
 

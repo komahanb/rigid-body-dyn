@@ -20,8 +20,8 @@ private
 
 ! expose only the functions that are needed outside the module
 public get_updated_q, get_updated_q_dot, get_updated_q_double_dot,&   
-     & get_extrapolated_q, get_bdf_coeffs , get_approximated_q_dot,&
-     & get_approximated_q_double_dot
+     & get_approx_q, get_bdf_coeffs , get_approx_q_dot,&
+     & get_approx_q_double_dot
 
 contains
 
@@ -72,7 +72,7 @@ end function get_updated_q_double_dot
 !--------------------------------------------------------------------------
 ! returns the extrapolated value of q based on first and second derivatives
 !-------------------------------------------------------------------------
-function get_extrapolated_q(old_q, old_q_dot, old_q_double_dot) &
+function get_approx_q(old_q, old_q_dot, old_q_double_dot) &
      &result(new_q)
 real(dp), intent(in)           :: old_q(TOT_NDOF), old_q_dot(TOT_NDOF)
 real(dp), intent(in), optional :: old_q_double_dot(TOT_NDOF)
@@ -85,7 +85,7 @@ else
    new_q(:) = old_q(:) + dT*old_q_dot(:)
 end if
 
-end function get_extrapolated_q
+end function get_approx_q
 
 !------------------------------------------------------------------
 ! returns the bdf coeffs (unscaled with respect to the step size h)
@@ -111,7 +111,7 @@ end function get_bdf_coeffs
 ! returns the approximated first derivative
 ! use 'q' to produce an m-th order approximation to q_dot
 !--------------------------------------------------------
-function get_approximated_q_dot(q, m) result(q_dot)
+function get_approx_q_dot(q, m) result(q_dot)
 !************************************************
 ! q = [t= 0                , (q1, q2, q_{TOT_NDOF}), 
 !      t= 0+dT          , (q1, q2, q_{TOT_NDOF}),
@@ -139,7 +139,7 @@ do i = 0, cnt                                    ! loop (sum) across the data po
 end do
 q_dot(:) = q_dot(:)/dT
 
-end function get_approximated_q_dot
+end function get_approx_q_dot
 
 !# tested OK, just need to check the sign of the derivative
 !# how to deal with initial steps?
@@ -147,7 +147,7 @@ end function get_approximated_q_dot
 ! returns the approximated second derivative
 ! use 'q' to produce an m-th order approximation to q_double_dot
 !--------------------------------------------------------
-function get_approximated_q_double_dot(q, m) result(q_double_dot)
+function get_approx_q_double_dot(q, m) result(q_double_dot)
 !------------------------------------------------------
 ! q = [t= 0                , (q1, q2, q_{TOT_NDOF}), 
 !      t= 0+dT          , (q1, q2, q_{TOT_NDOF}),
@@ -175,7 +175,7 @@ do i = 0, cnt                                                 ! loop (sum) acros
 end do
 q_double_dot(:) = q_double_dot(:)/dT**2
 
-end function get_approximated_q_double_dot
+end function get_approx_q_double_dot
 
 
 end module solver_utils
