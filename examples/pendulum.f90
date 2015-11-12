@@ -10,7 +10,7 @@ program pendulum
   use utils,only:deg2rad
   use types, only: body, vector
   use solver_utils, only: get_updated_q, get_updated_q_dot,&
-       & get_updated_q_double_dot
+       & get_updated_q_double_dot, get_approx_q, get_approx_q_dot
   use bodies, only: create_body, set_state
   use residual, only: get_residual
   use jacobian, only: get_jacobian
@@ -104,7 +104,7 @@ program pendulum
 
   ! The following defaults are already set in global_varaibles.f90.
   ! The user is free to change here too.
-  dT         = 0.01_dp
+  dT         = 0.001_dp
   start_time = 0.0_dp
   end_time   = 1.0_dp
 
@@ -126,14 +126,20 @@ program pendulum
        &  '             KE', '          PE','               TE', &
        &'       Niter',' FCNT'
 
-  ! initialize the time tracker
+  !-------------------------------------------------------------------!
+  ! Time integration loop
+  !-------------------------------------------------------------------!
+
   time = start_time
 
   time_march: do while ( time .le. end_time)  ! loop for time-marching
 
      time = time + dT ! update the time
 
-     ! Newton iterations
+     !----------------------------------------------------------------!
+     ! Newton iteration loop
+     !----------------------------------------------------------------!
+
      newton_cnt = 0
 
      newton: do k = 1, MAX_NEWTON_ITER
@@ -161,12 +167,16 @@ program pendulum
         !dq = matmul(jac, -res)
         dq = direct_solve(jac, -res, TOT_NDOF)
 
-        update_norm  =  maxval(abs(dq));
-        res_norm     =  maxval(abs(res));
+        !-------------------------------------------------------------!
+        ! Calcualte residual tolratances                    
+        !-------------------------------------------------------------!
+
+        update_norm  =  maxval(abs(dq)); res_norm  =  maxval(abs(res));
 
         !-------------------------------------------------------------!
         ! Update the state variables and then update the body
         !-------------------------------------------------------------!
+
         q            = get_updated_q(q, dq)
         q_dot        = get_updated_q_dot(q_dot, dq)
         ! q_double_dot = get_updated_q_double_dot(q_double_dot, dq) 
@@ -174,8 +184,14 @@ program pendulum
         !-------------------------------------------------------------!
         ! Check for convergence and stop is necessary
         !-------------------------------------------------------------!
+
         if ( update_norm .le. ABS_TOL .AND. res_norm .le. ABS_TOL) &
              & exit newton
+
+        if ( update_norm .ge. 1.0d5 .AND. res_norm .le. 1.0d5) then
+           call disp(" > Solution diverging - aborting time integrtn")
+           exit newton
+        end if
 
         if (k .eq. MAX_NEWTON_ITER) then
            call disp(" >> Newton solution failed in ", k , "iterations")
@@ -185,12 +201,19 @@ program pendulum
 
      end do newton
 
+     !----------------------------------------------------------------!
      ! print the summary of the newton iteration
+     !----------------------------------------------------------------!
      write(*,'(f15.2,e15.6,e15.6,e15.6,e15.6,e15.6,xi4,xi8)') &
           &time, update_norm, res_norm, body1%KE, body1%PE, &
           & body1%KE + body1%PE, newton_cnt, fcnt
 
-     
+!!$     !----------------------------------------------------------------!     
+!!$     ! extrapolate to next time step
+!!$     !-----------------------------------------------------------------!
+!!$     dq     = get_approx_q(q,q_dot)
+!!$     q_dot  = get_approx_q_dot(q,1)
+
   end do time_march
 
   call print_body(body1)
