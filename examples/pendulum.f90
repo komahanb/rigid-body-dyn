@@ -18,6 +18,7 @@ program pendulum
   use linear_system,only:direct_solve
   use bodies,only:print_body, create_body
   use dispmodule,only:disp
+  use filehandler
 
   implicit none
 
@@ -49,7 +50,13 @@ program pendulum
   real(dp)                           :: update_norm, res_norm
 
   ! loop variable
-  integer(sp)                        :: k, newton_cnt
+  integer(sp)                        :: k, newton_cnt, i
+
+  !file handle
+  integer(sp )                       :: filenum    
+
+  ! output filename
+  character                          :: filename   
 
   call disp("========================================================")
   call disp("'                 Rigid body dynamics                  '")
@@ -64,30 +71,24 @@ program pendulum
   call init()
 
   !-------------------------------------------------------------------!
+  ! Open up a file unit to record the results       
+  !-------------------------------------------------------------------!
+  filenum = newunit()
+  open (unit=filenum, file="state.dat", action="write",status="replace")
+
+  !-------------------------------------------------------------------!
   ! set the initial states and attributes of the body
   !-------------------------------------------------------------------!
   call disp(" >> Setting initial state of the body...")
 
-  call random_seed(); call random_number(q);call random_number(q_dot);
-  q_dot = q_dot + 1.0_dp
+  call random_seed(); call random_number(q); call random_number(q_dot);
+  q_dot = q_dot
 
   ! mass of the body
   mass = 2.0_dp
   
   ! used to calculate the inertial properties J and C
   re   = (/ 0.1_dp, 0.2_dp, 0.3_dp /) 
-
-!!$  ! define the initial states
-!!$  q(1:3)    = (/ 1.0_dp, 2.0_dp, 3.0_dp /)
-!!$  q(4:6)    = (/ deg2rad(20.0_dp), deg2rad(0.0_dp), deg2rad(20.0_dp)/)
-!!$  q(7:9)    = (/ 1.0_dp,  2.0_dp, 1.0_dp /)
-!!$  q(10:12)  = (/ 2.0_dp, 4.0_dp, 5.0_dp /)
-!!$
-!!$  ! define the intial time derivative of state
-!!$  q_dot(1:3)   = (/ 2.0_dp, 2.0_dp, 2.0_dp /)
-!!$  q_dot(4:6)   = (/ 0.25_dp, 0.0_dp, 0.0_dp /)
-!!$  q_dot(7:9)   = (/ 0.0_dp, 0.0_dp, 0.0_dp /)
-!!$  q_dot(10:12) = (/ 0.0_dp, 0.0_dp, 0.0_dp /)
 
   !  call disp("   q0  =   ", q)
   !  call disp("   qdot0  =   ", q_dot)
@@ -105,9 +106,10 @@ program pendulum
   !-------------------------------------------------------------------!
   ! Settings for time-integration
   !-------------------------------------------------------------------!
-
   ! The following defaults are already set in global_varaibles.f90.
   ! The user is free to change here too.
+  !-------------------------------------------------------------------!
+
   dT         = 0.1_dp
   start_time = 0.0_dp
   end_time   = 1.0_dp
@@ -129,6 +131,11 @@ program pendulum
   print*, '          time' , '       ||dq||', '       ||R||',&
        &  '             KE', '          PE','               TE', &
        &'       Niter',' FCNT'
+
+  ! Write tecplot labels for state vars and their time derivs
+  write(filenum,*) 'VARIABLES = "ITER" "R1" "R2" "R3" "T1" "T2" &
+       &"T3" "V1" "V2" "V3" "W1" "W2" "W3" "DR1" "DR2" "DR3" &
+       & "DT1" "DT2" "DT3" "DV1" "DV2" "DV3" "DW1" "DW2" "DW3" "NORM"'
 
   !-------------------------------------------------------------------!
   ! Time integration loop
@@ -185,6 +192,9 @@ program pendulum
 
         update_norm  =  maxval(abs(dq)); res_norm  =  maxval(abs(res));
 
+        if (k .eq. 1)   write(filenum,'(i4, 25F25.16)') newton_cnt, &
+             &(q(i), i = 1, size(q)),  (q_dot(i),i = 1, size(q_dot)), update_norm
+
         !-------------------------------------------------------------!
         ! Update the state variables and then update the body
         !-------------------------------------------------------------!
@@ -226,6 +236,9 @@ program pendulum
      time = time + dT ! update the time
 
   end do time_march
+
+
+  close (filenum) ! close the file that records the state vars across time
 
   call print_body(body1)
 
@@ -284,3 +297,22 @@ end subroutine residual
 !!$     dq     = get_approx_q(q,q_dot)
 !!$     q_dot  = get_approx_q_dot(q,1)
 
+
+
+!!$  filename(1:5) = 'state'
+!!$  call i_to_s(fctindx,fctindxnumber)
+!!$  histname(9:10)=fctindxnumber
+!!$  histname(11:14)='.dat'
+
+
+!!$  ! define the initial states
+!!$  q(1:3)    = (/ 1.0_dp, 2.0_dp, 3.0_dp /)
+!!$  q(4:6)    = (/ deg2rad(20.0_dp), deg2rad(0.0_dp), deg2rad(20.0_dp)/)
+!!$  q(7:9)    = (/ 1.0_dp,  2.0_dp, 1.0_dp /)
+!!$  q(10:12)  = (/ 2.0_dp, 4.0_dp, 5.0_dp /)
+!!$
+!!$  ! define the intial time derivative of state
+!!$  q_dot(1:3)   = (/ 2.0_dp, 2.0_dp, 2.0_dp /)
+!!$  q_dot(4:6)   = (/ 0.25_dp, 0.0_dp, 0.0_dp /)
+!!$  q_dot(7:9)   = (/ 0.0_dp, 0.0_dp, 0.0_dp /)
+!!$  q_dot(10:12) = (/ 0.0_dp, 0.0_dp, 0.0_dp /)
