@@ -3,6 +3,7 @@
 !=====================================================================!
 module scalar_class
 
+  ! module references
   use global_constants, only: dp
 
   ! module settings
@@ -11,14 +12,14 @@ module scalar_class
   public :: scalar
 
   ! module definitions
-  type, abstract :: scalar
+  type scalar
 
      ! type settings
      private
 
      ! attributes
      real(dp)  :: x ! real part
-     real(dp   :: y ! imaginary part 
+     real(dp)  :: y ! imaginary part 
 
      ! procedures
    contains
@@ -31,7 +32,26 @@ module scalar_class
 
   end type scalar
 
-  ! procedures
+  ! interfaces
+  interface scalar
+     module procedure constructor
+  end interface scalar
+
+contains
+
+  !-------------------------------------------------------------------!
+  ! Constructor for scalar_class      
+  !-------------------------------------------------------------------!
+  function constructor(x, y) result(this)
+
+    ! arguments
+    real(dp)     :: x, y
+    type(scalar) :: this
+
+    call this%set_real(x)
+    call this%set_cplx(y)
+
+  end function constructor
 
   !-------------------------------------------------------------------!
   ! Getter for the real part
@@ -88,6 +108,5 @@ module scalar_class
     this%y = y
 
   end subroutine set_cplx
-
 
 end module scalar_class
