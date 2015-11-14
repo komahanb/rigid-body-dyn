@@ -5,19 +5,19 @@ program pendulum
 
   ! import the necessary modules
   use global_constants, only: sp, dp, NUM_SPAT_DIM, TOT_NDOF
-  use global_variables,only: ABS_TOL, REL_TOL, start_time, dT, &
-       &end_time, aa, bb, MAX_NEWTON_ITER, fcnt, init, time
-  use utils,only:deg2rad
+  use global_variables, only: ABS_TOL, REL_TOL, start_time, dT, &
+       & end_time, aa, bb, MAX_NEWTON_ITER, fcnt, init, time
+  use utils, only:deg2rad
   use types, only: body, vector
   use solver_utils, only: get_updated_q, get_updated_q_dot,&
        & get_updated_q_double_dot, get_approx_q, get_approx_q_dot
   use bodies, only: create_body, set_state
   use residual, only: get_residual
   use jacobian, only: get_jacobian
-  use finite_diff, only:finite_difference2
-  use linear_system,only:direct_solve
-  use bodies,only:print_body, create_body
-  use dispmodule,only:disp
+  use finite_diff, only: finite_difference2
+  use linear_system, only: direct_solve
+  use bodies, only: print_body, create_body
+  use dispmodule, only: disp
   use filehandler
 
   implicit none
@@ -58,6 +58,9 @@ program pendulum
   ! output filename
   character                          :: filename   
 
+  ! logical for success of newton iterations
+  logical                            :: newton_success = .false.
+
   call disp("========================================================")
   call disp("'                 Rigid body dynamics                  '")
   call disp("========================================================")
@@ -82,11 +85,11 @@ program pendulum
   call disp(" >> Setting initial state of the body...")
 
   call random_seed(); call random_number(q); call random_number(q_dot);
-  q_dot = q_dot
+  q_dot = q_dot**2
 
   ! mass of the body
   mass = 2.0_dp
-  
+
   ! used to calculate the inertial properties J and C
   re   = (/ 0.1_dp, 0.2_dp, 0.3_dp /) 
 
@@ -110,7 +113,7 @@ program pendulum
   ! The user is free to change here too.
   !-------------------------------------------------------------------!
 
-  dT         = 0.1_dp
+  dT         = 0.001_dp
   start_time = 0.0_dp
   end_time   = 1.0_dp
 
@@ -153,7 +156,9 @@ program pendulum
 
      newton: do k = 1, MAX_NEWTON_ITER
 
-        newton_cnt = newton_cnt + 1
+        newton_cnt = newton_cnt + 1 ! increment the iter cnt
+
+        newton_success = .false.  ! reset before starting a new iter
 
         !-------------------------------------------------------------!
         ! Update the state for every other iteration that first
@@ -172,9 +177,9 @@ program pendulum
         !-------------------------------------------------------------!
 
         !jac = get_jacobian(body1)  ! actual jacobian
-        
+
         jac = finite_difference2(q, q_dot, aa, 1.0d-6) !finite diff
-        
+
         !-------------------------------------------------------------!
         !--------------------SOLUTION TO LINEAR SYSTEM ---------------!
         ! (a) Direct solution
@@ -182,18 +187,21 @@ program pendulum
         ! (c) Iterative solution (should implement)
         !-------------------------------------------------------------!
 
-        !jac = direct_solve(jac); dq = matmul(jac, -res);
-        
-        dq = direct_solve(jac, -res, TOT_NDOF)
-        
+        jac = direct_solve(jac); dq = matmul(jac, -res);
+
+        !dq = direct_solve(jac, -res, TOT_NDOF)
+
         !-------------------------------------------------------------!
         ! Calcualte residual tolratances                    
         !-------------------------------------------------------------!
 
         update_norm  =  maxval(abs(dq)); res_norm  =  maxval(abs(res));
 
-        if (k .eq. 1)   write(filenum,'(i4, 25F25.16)') newton_cnt, &
-             &(q(i), i = 1, size(q)),  (q_dot(i),i = 1, size(q_dot)), update_norm
+        if (k .eq. 1)   write(filenum,'(i4, 26F25.16)') &
+             & newton_cnt, &
+             & update_norm, res_norm, &
+             & (q(i), i = 1, size(q)), &
+             & (q_dot(i),i = 1, size(q_dot))
 
         !-------------------------------------------------------------!
         ! Update the state variables and then update the body
@@ -201,22 +209,24 @@ program pendulum
 
         q            = get_updated_q(q, dq)
         q_dot        = get_updated_q_dot(q_dot, dq)
-        ! q_double_dot = get_updated_q_double_dot(q_double_dot, dq) 
+        !q_double_dot = get_updated_q_double_dot(q_double_dot, dq) 
 
         !-------------------------------------------------------------!
         ! Check for convergence and stop is necessary
         !-------------------------------------------------------------!
 
         !is converged?
-        if ( update_norm .le. ABS_TOL .AND. res_norm .le. ABS_TOL) &
-             & exit newton
-        
+        if ( update_norm .le. ABS_TOL .AND. res_norm .le. ABS_TOL) then
+           
+           exit newton
+        end if
+
         ! is disverged?
-        if ( update_norm .ge. 1.0d5 .AND. res_norm .le. 1.0d5) then
+        if ( update_norm .ge. 1.0d5 .AND. res_norm .le. 1.0d5) then           
            call disp(" > Solution diverging - aborting time integrtn")
            exit newton
         end if
-        
+
         !? max iters reached
         if (k .eq. MAX_NEWTON_ITER) then
            call disp(" >> Newton solution failed in ", k , "iterations")
@@ -230,7 +240,7 @@ program pendulum
      ! print the summary of the newton iteration
      !----------------------------------------------------------------!
      write(*,'(f15.2,e15.6,e15.6,e15.6,e15.6,e15.6,xi4,xi8)') &
-          &time, update_norm, res_norm, body1%KE, body1%PE, &
+          & time, update_norm, res_norm, body1%KE, body1%PE, &
           & body1%KE + body1%PE, newton_cnt, fcnt
 
      time = time + dT ! update the time
@@ -247,7 +257,7 @@ program pendulum
 end program pendulum
 
 !*********************************************************************!
-! Callbaclk function for approximation of jacobian using finite-diff
+! Callback function for approximation of jacobian using finite-diff
 !*********************************************************************!
 subroutine residual2(q, qdot, f)
 
