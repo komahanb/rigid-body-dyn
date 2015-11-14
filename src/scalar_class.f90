@@ -18,17 +18,20 @@ module scalar_class
      private
 
      ! attributes
-     real(dp)  :: x ! real part
-     real(dp)  :: y ! imaginary part 
+     real(dp)  :: x = 0.0_dp ! real part
+     real(dp)  :: y = 0.0_dp ! imaginary part 
 
-     ! procedures
+     ! type procedures
    contains
 
+     private
+
      ! included below
-     procedure :: get_real ! function
-     procedure :: get_cplx ! function
-     procedure :: set_real ! subroutine
-     procedure :: set_cplx ! subroutine
+     procedure, public :: get_real ! function
+     procedure, public :: get_cplx ! function
+     procedure, public :: set_real ! subroutine
+     procedure, public :: set_cplx ! subroutine
+     procedure, public :: print    ! subroutine
 
   end type scalar
 
@@ -45,11 +48,12 @@ contains
   function constructor(x, y) result(this)
 
     ! arguments
-    real(dp)     :: x, y
-    type(scalar) :: this
-
-    call this%set_real(x)
-    call this%set_cplx(y)
+    real(dp), optional :: x
+    real(dp), optional :: y
+    type(scalar)       :: this
+    
+    if (present(x))  call this%set_real(x)
+    if (present(y))  call this%set_cplx(y)
 
   end function constructor
 
@@ -59,8 +63,9 @@ contains
   function get_real(this)
 
     ! arguments
-    real(dp)      :: get_real
     class(scalar) :: this
+    real(dp)      :: get_real
+
 
     ! return value is set
     get_real = this%x
@@ -73,8 +78,8 @@ contains
   function get_cplx(this)
 
     ! arguments
-    real(dp)      :: get_cplx
     class(scalar) :: this
+    real(dp)      :: get_cplx
 
     ! return value is set
     get_cplx = this%y
@@ -108,5 +113,17 @@ contains
     this%y = y
 
   end subroutine set_cplx
+
+  !-------------------------------------------------------------------!
+  ! Print routine to display the contents of the type
+  !-------------------------------------------------------------------!
+  subroutine print(this)
+
+    ! argumants
+    class(scalar) :: this
+
+    write(*,*) this%x, this%y
+
+  end subroutine print
 
 end module scalar_class
