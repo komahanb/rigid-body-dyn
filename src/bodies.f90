@@ -126,7 +126,7 @@ contains
     alpha%S         = get_angrate(theta)
     alpha%S_dot     = get_angrate_dot(theta, qdot(4:6))
 
-    !qdot =qdotin
+    !qdot = qdotin
     !qdot(1:3) = array(trans(get_rotation(theta)) * vector(q(7:9)))
     !qdot(4:6) = array(get_angrate_inv(theta) * vector(q(10:12)))
 
@@ -151,19 +151,19 @@ contains
     ! reaction torque
     alpha%gr = zeroV !alpha%J*alpha%omega_dot !? check
 
-    ! translational + rotational KE = 0.5mV^2 + 0.5*wJw
+    ! Translational + rotational KE = 0.5mV^2 + 0.5*wJw
     ! (*) between two vectors does a dot product (see utils.f90)
     ! Assuming the body axis to be at the centre of mass of the body
     ! Inertial or body frame?
     alpha%KE = 0.5_dp*(mass * alpha%v *  alpha%v &
          & + alpha%omega*alpha%J* alpha%omega) ! + coupling term
 
-    ! potential energy due to position
-    ! include strain energy later
+    ! Potential energy due to position. Should include strain energy later
     ! Inertial or body frame?
     alpha%PE = mass*alpha%g*alpha%r
 
-!    alpha%fr =  vector( (/ sin(q(10)*time ), sin(q(11)*time), sin(q(12)*time ) /) )
+    alpha%fr =  vector( (/ cos(q(10)*time ), cos(q(11)*time), sin(q(12)*time ) /) )
+
     !call print_body(alpha)
 
   end function create_body
