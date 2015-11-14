@@ -9,30 +9,39 @@ module types
   use global_constants, only: sp, dp, NUM_SPAT_DIM
 
   implicit none
-
-  !*******************************************************************!
+  
+  !-------------------------------------------------------------------!
+  ! Type that is used for conversion between real and complex types
+  !-------------------------------------------------------------------!
+  type scalar
+      real(dp)    :: x = 0.0_dp
+!     real(dp)    :: y = 0.0_dp
+!     complex(dp) :: z
+  end type scalar
+  
+  !-------------------------------------------------------------------!
   ! VECTOR datatype can be used for arrays that are represented in 
   ! three spatial dimensions, for example gravity, acceleration, 
   ! velocity, position, orientation etc
-  !*******************************************************************!
+  !-------------------------------------------------------------------!
   type vector
      real(dp)    :: x(NUM_SPAT_DIM) = 0.0_dp
   end type vector
 
-  !*******************************************************************!
+  !-------------------------------------------------------------------!
   ! MATRIX datatype can be used for matrices involved within spatial 
   ! dimensions, for example moment of inertia (J), rotation matrix(C, 
   ! Cdot), angular rates (S, Sdot)
-  !*******************************************************************!
+  !-------------------------------------------------------------------!
   type matrix
      real(dp)    :: ij(NUM_SPAT_DIM, NUM_SPAT_DIM) = 0.0_dp
   end type matrix
 
-  !*******************************************************************!
+  !-------------------------------------------------------------------!
   ! BODY datatype can be used to fully characterize the STATE and 
   ! ATTRIBUTES of a dynamic body .
   ! A body object contains virtually everything about the body 
-  !*******************************************************************!
+  !-------------------------------------------------------------------!
   type body
 
      !----------------------------------------------------------------!
@@ -104,9 +113,9 @@ module types
 
   end type body
 
-  ! ******************************************************************!
+  ! ------------------------------------------------------------------!
   ! JOINT datatype  characterizes the joints between two bodies
-  ! ******************************************************************!
+  ! ------------------------------------------------------------------!
   type joint
 
      ! spherical, revolute, prismatic, planar

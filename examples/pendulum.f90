@@ -8,7 +8,7 @@ program pendulum
   use global_variables, only: ABS_TOL, REL_TOL, start_time, dT, &
        & end_time, aa, bb, MAX_NEWTON_ITER, fcnt, init, time
   use utils, only:deg2rad
-  use types, only: body, vector
+  use types, only: body, vector, scalar
   use solver_utils, only: get_updated_q, get_updated_q_dot,&
        & get_updated_q_double_dot, get_approx_q, get_approx_q_dot
   use bodies, only: create_body, set_state
@@ -26,28 +26,30 @@ program pendulum
   real(dp), dimension(NUM_SPAT_DIM)  :: re    
 
   ! mass of the body
-  real(dp)                           :: mass 
+  type(scalar)                       :: mass 
 
   ! the state
-  real(dp)                           :: q(TOT_NDOF)= 0.0_dp
+  ! real(dp)                           :: q(TOT_NDOF)= 0.0_dp
 
+  type(scalar)                       :: q(TOT_NDOF) 
+  
   ! time derivative of state
-  real(dp)                           :: q_dot(TOT_NDOF) = 0.0_dp
+  type(scalar)                       :: q_dot(TOT_NDOF)
 
   ! residual
-  real(dp)                           :: res(TOT_NDOF)
+  type(scalar)                       :: res(TOT_NDOF)
 
   ! jacobian
-  real(dp)                           :: jac(TOT_NDOF, TOT_NDOF)
+  real(dp):: jac(TOT_NDOF, TOT_NDOF)
 
   ! update from newton iterations
-  real(dp)                           :: dq(TOT_NDOF) = 0.0_dp
+  type(scalar)                       :: dq(TOT_NDOF)
 
   ! body -- single pendulum
   type(body)                         :: body1
 
   ! time, and norms to stop integration
-  real(dp)                           :: update_norm, res_norm
+  real(dp) :: update_norm, res_norm
 
   ! loop variable
   integer(sp)                        :: k, newton_cnt, i
@@ -84,11 +86,11 @@ program pendulum
   !-------------------------------------------------------------------!
   call disp(" >> Setting initial state of the body...")
 
-  call random_seed(); call random_number(q); call random_number(q_dot);
-  q_dot = q_dot**2
+  call random_seed(); call random_number(q%x); call random_number(q_dot%x);
+  q_dot%x = q_dot%x**2
 
   ! mass of the body
-  mass = 2.0_dp
+  mass%x = 2.0_dp
 
   ! used to calculate the inertial properties J and C
   re   = (/ 0.1_dp, 0.2_dp, 0.3_dp /) 
@@ -102,7 +104,7 @@ program pendulum
 
   call disp(" >> Creating a body...")
 
-  body1 = create_body(mass, vector(re), q, q_dot)
+  body1 = create_body(mass%x, vector(re), q%x, q_dot%x)
 
   call print_body(body1)
 
@@ -113,7 +115,7 @@ program pendulum
   ! The user is free to change here too.
   !-------------------------------------------------------------------!
 
-  dT         = 0.001_dp
+  dT         = 0.1_dp
   start_time = 0.0_dp
   end_time   = 1.0_dp
 
@@ -163,12 +165,12 @@ program pendulum
         !-------------------------------------------------------------!
         ! Update the state for every other iteration that first
         !-------------------------------------------------------------!
-        if (k .gt. 1)  call set_state(q, q_dot, body1)
+        if (k .gt. 1)  call set_state(q%x, q_dot%x, body1)
 
         !-------------------------------------------------------------!
         !---------------------RESIDUAL ASSEMBLY-----------------------!
         !-------------------------------------------------------------!
-        res  = get_residual(body1)
+        res%x  = get_residual(body1)
 
         !-------------------------------------------------------------!
         !---------------------JACOBIAN ASSEMBLY-----------------------!
@@ -178,7 +180,7 @@ program pendulum
 
         !jac = get_jacobian(body1)  ! actual jacobian
 
-        jac = finite_difference2(q, q_dot, aa, 1.0d-6) !finite diff
+        jac = finite_difference2(q%x, q_dot%x, aa, 1.0d-6) !finite diff
 
         !-------------------------------------------------------------!
         !--------------------SOLUTION TO LINEAR SYSTEM ---------------!
@@ -187,7 +189,7 @@ program pendulum
         ! (c) Iterative solution (should implement)
         !-------------------------------------------------------------!
 
-        jac = direct_solve(jac); dq = matmul(jac, -res);
+        jac = direct_solve(jac); dq%x = matmul(jac, -res%x);
 
         !dq = direct_solve(jac, -res, TOT_NDOF)
 
@@ -195,20 +197,20 @@ program pendulum
         ! Calcualte residual tolratances                    
         !-------------------------------------------------------------!
 
-        update_norm  =  maxval(abs(dq)); res_norm  =  maxval(abs(res));
-
-        if (k .eq. 1)   write(filenum,'(i4, 26F25.16)') &
-             & newton_cnt, &
-             & update_norm, res_norm, &
-             & (q(i), i = 1, size(q)), &
-             & (q_dot(i),i = 1, size(q_dot))
+        update_norm  =  maxval(abs(dq%x)); res_norm  =  maxval(abs(res%x));
+!!$
+!!$        if (k .eq. 1)   write(filenum,'(i4, 26F25.16)') &
+!!$             & newton_cnt, &
+!!$             & update_norm, res_norm, &
+!!$             & (q%x(i), i = 1, size(q%x)), &
+!!$             & (q%x_dot(i),i = 1, size(q_dot%x))
 
         !-------------------------------------------------------------!
         ! Update the state variables and then update the body
         !-------------------------------------------------------------!
 
-        q            = get_updated_q(q, dq)
-        q_dot        = get_updated_q_dot(q_dot, dq)
+        q%x            = get_updated_q(q%x, dq%x)
+        q_dot%x        = get_updated_q_dot(q_dot%x, dq%x)
         !q_double_dot = get_updated_q_double_dot(q_double_dot, dq) 
 
         !-------------------------------------------------------------!
