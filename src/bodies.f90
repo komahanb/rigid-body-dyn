@@ -162,7 +162,7 @@ contains
     ! Inertial or body frame?
     alpha%PE = mass*alpha%g*alpha%r
 
-    alpha%fr =  vector( (/ cos(q(10)*time ), cos(q(11)*time), sin(q(12)*time ) /) )
+!    alpha%fr =  vector( (/ cos(q(10)*time ), cos(q(11)*time), sin(q(12)*time ) /) )
 
     !call print_body(alpha)
 

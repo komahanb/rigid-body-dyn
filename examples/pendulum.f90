@@ -113,7 +113,7 @@ program pendulum
   ! The user is free to change here too.
   !-------------------------------------------------------------------!
 
-  dT         = 0.001_dp
+  dT         = 0.1_dp
   start_time = 0.0_dp
   end_time   = 1.0_dp
 
