@@ -14,14 +14,14 @@
 #------------------------------
 CC = mpicc
 CX = mpicxx
-FC = gfortran
+FC = mpif90
 
 #------------------------------
 # define any compile-time flags
 #------------------------------
 CC_FLAGS =  -g #-Wall
-CX_FLAGS =  -g #-Wall
-FC_FLAGS =  -g -Wno-unused -fbounds-check #-Wall
+CX_FLAGS =  -g -cpp -dM #-Wall
+FC_FLAGS =  -g -cpp -dM -Wno-unused -fbounds-check #-Wall
 
 
 #------------------------------
@@ -34,7 +34,9 @@ BIN_DIR=bin
 #-----------------------------------------------------------------------
 # define any directories containing header files other than /usr/include
 #-----------------------------------------------------------------------
-INCLUDES = -I/usr/local/include -I/usr/lib/petscdir/3.4.2/include #-I./include  #-I/home/newhall/include  -I../include
+INCLUDES = -I/usr/local/include -I${PETSC_ARCH}/include -I${PETSC_DIR}/include -I${SLEPC_DIR}/include
+
+ #-I./include  #-I/home/newhall/include  -I../include
 
 #export PETSC_DIR=/home/balay/petsc-3.2-p0
 #export PETSC_ARCH=linux-gnu-c-debug        
@@ -61,13 +63,15 @@ LIBS =  -ldl -lstdc++ -llapack -lblas #lib/lsqr.a #lib/libdisp.a #daesolve.a #li
 
 #SRCS = hey.f90 hello.f90 hello1.f90
 #SRC := $(wildcard src/*.f90 src/*.c src/*.cpp)
-SRC  :=	src/dispmodule.f90 src/global_constants.f90 \
-	src/types.f90 src/filehandler.f90 \
+SRC  :=	src/dispmodule.f90 src/matrix_class.f90 src/sparse_matrix_class.f90 \
+	src/jacobian_matrix_class.f90 src/global_constants.f90 \
+	src/tictoc.f90 src/types.f90 src/filehandler.f90 \
 	src/global_variables.f90 src/utils.f90 src/differ.f90 \
 	src/linear_system.f90 src/bodies.f90 src/joints.f90 \
 	src/residual.f90 src/jacobian.f90 src/solver_utils.f90 \
-	src/finite_diff.f90 examples/pendulum.f90
+	test/sparse_test.f90
 
+#test/finite_diff.f90
 #test/test_linsys.f90
 #test/pend.f90 
 #test/test_finite_diff.f90
