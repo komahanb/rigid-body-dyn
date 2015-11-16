@@ -48,6 +48,8 @@ module residual
   use utils
   use types
   use body_class
+  use rigid_body_class
+  use flexible_body_class
   use joints
 
   implicit none
@@ -97,7 +99,7 @@ contains
   function residual_assembler(body_array, joint_array) result(res_arr)
 
     ! inputs
-    type(body), dimension(:)             :: body_array
+    type(rigid_body), dimension(:)       :: body_array
     type(joint), dimension(:)            :: joint_array
 
     ! outputs
@@ -126,7 +128,7 @@ contains
   function residual_assembler_vec(body_array, joint_array) result(res)
 
     ! inputs
-    type(body), dimension(:)             :: body_array
+    type(rigid_body), dimension(:)             :: body_array
     type(joint), dimension(:)            :: joint_array
 
     ! outputs
@@ -222,7 +224,7 @@ contains
   function get_body_residual(alpha) result(res_dyn_arr)
 
     ! input
-    type(body), intent(in)   :: alpha
+    type(rigid_body), intent(in)   :: alpha
 
     ! output
     real(dp), dimension(NDOF_PBODY)    :: res_dyn_arr
@@ -245,7 +247,7 @@ contains
   !*******************************************************************!
   function get_q(alpha) result(q)
     
-    type(body), intent(in)          :: alpha
+    type(rigid_body), intent(in)          :: alpha
     real(dp), dimension(NDOF_PBODY) :: q
     
     q=  array((/alpha%r , alpha%theta, alpha%v, alpha%omega /))
@@ -260,7 +262,7 @@ contains
   !*******************************************************************!
   function get_qdot(alpha) result(qdot)
 
-    type(body), intent(in)          :: alpha
+    type(rigid_body), intent(in)          :: alpha
     real(dp), dimension(NDOF_PBODY) :: qdot
 
     qdot=  array((/alpha%r_dot , alpha%theta_dot, &
@@ -283,7 +285,7 @@ contains
   function get_body_residual_vec(alpha) result(res_dyn)
     use global_variables, only:fcnt
     ! input
-    type(body), intent(in)   :: alpha
+    type(rigid_body), intent(in)   :: alpha
 
     ! output
     type(vector) :: res_dyn(NUM_BODY_EQN)
@@ -315,20 +317,20 @@ contains
     omega_dot     = alpha%omega_dot
 
     ! elatic state variables
-    qs            = alpha%qs
-    qs_dot        = alpha%qs_dot
-    qs_double_dot = alpha%qs_double_dot
+!    qs            = alpha%qs
+!    qs_dot        = alpha%qs_dot
+!    qs_double_dot = alpha%qs_double_dot
 
     ! other body Attributes
     mass          = alpha%mass
     c             = alpha%c
     J             = alpha%J
 
-    p             = alpha%p
-    h             = alpha%h
+ !   p             = alpha%p
+ !   h             = alpha%h
 
-    K             = alpha%K
-    M             = alpha%M
+ !   K             = alpha%K
+ !   M             = alpha%M
 
     C_mat         = alpha%C_mat
     S             = alpha%S
@@ -337,7 +339,7 @@ contains
     fr            = alpha%fr
     gr            = alpha%gr
 
-    f             = alpha%f
+ !   f             = alpha%f
 
     !-----------------------------------------------------------------!
     ! Now assembling the residual terms. The final vector form of 
@@ -383,10 +385,10 @@ contains
     !-----------------------------------------------------------------!
     ! include elastic eqn (5 terms)
     !-----------------------------------------------------------------!
-    if (ELASTIC) then
+!    if (ELASTIC) then
 !       res_dyn(5) = trans(p)*v + trans(h)*omega_dot + M*qs_double_dot &
 !            &+K*qs - f
-    end if
+!    end if
 
   end function get_body_residual_vec
 
@@ -398,7 +400,7 @@ end module residual
 !!$  function get_elastic_residual(alpha) result(res_elastic)
 !!$
 !!$    type(vector) :: res_elastic(NUM_ELAST_EQN)
-!!$    type(body)   :: alpha
+!!$    type(rigid_body)   :: alpha
 !!$
 !!$    stop"dummy impl"
 !!$     res_elastic(1) = trans(p)*v + trans(h)*omega_dot + M*qs_double_dot &
@@ -412,7 +414,7 @@ end module residual
 !!$  ! ******************************************************************
 !!$  function  get_body_residual(alpha) result(res)
 !!$
-!!$    type(body)   :: alpha
+!!$    type(rigid_body)   :: alpha
 !!$    type(vector) :: res_vector_form(NUM_GOV_EQN)
 !!$    real(dp), dimension(NUM_STATES) :: res_array
 !!$

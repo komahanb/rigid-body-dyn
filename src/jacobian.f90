@@ -18,6 +18,8 @@ module jacobian
 
   use global_variables, only: aa, bb
   use body_class, only : body
+  use rigid_body_class
+  use flexible_body_class
   use types, only: sp, dp, joint
   use utils
   
@@ -51,7 +53,7 @@ contains
   !****************************************************
   function jac_rigid(alpha)
 
-    type(body)      :: alpha
+    type(rigid_body)      :: alpha
     real(dp)        :: jac_rigid(12,12)
     type(matrix)    :: DR1 (4,4)
 
@@ -68,7 +70,7 @@ contains
   !****************************************************
   function jac_full(alpha) !?! may be more inputs e.g. joint
 
-    type(body)      :: alpha
+    type(rigid_body)      :: alpha
     real(dp)        :: jac_full(1,1) !?? decide the dim
 
     ! constituent sub-matrices in the jacobian
@@ -87,7 +89,7 @@ contains
   !*******************************************************************!
   function D_R(alpha)
 
-    type(body)    :: alpha
+    type(rigid_body)    :: alpha
     type(matrix)  :: D_R(4,4) ! where 4 is the state vector length
     type(matrix)  :: O ! zero matrix
     type(matrix)  :: I ! identity matrix
@@ -118,20 +120,20 @@ contains
     omega_dot     = alpha%omega_dot
 
     ! elatic state variables
-    qs            = alpha%qs
-    qs_dot        = alpha%qs_dot
-    qs_double_dot = alpha%qs_double_dot
+!    qs            = alpha%qs
+!    qs_dot        = alpha%qs_dot
+!    qs_double_dot = alpha%qs_double_dot
 
     ! other body Attributes
     mass          = alpha%mass
     c             = alpha%c
     J             = alpha%J
 
-    p             = alpha%p
-    h             = alpha%h
+!    p             = alpha%p
+!    h             = alpha%h
 
-    K             = alpha%K
-    M             = alpha%M
+!    K             = alpha%K
+!    M             = alpha%M
 
     C_mat         = alpha%C_mat
     S             = alpha%S
@@ -140,7 +142,7 @@ contains
     fr            = alpha%fr
     gr            = alpha%gr
 
-    f             = alpha%f
+!    f             = alpha%f
 
     ! some useful matrices
     O = matrix(zeros(NUM_SPAT_DIM))
@@ -176,7 +178,7 @@ contains
   !*******************************************************************!
   function S_R(alpha)
 
-    type(body)   :: alpha
+    type(flexible_body)   :: alpha
     type(matrix) :: S_R(4,4) ! where 4 is the state vector length
     type(matrix)  :: O ! zero matrix
 
@@ -209,7 +211,7 @@ contains
   !*******************************************************************!
   function S_S(alpha)
 
-    type(body)   :: alpha
+    type(flexible_body)   :: alpha
     type(matrix) :: S_S
     
     S_S = alpha%K  + bb*alpha%M ! K + b M
@@ -221,7 +223,7 @@ contains
   !*******************************************************************!
   function S_RS(alpha)
 
-    type(body)   :: alpha
+    type(flexible_body)   :: alpha
     type(matrix) :: S_RS(1,4)
     type(matrix) :: O ! zero matrix
 
@@ -240,7 +242,7 @@ contains
   !*******************************************************************!
   function S_SR(alpha)
 
-    type(body)   :: alpha
+    type(flexible_body)   :: alpha
     type(matrix) :: S_SR(4,1)
     type(matrix) :: O ! zero matrix
 

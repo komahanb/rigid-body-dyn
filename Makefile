@@ -67,7 +67,8 @@ SRC  :=	src/dispmodule.f90 src/matrix_class.f90 src/sparse_matrix_class.f90 \
 	src/jacobian_matrix_class.f90 src/global_constants.f90 \
 	src/tictoc.f90 src/types.f90 src/filehandler.f90 \
 	src/global_variables.f90 src/utils.f90 src/differ.f90 \
-	src/linear_system.f90 src/bodies.f90 src/joints.f90 \
+	src/linear_system.f90 src/body_class.f90 src/rigid_body_class.f90\
+	src/flexible_body_class.f90 src/joints.f90 \
 	src/residual.f90 src/jacobian.f90 src/solver_utils.f90 \
 	src/snes.f90 test/sparse_test.f90
 
