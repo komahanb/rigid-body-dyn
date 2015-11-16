@@ -17,9 +17,10 @@
 module jacobian
 
   use global_variables, only: aa, bb
-  use types, only: sp, dp, body, joint
+  use body_class, only : body
+  use types, only: sp, dp, joint
   use utils
-
+  
   implicit none
 
   ! all functions are private by default

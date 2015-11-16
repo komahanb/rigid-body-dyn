@@ -47,7 +47,7 @@ module residual
   use global_constants
   use utils
   use types
-  use bodies
+  use body_class
   use joints
 
   implicit none

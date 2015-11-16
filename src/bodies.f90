@@ -12,9 +12,8 @@
 ! Use the interface names to access the functions instead of internal
 ! functions whose signature may change as per needs.
 !=====================================================================!
-module bodies
+module body_class
 
-  use types
   use global_constants
   use global_variables
   use utils
@@ -26,14 +25,98 @@ module bodies
   private 
 
   ! Expose only the needed variables and functions
-  public body
+  public body, get_body
   public get_rotation
   public get_angrate, get_angrate_dot, get_angrate_inv
   public print_body
 
-  interface body
-     module procedure  get_rigid_body
-  end interface body
+  !*******************************************************************!
+  ! BODY datatype can be used to fully characterize the STATE and 
+  ! ATTRIBUTES of a dynamic body .
+  ! A body object contains virtually everything about the body 
+  !*******************************************************************!
+  type body
+
+     !----------------------------------------------------------------!
+     ! rigid body state variables
+     !----------------------------------------------------------------!
+
+     ! origin of the body frame
+     type(vector) :: r              
+
+     ! orientation of the body frame with inertial (euler angles)
+     type(vector) :: theta          
+
+     ! velocity of the origin with respect to inertial
+     type(vector) :: v              
+
+     ! angular velocity of the body frame with respect to inertial
+     type(vector) :: omega          
+
+     !----------------------------------------------------------------!
+     ! time derivative of states
+     !----------------------------------------------------------------!
+     type(vector) :: r_dot
+     type(vector) :: theta_dot
+     type(vector) :: v_dot
+     type(vector) :: omega_dot
+
+     !----------------------------------------------------------------!
+     ! elatic state variables and time derivatives
+     !----------------------------------------------------------------!
+     type(vector) :: qs
+     type(vector) :: qs_dot
+     type(vector) :: qs_double_dot
+
+     !----------------------------------------------------------------!
+     ! Body Attributes
+     !----------------------------------------------------------------!
+
+     real(dp)     :: mass           ! mass (denoted m in paper)   
+
+     !     The format for c is: (in body frame)
+     !     c = [ cx,  cy,  cz ]
+     type(vector) :: c              ! first moment of inertia
+
+     !  The format for J is: (in body frame)
+     !  J = [ Jxx,  Jxy,  Jxz ] = [ J[0],  J[1],  J[2] ]
+     !  . = [    ,  Jyy,  Jyz ] = [     ,  J[3],  J[4] ]
+     !  . = [    ,     ,  Jzz ] = [     ,      ,  J[5] ]
+     type(matrix) :: J              ! second moment of inertia
+
+     type(matrix) :: p              ! 
+     type(matrix) :: h              ! 
+
+     type(matrix) :: K              ! stiffness matrix
+     type(matrix) :: M              ! mass matrix
+
+     type(matrix) :: C_mat          ! rotation matrix
+     type(matrix) :: S
+     type(matrix) :: S_dot          ! transformation matrix
+
+     type(vector) :: fr             ! external/reaction force
+     type(vector) :: gr             ! external/reaction torque
+
+     type(vector) :: f              ! elastic force
+
+     type(vector) :: g              ! gravity vector in local frame
+
+     real(dp)     :: KE             ! kinetic energy of the body
+     real(dp)     :: PE             ! potential energy of the body
+
+  end type body
+
+
+  !*******************************************************************!
+  ! A common interface for creating bodies and updating existing ones
+  !-------------------------------------------------------------------!
+  ! The inputs are described in the methods under the interface. One 
+  ! can use the same interface for updating existing bodies.
+  ! Shortly: use this to create and update bodies
+  !*******************************************************************!
+  interface get_body
+     module procedure get_rigid_body
+  end interface get_body
   
   !*******************************************************************!
   ! A common interface for different ways of getting rotation matrix
@@ -53,7 +136,6 @@ module bodies
   ! (a) get_angrate_from_angles_vec    -- > input VECTOR theta
   ! (b) get_angrate_from_angles_array  -- > input theta(3)
   ! (c) get_angrate_from_cosines       -- > input dir cosines and sines
-
   !*******************************************************************!
   interface get_angrate
      module procedure get_angrate_from_angles_vec, &
@@ -100,7 +182,7 @@ contains
   ! q, qdot: state vector and time derivatives
   ! qddot  : second time derivative of the state (used in elastic only)
   !*******************************************************************!
-  function get_rigid_body(mass, c, J, fr, gr, q, qdot)result(alpha)
+  subroutine get_rigid_body(alpha, mass, c, J, fr, gr, q, qdot)
 
     ! inputs
     real(dp), optional, intent(in) :: mass 
@@ -112,8 +194,8 @@ contains
     real(dp), optional, intent(in) :: q(NDOF_PBODY)
     real(dp), optional, intent(in) :: qdot(NDOF_PBODY)
 
-    ! output
-    type(body)  :: alpha
+    ! input/output
+    type(body), intent(inout) :: alpha
 
     !-----------------------------------------------------------------!
     ! Inertial properties of the body
@@ -131,12 +213,12 @@ contains
     !-----------------------------------------------------------------!
     ! set the state into the body
     !-----------------------------------------------------------------!
-  if (present(q)) then
-    alpha%r         = vector(q(1:3))
-    alpha%theta     = vector(q(4:6))
-    alpha%v         = vector(q(7:9))
-    alpha%omega     = vector(q(10:12))
-end if
+    if (present(q)) then
+       alpha%r         = vector(q(1:3))
+       alpha%theta     = vector(q(4:6))
+       alpha%v         = vector(q(7:9))
+       alpha%omega     = vector(q(10:12))
+    end if
 
     !-----------------------------------------------------------------!
     ! set the time derivatives of state into the body
@@ -186,7 +268,7 @@ end if
 
     !call print_body(alpha)
 
-  end function get_rigid_body
+  end subroutine get_rigid_body
 
   !*******************************************************************!
   ! Returns the rotation matrix based on the euler angles
@@ -550,7 +632,7 @@ end if
     call disp('======================================================')
   end subroutine print_body
 
-end module bodies
+end module body_class
 
 !!$ ! ********************************************************
 !!$  ! routine that returns the rotation matrix (euler angles)
