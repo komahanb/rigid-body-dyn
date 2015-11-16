@@ -53,7 +53,7 @@ contains
   !****************************************************
   function jac_rigid(alpha)
 
-    type(rigid_body)      :: alpha
+    type(rigid_body):: alpha
     real(dp)        :: jac_rigid(12,12)
     type(matrix)    :: DR1 (4,4)
 
@@ -68,11 +68,11 @@ contains
   !****************************************************
   ! returns the FULL jacobian matrix terms
   !****************************************************
-  function jac_full(alpha) !?! may be more inputs e.g. joint
+  function jac_flexible(alpha) !?! may be more inputs e.g. joint
 
-    type(rigid_body)      :: alpha
-    real(dp)        :: jac_full(1,1) !?? decide the dim
-
+    type(flexible_body) :: alpha
+    real(dp)           :: jac_flexible(1,1) !?? decide the dim
+ 
     ! constituent sub-matrices in the jacobian
     type(matrix) :: DR (4,4)
     type(matrix) :: SR (4,4)
@@ -82,7 +82,7 @@ contains
 
     stop"not implemted yet"
 
-  end function jac_full
+  end function jac_flexible
 
   !*******************************************************************!
   ! Jacobian of the equation of motion for the supplied BODY alpha

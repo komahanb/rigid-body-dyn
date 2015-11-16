@@ -1,11 +1,11 @@
 module flexible_body_class
 
   ! module references
-  use body_class
   use global_constants
   use global_variables
   use types
   use utils
+  use body_class
   use rigid_body_class
   use dispmodule, only : disp
 
