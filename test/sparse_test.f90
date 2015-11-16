@@ -11,6 +11,7 @@ program main
        & initialized, solver_type, time_tot
   use tictoc, only: timer_start, timer_stop
   use dispmodule, only: disp
+  use dynamics, only: execute
 
   implicit none
 #include <finclude/petsc.h90>
@@ -43,7 +44,7 @@ program main
   ! Execute multibody dynamics
   !-------------------------------------------------------------------!
 
-  ! call execute_dynamics()
+  call execute()
 
   !-------------------------------------------------------------------!
   ! finalize run

@@ -34,7 +34,8 @@ BIN_DIR=bin
 #-----------------------------------------------------------------------
 # define any directories containing header files other than /usr/include
 #-----------------------------------------------------------------------
-INCLUDES = -I/usr/local/include -I${PETSC_DIR}/${PETSC_ARCH}/include -I${PETSC_DIR}/include #-I${SLEPC_DIR}/include
+INCLUDES = -I/usr/local/include -I${PETSC_DIR}/${PETSC_ARCH}/include \
+	-I${PETSC_DIR}/include #-I${SLEPC_DIR}/include
 
  #-I./include  #-I/home/newhall/include  -I../include
 
@@ -70,7 +71,8 @@ SRC  :=	src/dispmodule.f90 src/matrix_class.f90 src/sparse_matrix_class.f90 \
 	src/linear_system.f90 src/body_class.f90 src/rigid_body_class.f90\
 	src/flexible_body_class.f90 src/joints.f90 \
 	src/residual.f90 src/jacobian.f90 src/solver_utils.f90 \
-	src/snes.f90 test/sparse_test.f90
+	src/snes.f90 src/dynamics_input.f90 src/dynamics.f90\
+	test/sparse_test.f90
 
 #test/finite_diff.f90
 #test/test_linsys.f90
