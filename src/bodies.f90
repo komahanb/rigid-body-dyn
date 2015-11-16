@@ -18,7 +18,7 @@ module bodies
   use global_constants
   use global_variables
   use utils
-  use dispmodule,only:disp
+  use dispmodule, only : disp
 
   implicit none
 
@@ -26,22 +26,15 @@ module bodies
   private 
 
   ! Expose only the needed variables and functions
-  public create_body, set_state 
+  public body
   public get_rotation
   public get_angrate, get_angrate_dot, get_angrate_inv
   public print_body
 
-  !*******************************************************************!
-  ! A common interface for setting (updating the state vectors) during
-  ! time-integration. During time-integration only the state of the 
-  ! bodies change and it is unnecessary to create new bodies for the 
-  ! new state. Therefore the user can call this interface to update the 
-  ! state of the supplied  bodies
-  !-------------------------------------------------------------------! 
-  interface set_state
-     module procedure set_body_state
-  end interface set_state
-
+  interface body
+     module procedure  get_rigid_body
+  end interface body
+  
   !*******************************************************************!
   ! A common interface for different ways of getting rotation matrix
   !-------------------------------------------------------------------!
@@ -66,8 +59,6 @@ module bodies
      module procedure get_angrate_from_angles_vec, &
           &get_angrate_from_angles_array, get_angrate_from_cosines
   end interface get_angrate
-
-
 
   !*******************************************************************!
   ! A common interface for different ways of getting the time 
@@ -99,108 +90,82 @@ module bodies
 contains
 
   !*******************************************************************!
-  ! create a body using the supplied state and other parameters
+  ! create a body using the supplied parameters
   !-------------------------------------------------------------------!
-  ! q, qdot: state vector and time derivatives
   ! mass   : mass of the body
-  ! re     : interested point on the body measure in body frame
+  ! c      : first moment of mass 
+  ! J      : second moment of mass
+  ! fr     : reaction force
+  ! gr     : reaction torque
+  ! q, qdot: state vector and time derivatives
+  ! qddot  : second time derivative of the state (used in elastic only)
   !*******************************************************************!
-  function create_body(mass, re, q, qdot) result(alpha)
+  function get_rigid_body(mass, c, J, fr, gr, q, qdot)result(alpha)
 
     ! inputs
-    real(dp), intent(in)        :: mass 
-    type(vector), intent(in)    :: re 
-    real(dp), intent(in)        :: q(NDOF_PBODY)
-    real(dp), intent(in)        :: qdot(NDOF_PBODY)
+    real(dp), optional, intent(in) :: mass 
+    real(dp), optional, intent(in) :: c(NUM_SPAT_DIM)
+    real(dp), optional, intent(in) :: J(NUM_SPAT_DIM, NUM_SPAT_DIM)
+    real(dp), optional, intent(in) :: fr(NUM_SPAT_DIM)
+    real(dp), optional, intent(in) :: gr(NUM_SPAT_DIM)
+
+    real(dp), optional, intent(in) :: q(NDOF_PBODY)
+    real(dp), optional, intent(in) :: qdot(NDOF_PBODY)
+
     ! output
-    type(body)                  :: alpha
+    type(body)  :: alpha
 
-    ! local variables
-    real(dp), dimension(NUM_SPAT_DIM):: theta
-
-    ! make a local copy
-    theta = q(4:6)
-
-    ! rotation and rate matrices
-    alpha%C_mat     = get_rotation(theta)
-    alpha%S         = get_angrate(theta)
-    alpha%S_dot     = get_angrate_dot(theta, qdot(4:6))
-
-    !qdot = qdotin
-    !qdot(1:3) = array(trans(get_rotation(theta)) * vector(q(7:9)))
-    !qdot(4:6) = array(get_angrate_inv(theta) * vector(q(10:12)))
-
-    !  sets the state of the body and its time derivatives
-    call set_state(q, qdot, alpha)
+    !-----------------------------------------------------------------!
+    ! Inertial properties of the body
+    !-----------------------------------------------------------------!
 
     ! mass of the body
-    alpha%mass  = mass
-
-    ! set the gravity vector in body frame
-    alpha%g = alpha%C_mat*GRAV
+    if (present(mass)) alpha%mass = mass
 
     ! moment of inertia in body-fixed frame
-    alpha%J = -mass*skew(re)*skew(re)
+    if (present(J)) alpha%J = matrix(J)       !-mass*skew(re)*skew(re)
 
     !first moment of inertia in body-fixed frame: mass*(cg location)
-    alpha%c  = mass*re
+    if (present(c)) alpha%c = vector(c)       ! mass*re
 
-    ! reaction force 
-    alpha%fr = zeroV !mass*GRAV !? check
-
-    ! reaction torque
-    alpha%gr = zeroV !alpha%J*alpha%omega_dot !? check
-
-    ! Translational + rotational KE = 0.5mV^2 + 0.5*wJw
-    ! (*) between two vectors does a dot product (see utils.f90)
-    ! Assuming the body axis to be at the centre of mass of the body
-    ! Inertial or body frame?
-    alpha%KE = 0.5_dp*(mass * alpha%v *  alpha%v &
-         & + alpha%omega*alpha%J* alpha%omega) ! + coupling term
-
-    ! Potential energy due to position. Should include strain energy later
-    ! Inertial or body frame?
-    alpha%PE = mass*alpha%g*alpha%r
-
-!    alpha%fr =  vector( (/ cos(q(10)*time ), cos(q(11)*time), sin(q(12)*time ) /) )
-
-    !call print_body(alpha)
-
-  end function create_body
-
-  !*******************************************************************!
-  ! Takes the body (alpha) and updates/sets the state variables
-  !-------------------------------------------------------------------!
-  ! Note: 
-  ! Everything changes except the inertial properties of the body
-  !*******************************************************************!
-  subroutine set_body_state(q, qdot, alpha)
-
-    real(dp), intent(in)          :: q(NDOF_PBODY)
-    real(dp), intent(in)          :: qdot(NDOF_PBODY)
-    type(body),intent(inout)      :: alpha
-
-    !    call disp(" >> Setting state variables into the body...")
-
+    !-----------------------------------------------------------------!
     ! set the state into the body
+    !-----------------------------------------------------------------!
+  if (present(q)) then
     alpha%r         = vector(q(1:3))
     alpha%theta     = vector(q(4:6))
     alpha%v         = vector(q(7:9))
     alpha%omega     = vector(q(10:12))
+end if
 
+    !-----------------------------------------------------------------!
     ! set the time derivatives of state into the body
-    alpha%r_dot     = vector(qdot(1:3))
-    alpha%theta_dot = vector(qdot(4:6))
-    alpha%v_dot     = vector(qdot(7:9))
-    alpha%omega_dot = vector(qdot(10:12))
+    !-----------------------------------------------------------------!
 
+    if (present(qdot)) then
+       alpha%r_dot     = vector(qdot(1:3))
+       alpha%theta_dot = vector(qdot(4:6))
+       alpha%v_dot     = vector(qdot(7:9))
+       alpha%omega_dot = vector(qdot(10:12))
+    end if
+
+    !-----------------------------------------------------------------!
     ! update the rotation and angular rate matrices
+    !-----------------------------------------------------------------!
+
     alpha%C_mat     = get_rotation(alpha%theta)
     alpha%S         = get_angrate(alpha%theta)
     alpha%S_dot     = get_angrate_dot(alpha%theta, alpha%theta_dot)
-    
+
+    !-----------------------------------------------------------------!
     ! update the new direction of the gravity vector in body frame
+    !-----------------------------------------------------------------!
+
     alpha%g = alpha%C_mat*GRAV
+
+    !-----------------------------------------------------------------!
+    ! Mechanical Energy 
+    !-----------------------------------------------------------------!
 
     ! update the kinetic energy
     alpha%KE = 0.5_dp*(alpha%mass * alpha%v *  alpha%v &
@@ -209,15 +174,19 @@ contains
     ! update potential energy
     alpha%PE = alpha%mass*alpha%g*alpha%r
 
-!    alpha%fr =  vector( (/ sin(q(10)*time ), sin(q(11)*time), sin(q(12)*time ) /) )
+    !-----------------------------------------------------------------!
+    ! Joint reactions
+    !-----------------------------------------------------------------!
 
-    if (ELASTIC) then
-       ! set the elastic state variables in the body
-       !       alpha%qs        = vector(q(13:15))    ! IS_QS:IE_QE
-       !       alpha%qs_dot    = vector(qdot(13:15)) ! IS_QS:IE_QE
-    end if
+    ! reaction force 
+    if (present(fr)) alpha%fr    = vector(fr)   
 
-  end subroutine set_body_state
+    ! reaction torque
+    if (present(gr)) alpha%gr    = vector(gr)
+
+    !call print_body(alpha)
+
+  end function get_rigid_body
 
   !*******************************************************************!
   ! Returns the rotation matrix based on the euler angles
@@ -476,7 +445,7 @@ contains
     type(vector) :: thetain
     type(matrix) :: SMAT_INV
     real(dp)     :: theta(NUM_SPAT_DIM)
-    
+
     ! decompose the vector into array
     theta = array(thetain)
 
@@ -484,7 +453,7 @@ contains
     SMAT_INV =  get_angrate_inv_array(theta)
 
   end function get_angrate_inv_vec
-  
+
   ! ******************************************************************!
   ! Returns the inverse of the angular rate matrix for the supplied
   ! theta array
@@ -522,7 +491,7 @@ contains
     SMAT_INV= matrix( (/  1.0_dp, s1*s2/c2, c1*s2/c2, &
          &0.0_dp, c1, -s1, 0.0_dp,&
          & s1/c2, c1/c2 /))
-    
+
   end function get_angrate_inv_cosines
 
   !*******************************************************************!
@@ -609,5 +578,85 @@ end module bodies
 !!$    type(matrix) :: get_rotation_dot
 !!$
 !!$    stop "dummy impl"
+
+!!$ end function get_rotation_dot
+!!$ !*******************************************************************!
+!!$  ! create a body using the supplied state and other parameters
+!!$  !-------------------------------------------------------------------!
+!!$  ! q, qdot: state vector and time derivatives
+!!$  ! mass   : mass of the body
+!!$  ! re     : interested point on the body measure in body frame
+!!$  !*******************************************************************!
+!!$  function construct1(mass, re, q, qdot) result(alpha)
 !!$
-!!$  end function get_rotation_dot
+!!$    ! inputs
+!!$    real(dp), intent(in)        :: mass 
+!!$    type(vector), intent(in)    :: re 
+!!$    real(dp), intent(in)        :: q(NDOF_PBODY)
+!!$    real(dp), intent(in)        :: qdot(NDOF_PBODY)
+!!$    ! output
+!!$    type(body)                  :: alpha
+!!$
+!!$    ! local variables
+!!$    real(dp), dimension(NUM_SPAT_DIM):: theta
+!!$
+!!$    ! make a local copy
+!!$    theta = q(4:6)
+!!$
+!!$    ! rotation and rate matrices
+!!$    alpha%C_mat     = get_rotation(theta)
+!!$    alpha%S         = get_angrate(theta)
+!!$    alpha%S_dot     = get_angrate_dot(theta, qdot(4:6))
+!!$
+!!$    !qdot = qdotin
+!!$    !qdot(1:3) = array(trans(get_rotation(theta)) * vector(q(7:9)))
+!!$    !qdot(4:6) = array(get_angrate_inv(theta) * vector(q(10:12)))
+!!$
+!!$    !  sets the state of the body and its time derivatives
+!!$    call set_state(alpha, q, qdot, alpha)
+!!$
+!!$    ! set the gravity vector in body frame
+!!$    alpha%g = alpha%C_mat*GRAV
+!!$
+!!$    ! mass of the body
+!!$    alpha%mass  = mass
+!!$
+!!$    ! moment of inertia in body-fixed frame
+!!$    alpha%J = -mass*skew(re)*skew(re)
+!!$
+!!$    !first moment of inertia in body-fixed frame: mass*(cg location)
+!!$    alpha%c  = mass*re
+!!$
+!!$    ! reaction force 
+!!$    alpha%fr = zeroV !mass*GRAV !? check
+!!$!    alpha%fr =  vector( (/ cos(q(10)*time ), cos(q(11)*time), sin(q(12)*time ) /) )
+!!$
+!!$    ! reaction torque
+!!$    alpha%gr = zeroV !alpha%J*alpha%omega_dot !? check
+!!$
+!!$    ! Translational + rotational KE = 0.5mV^2 + 0.5*wJw
+!!$    ! (*) between two vectors does a dot product (see utils.f90)
+!!$    ! Assuming the body axis to be at the centre of mass of the body
+!!$    ! Inertial or body frame?
+!!$    alpha%KE = 0.5_dp*(mass * alpha%v *  alpha%v &
+!!$         & + alpha%omega*alpha%J* alpha%omega) ! + coupling term
+!!$
+!!$    ! Potential energy due to position. Should include strain energy later
+!!$    ! Inertial or body frame?
+!!$    alpha%PE = mass*alpha%g*alpha%r
+!!$
+!!$    !call print_body(alpha)
+!!$
+!!$  end function construct1
+
+
+  !*******************************************************************!
+  ! A common interface for setting (updating the state vectors) during
+  ! time-integration. During time-integration only the state of the 
+  ! bodies change and it is unnecessary to create new bodies for the 
+  ! new state. Therefore the user can call this interface to update the 
+  ! state of the supplied  bodies
+  !-------------------------------------------------------------------! 
+!!$  interface set_state
+!!$     module procedure set_body_state
+!!$  end interface set_state
