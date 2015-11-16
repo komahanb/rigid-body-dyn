@@ -32,7 +32,7 @@ module joint_class
      integer :: joint_num
 
      ! spherical, revolute, prismatic, planar
-     character(len=10) :: joint_type      
+     character(len=*) :: joint_type      
      
      ! the two interacting bodies
      class(body) :: first_body, second_body
@@ -59,7 +59,7 @@ module joint_class
 
        class(joint) :: this
        integer      :: jnum
-       character(len=10) :: jtype
+       character(len=*) :: jtype
        class(body)  :: first_body, second_body
 
      end subroutine create_joint_interface
@@ -101,7 +101,7 @@ contains
   function get_joint_type(this)
 
     class(joint)      :: this
-    character(len=10) :: get_joint_type
+    character(len=*) :: get_joint_type
 
     get_joint_type = this % joint_type
 
@@ -114,7 +114,7 @@ contains
   subroutine set_joint_type(this, jtype)
 
     class(joint)      :: this
-    character(len=10) :: jtype
+    character(len=*) :: jtype
 
     this % joint_type =  jtype
 

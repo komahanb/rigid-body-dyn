@@ -8,7 +8,7 @@
 ! This abstract class has:
 !
 ! Getters and setters that are relevant to the variables in the type
-!
+! Method to initialize the body
 !=====================================================================!
 
 module body_class
@@ -19,7 +19,7 @@ module body_class
   private 
   
   ! Expose only the needed variables and functions
-  public body
+  public body !, init_body
   
   ! abtract that that subclass must extend
   type, abstract :: body
@@ -30,12 +30,13 @@ module body_class
      integer :: body_num
 
      ! rod, bar, sphere, plate
-     character(len=10) :: body_type      
+     character(len=*) :: body_type      
 
    contains
 
      procedure :: get_body_num, set_body_num
      procedure :: get_body_type, set_body_type
+     procedure :: init_body
 
   end type body
 
@@ -75,7 +76,7 @@ contains
   function get_body_type(this)
 
     class(body)       :: this
-    character(len=10) :: get_body_type
+    character(len=*) :: get_body_type
 
     get_body_type = this % body_type
 
@@ -88,10 +89,25 @@ contains
   subroutine set_body_type(this, btype)
 
     class(body)       :: this
-    character(len=10) :: btype
+    character(len=*) :: btype
 
     this % body_type =  btype
 
   end subroutine set_body_type
+  
+  !*******************************************************************!
+  ! Routine to initialize the body
+  !*******************************************************************!
+  
+  subroutine init_body(this, bnum, btype )
+
+    class(body)       :: this
+    integer           :: bnum
+    character(len=*) :: btype
+
+    call this % set_body_num(bnum)
+    call this % set_body_type(btype)
+
+  end subroutine init_body
 
 end module body_class
