@@ -44,14 +44,14 @@ module joint_class
      procedure :: get_first_body, set_fist_body
      procedure :: get_second_body, set_second_body
 
-     procedure(add_joint_interface), deferred :: add_joint
+     procedure(create_joint_interface), deferred :: create_joint
 
   end type joint
 
   ! inteface for adding joints
   abstract interface
 
-     subroutine add_joint_interface(this, jnum, jtype, &
+     subroutine create_joint_interface(this, jnum, jtype, &
           & first_body, second_body)
 
        use body_class, only: body
@@ -62,7 +62,7 @@ module joint_class
        character(len=10) :: jtype
        class(body)  :: first_body, second_body
 
-     end subroutine add_joint_interface
+     end subroutine create_joint_interface
 
   end interface
 

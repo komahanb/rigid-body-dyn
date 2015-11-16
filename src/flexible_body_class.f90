@@ -1,12 +1,23 @@
+!=====================================================================!
+! Flexible body implementation of the abstract body class extending 
+! rigid body class
+!---------------------------------------------------------------------!
+! Has functions to:
+! (a) create flexible body based on the supplied parameters
+! (b) update the flexible body state variables during time-marching
+! (d) compute the rotation and angular rate matrices of the body
+! (c) 'toString' like function to print the body props (state+attrs)
+!=====================================================================!
+
 module flexible_body_class
 
   ! module references
+  use rigid_body_class
   use global_constants
   use global_variables
   use types
   use utils
   use body_class
-  use rigid_body_class
   use dispmodule, only : disp
 
 
@@ -38,7 +49,7 @@ module flexible_body_class
   ! interfaces
   interface flexible_body
 
-     procedure constructor ! add constructor
+     procedure constructor_flex ! add constructor
 
   end interface flexible_body
 
@@ -55,65 +66,68 @@ contains
   ! q, qdot: state vector and time derivatives
   ! qddot  : second time derivative of the state (used in elastic only)
   !*******************************************************************!
-  function constructor(mass, c, J, fr, gr, q, qdot, qs, &
+  function constructor_flex(mass, c, J, fr, gr, q, qdot, qs, &
        & qs_dot, qs_double_dot, f, p, h, K, M) result(this)
 
     ! inputs
-    real(dp), optional, intent(in) :: mass 
-    real(dp), optional, intent(in) :: c(NUM_SPAT_DIM)
-    real(dp), optional, intent(in) :: J(NUM_SPAT_DIM, NUM_SPAT_DIM)
-    real(dp), optional, intent(in) :: fr(NUM_SPAT_DIM)
-    real(dp), optional, intent(in) :: gr(NUM_SPAT_DIM)
+    real(dp), intent(in) :: mass 
+    real(dp), intent(in) :: c(NUM_SPAT_DIM)
+    real(dp), intent(in) :: J(NUM_SPAT_DIM, NUM_SPAT_DIM)
+    real(dp), intent(in) :: fr(NUM_SPAT_DIM)
+    real(dp), intent(in) :: gr(NUM_SPAT_DIM)
 
-    real(dp), optional, intent(in) :: q(NDOF_PBODY)
-    real(dp), optional, intent(in) :: qdot(NDOF_PBODY)
+    real(dp), intent(in) :: q(NDOF_PBODY)
+    real(dp), intent(in) :: qdot(NDOF_PBODY)
 
-    real(dp), optional, intent(in) :: qs(NUM_SPAT_DIM)
-    real(dp), optional, intent(in) :: qs_dot(NUM_SPAT_DIM)
-    real(dp), optional, intent(in) :: qs_double_dot(NUM_SPAT_DIM)
+    real(dp), intent(in) :: qs(NUM_SPAT_DIM)
+    real(dp), intent(in) :: qs_dot(NUM_SPAT_DIM)
+    real(dp), intent(in) :: qs_double_dot(NUM_SPAT_DIM)
 
-    real(dp), optional, intent(in) :: f(NUM_SPAT_DIM)
+    real(dp), intent(in) :: f(NUM_SPAT_DIM)
 
-    real(dp), optional, intent(in) :: p(NUM_SPAT_DIM, NUM_SPAT_DIM)
-    real(dp), optional, intent(in) :: h(NUM_SPAT_DIM, NUM_SPAT_DIM)
-    real(dp), optional, intent(in) :: K(NUM_SPAT_DIM, NUM_SPAT_DIM)
-    real(dp), optional, intent(in) :: M(NUM_SPAT_DIM, NUM_SPAT_DIM)
+    real(dp), intent(in) :: p(NUM_SPAT_DIM, NUM_SPAT_DIM)
+    real(dp), intent(in) :: h(NUM_SPAT_DIM, NUM_SPAT_DIM)
+    real(dp), intent(in) :: K(NUM_SPAT_DIM, NUM_SPAT_DIM)
+    real(dp), intent(in) :: M(NUM_SPAT_DIM, NUM_SPAT_DIM)
 
     ! input/output
-    type(flexible_body):: this
+    type(flexible_body)  :: this
+
+    !this = rigid_body(mass, c, J, fr, gr, q, qdot)
+    
     !-----------------------------------------------------------------!
     ! Inertial properties of the body
     !-----------------------------------------------------------------!
 
     ! mass of the body
-    if (present(mass)) this%mass = mass
+    this%mass = mass
 
     ! moment of inertia in body-fixed frame
-    if (present(J)) this%J = matrix(J)       !-mass*skew(re)*skew(re)
+    this%J = matrix(J)       !-mass*skew(re)*skew(re)
 
     !first moment of inertia in body-fixed frame: mass*(cg location)
-    if (present(c)) this%c = vector(c)       ! mass*re
+    this%c = vector(c)       ! mass*re
 
     !-----------------------------------------------------------------!
     ! set the state into the body
     !-----------------------------------------------------------------!
-    if (present(q)) then
+    
        this%r         = vector(q(1:3))
        this%theta     = vector(q(4:6))
        this%v         = vector(q(7:9))
        this%omega     = vector(q(10:12))
-    end if
+    
 
     !-----------------------------------------------------------------!
     ! set the time derivatives of state into the body
     !-----------------------------------------------------------------!
 
-    if (present(qdot)) then
+    
        this%r_dot     = vector(qdot(1:3))
        this%theta_dot = vector(qdot(4:6))
        this%v_dot     = vector(qdot(7:9))
        this%omega_dot = vector(qdot(10:12))
-    end if
+    
 
     !-----------------------------------------------------------------!
     ! update the rotation and angular rate matrices
@@ -145,27 +159,26 @@ contains
     !-----------------------------------------------------------------!
 
     ! reaction force 
-    if (present(fr)) this%fr    = vector(fr)   
+    this%fr    = vector(fr)   
 
     ! reaction torque
-    if (present(gr)) this%gr    = vector(gr)
+    this%gr    = vector(gr)
 
     if (this%mass .eq. ZERO) stop "ERROR: Body with zero mass!"
 
 
-    if (present(qs))  this%qs = vector(qs)
-    if (present(qs_dot))  this%qs_dot = vector(qs_dot)
-    if (present(qs_double_dot))  this%qs_double_dot = &
-         &vector(qs_double_dot)
+    this%qs = vector(qs)
+    this%qs_dot = vector(qs_dot)
+    this%qs_double_dot = vector(qs_double_dot)
 
-    if (present(f))  this%f = vector(f)
+    this%f = vector(f)
 
-    if (present(p))  this%p = matrix(p)
-    if (present(h))  this%h = matrix(h)
-    if (present(K))  this%K = matrix(K)
-    if (present(M))  this%M = matrix(M)
+    this%p = matrix(p)
+    this%h = matrix(h)
+    this%K = matrix(K)
+    this%M = matrix(M)
 
-  end function constructor
+  end function constructor_flex
 
 !*******************************************************************!
 ! routine that prints the state and properties of the flexible body
