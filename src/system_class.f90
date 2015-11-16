@@ -10,12 +10,12 @@ module system_class
 
      private
 
-     integer   :: nbody
+     integer   :: num_body
 
    contains
 
-     procedure :: get_nbody
-     procedure :: set_nbody
+     procedure :: get_num_body
+     procedure :: set_num_body
 
      ! deferred procedure
      procedure(add_body_interface), deferred :: add_body
@@ -46,27 +46,27 @@ contains
   ! Getter for number of bodies
   !*******************************************************************!
 
-  function get_nbody(this)
+  function get_num_body(this)
 
     class(system) :: this
-    integer       :: get_nbody
+    integer       :: get_num_body
 
-    get_nbody = this % nbody
+    get_num_body = this % num_body
 
-  end function get_nbody
+  end function get_num_body
 
   !*******************************************************************!
   ! Setter for number of bodies
   !*******************************************************************!
 
-  subroutine set_nbody(this, bnum)
+  subroutine set_num_body(this, bnum)
 
     class(system) :: this
     integer       :: bnum
 
-    this % nbody =  bnum
+    this % num_body =  bnum
 
-  end subroutine set_nbody
+  end subroutine set_num_body
 
 
 end module system_class
