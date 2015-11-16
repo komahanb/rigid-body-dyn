@@ -15,7 +15,6 @@ module rigid_body_class
 
   ! module definitions
   type, extends(body) :: rigid_body
-     ! no new variables from body
 
   end type rigid_body
 
@@ -59,7 +58,7 @@ contains
     real(dp), optional, intent(in) :: qdot(NDOF_PBODY)
 
     ! input/output
-    type(rigid_body), pointer :: this
+    type(rigid_body) :: this
 
     !-----------------------------------------------------------------!
     ! Inertial properties of the body
