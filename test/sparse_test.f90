@@ -84,10 +84,7 @@ contains
        call disp('>> Performing initialization...')
        call disp('>> Number of processors :', nproc)
     end if
-
-
-    print*, "Hello World from", rank , "of ",nproc
-
+    print*, "I am processor", rank , " of",nproc
 
     !-----------------------------------------------------------------!
     ! Start the total timer
@@ -150,8 +147,10 @@ contains
     !-----------------------------------------------------------------!
     ! finalize MPI
     !-----------------------------------------------------------------!
-    call mpi_finalize(ierr)
-
+    ! call mpi_finalize(ierr)
+    
+    call PetscFinalize(PETSC_NULL_CHARACTER,ierr)
+    
     if(master)  call disp (">> End of execution...")
 
   end subroutine finalize
