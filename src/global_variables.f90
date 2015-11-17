@@ -15,8 +15,6 @@ module global_variables
   ! stores the system in this object
   class(system), allocatable :: dynsys
 
-  integer(sp)  :: MAX_NEWTON_ITER = 50
-
   ! acceleration due to gravity (inertial frame)
   type(vector), parameter :: GRAV = vector((/ 0.0_dp, -9.8_dp, 0.0_dp/))
 
@@ -81,25 +79,31 @@ module global_variables
   logical           :: fdgradient  = .false.
   logical           :: csgradient  = .false.
   logical           :: adjgradient = .false.
-
   
-  !file handle
-  integer(sp )                       :: filenum    
+  !-------------------------------------------------------------------!
+  ! File handling
+  !-------------------------------------------------------------------!
+  integer(sp)                       :: filenum    
+  character                          :: filename  
 
-  ! output filename
-  character                          :: filename   
+  ! count the number of function and jacobian calls made
+  integer(sp)  :: fcnt = 0, fgcnt = 0, newton_cnt = 0
+  
+  ! For newton iterations
+  real(dp)     :: update_norm, res_norm
+  logical      :: unsteady = .false.
+  logical      :: newton_success
+  integer(sp)  :: MAX_NEWTON_ITER = 50
 
   ! tolerances used in time-integration
   real(dp)     :: rel_tol = 1.e-7_dp
   real(dp)     :: abs_tol = 1.e-7_dp
 
-  ! count the number of function and jacobian calls made
-  integer(sp)  :: fcnt = 0, fgcnt = 0, newton_cnt = 0
-  
-  ! each newton_iteration will set these parameters
-  real(dp)     :: update_norm, res_norm
-
-  logical(sp)  :: unsteady = .false.
+  !-------------------------------------------------------------------!
+  ! For error handling
+  !-------------------------------------------------------------------!
+  integer            :: ecode
+  character(len=100) :: ecause
 
 contains
 

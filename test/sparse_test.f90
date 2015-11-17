@@ -13,7 +13,9 @@ program main
   use tictoc, only: timer_start, timer_stop
   use dispmodule, only: disp
   use dynamics, only: execute
-  use system_input_handler
+
+  use input_handler
+
   implicit none
 #include <finclude/petsc.h90>
 !#include <finclude/slepcsys.h>

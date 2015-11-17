@@ -13,18 +13,26 @@
 ! in jacobian.f90 and residual.f90
 !=====================================================================!
 
-module system_input_handler
+module input_handler
 
   use global_constants, only: dp, sp, ZERO, TOT_NDOF, NUM_SPAT_DIM
   use global_variables, only: dynsys
+
+  use global_variables, only: solver_type, filenum, filename, &
+       & ABS_TOL, REL_TOL, MAX_NEWTON_ITER, &
+       & start_time, dT, time, end_time, &
+       & aa, bb, fcnt, unsteady,&
+       & update_norm, res_norm, newton_cnt, master, dynsys
+
   use rigid_body_class, only: rigid_body, print_rigid_body
   use joint_class, only: joint
   use pendulum_class, only : pendulum
   use dispmodule, only: disp
+  use filehandler, only: newunit
 
   implicit none
   private
-  public :: read_system_input
+  public :: read_system_input, read_solver_input
 
 contains 
 
@@ -106,4 +114,58 @@ contains
 
   end subroutine read_system_input
 
-end module system_input_handler
+
+  !*******************************************************************!
+  ! Reads the input file for solution method and sets up  global vars
+  !*******************************************************************!
+
+  subroutine read_solver_input()
+
+    call disp(" >> Loading solver settings from solution.inp") 
+
+    ! get a new unit number
+    filenum = newunit()
+
+    ! read the file
+    open (unit=filenum, file="solution.inp")
+
+    read(filenum, *) start_time
+    read(filenum, *) end_time
+    read(filenum, *) dT
+
+    read(filenum, *) MAX_NEWTON_ITER
+    read(filenum, *) REL_TOL
+    read(filenum, *) ABS_TOL
+
+    close(filenum)
+
+    ! steady or unsteady?
+    if (start_time .ne. end_time) unsteady = .true.
+
+    ! a few sanity checks for unsteady 
+    if (unsteady) then
+
+       if (start_time .gt. end_time)&
+            &stop "ERROR: Start time is greater than end time"
+
+       if (dT .lt. epsilon(1.0_dp)) &
+            &stop "ERROR: Time step less than machine precision"
+
+    end if
+
+    ! everything fine print summary
+    call disp("")
+    call disp(" >> Solver inputs are loaded successfully ") 
+    call disp("  > Initial time        : ", start_time)
+    call disp("  > End time            : ", end_time)
+    call disp("  > Time-step           : ", dT)
+    call disp("  > Max Newton iters    : ", MAX_NEWTON_ITER)
+    call disp("  > Relative tolenrance : ", REL_TOL)
+    call disp("  > Absolute tolenrance : ", ABS_TOL)
+    call disp("  > Unsteady problem    : ", unsteady)
+    call disp("")
+
+  end subroutine read_solver_input
+
+
+end module input_handler
