@@ -38,8 +38,6 @@ program main
 
   call initialize()
 
-!  call PetscOptionsSetValue("-snes_mf_operator","TRUE",ierr)
-
   !-------------------------------------------------------------------!
   ! Execute multibody dynamics
   !-------------------------------------------------------------------!
@@ -62,13 +60,19 @@ contains
 
     integer            :: i         ! loop counter
     integer            :: argc      ! number of command line arguments
-    character(len=25)  :: argv ,cc      ! a command line argument
+    character(len=25)  :: argv ,cc  ! a command line argument
+
 
     !-----------------------------------------------------------------!
-    ! initialize mpi
+    !-------------------- INITIALIZE PETSC ---------------------------! 
     !-----------------------------------------------------------------!
 
     call PetscInitialize(PETSC_NULL_CHARACTER,ierr)
+    call PetscOptionsSetValue("-snes_mf_operator","TRUE", ierr)
+
+    !-----------------------------------------------------------------!
+    !-------------------- INITIALIZE MPI -----------------------------! 
+    !-----------------------------------------------------------------!
 
     call MPI_COMM_RANK(PETSC_COMM_WORLD,rank,ierr)
     call MPI_COMM_SIZE(PETSC_COMM_WORLD,nproc,ierr)
@@ -85,15 +89,17 @@ contains
        call disp('>> Performing initialization...')
        call disp('>> Number of processors :', nproc)
     end if
-    print*, "I am processor", rank , " of",nproc
+    print*, "    I am processor", rank , " of",nproc
+
 
     !-----------------------------------------------------------------!
-    ! Start the total timer
+    !------------------ START THE TIMER ------------------------------!
     !-----------------------------------------------------------------!
+
     call timer_start(time_tot)
-!
+
     !-----------------------------------------------------------------!
-    ! process command line arguments
+    !-------------------COMMAND LINE ARGUMENTS -----------------------! 
     !-----------------------------------------------------------------!
 
     ! get number of command line arguments
@@ -134,22 +140,24 @@ contains
 
 
   !*******************************************************************!
-  ! finalize
+  !  Function to finalize mpi and other cleaning up tasks
   !*******************************************************************!
 
   subroutine finalize()
 
     !-----------------------------------------------------------------!
-    ! Stop the timer
+    !-------------------- STOP THE TIMER -----------------------------!
     !-----------------------------------------------------------------!
+
     if (master) then
        call timer_stop(time_tot)
        call print_timer_summary()
     end if
 
     !-----------------------------------------------------------------!
-    ! finalize MPI
+    ! ---------------------FINALIZE MPI-------------------------------!
     !-----------------------------------------------------------------!
+
     ! call mpi_finalize(ierr)
     
     call PetscFinalize(PETSC_NULL_CHARACTER,ierr)
@@ -157,6 +165,5 @@ contains
     if(master)  call disp (">> End of execution...")
 
   end subroutine finalize
-
 
 end program main

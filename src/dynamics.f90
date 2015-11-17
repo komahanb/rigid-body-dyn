@@ -7,19 +7,12 @@ module dynamics
 
   use global_variables, only: solver_type, ierr
   use global_constants, only: dp
+  use system_input_handler, only: setup_system
   use types
+
   implicit none
 
 contains
-
-  subroutine setup_dynamics()
-
-    ! read the input file
-!    call read_input()
-
-    ! any post processing may be?
-
-  end subroutine setup_dynamics
 
   !*******************************************************************!
   ! Routine that wraps the whole execution logic from creating geometry
@@ -32,7 +25,7 @@ contains
     ! setup the problem
     !-----------------------------------------------------------------!
 
-    call setup_dynamics()
+    call setup_system()
 
     !-----------------------------------------------------------------!
     ! solve the problem

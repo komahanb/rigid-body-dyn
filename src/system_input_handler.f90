@@ -24,7 +24,7 @@ module system_input_handler
 
   implicit none
   private
-  public :: read_input 
+  public :: read_input, setup_system
 
 contains 
 
@@ -105,5 +105,15 @@ contains
     call disp(" >> System is created...")
 
   end subroutine read_input
+
+
+  subroutine setup_system()
+    
+    ! read the input file
+    call read_input()
+    
+    ! any post processing may be?
+    
+  end subroutine setup_system
 
 end module system_input_handler
