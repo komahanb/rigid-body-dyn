@@ -8,7 +8,8 @@ program main
   !  use matrix_class, only: matrix
   !  use tictoc, only: timer_start, timer_stop, timer
   use global_variables, only: print_timer_summary, master, nproc, rank,&
-       & initialized, solver_type, time_tot
+       & initialized, solver_type, time_tot, dT, start_time, end_time
+
   use tictoc, only: timer_start, timer_stop
   use dispmodule, only: disp
   use dynamics, only: execute
@@ -86,8 +87,14 @@ contains
     ! find master
     if (rank .eq. 0) then       
        master = .true.
+
+       call disp("===================================================")
+       call disp("'            Rigid body dynamics                  '")
+       call disp("===================================================")
+
        call disp('>> Performing initialization...')
        call disp('>> Number of processors :', nproc)
+
     end if
     print*, "    I am processor", rank , " of",nproc
 
@@ -108,7 +115,7 @@ contains
     ! begin loop around command line args
     do i = 1, argc
 
-       ! get that argument
+       ! get the argument
        call get_command_argument(i,argv)
 
        ! begin case structure
@@ -117,12 +124,38 @@ contains
           ! solver
        case('--solver_type')
 
-          ! get next argument
+          ! get the next argument
           call get_command_argument(i+1,argv)
 
-          ! set global var
+          ! set the colver_type global variable
           solver_type = trim(argv)
+          
+          ! time step for integration
+       case('--step-size')
 
+          ! get the next argument
+          call get_command_argument(i+1,argv)
+
+          ! set the time-step global variable
+
+          ! start time for integration
+       case('--start-time')
+          
+          ! get the next argument
+          call get_command_argument(i+1,argv)
+          
+          ! set the start time global variable
+          !call convert (trim(argv), start_time)
+
+          ! end time for integration
+       case('--end-time')
+          
+          ! get the next argument
+          call get_command_argument(i+1,argv)
+          
+          ! set the end time global variable
+          !call convert (trim(argv), end_time)
+          
           ! do nothing here
        case default
 
@@ -130,8 +163,6 @@ contains
 
     end do
     
-    call read_input() ! will set everything into the system object
-
     initialized = .true.
 
     if (master) call disp('>> Initialization complete...')

@@ -85,6 +85,14 @@ module global_variables
   logical           :: csgradient  = .false.
   logical           :: adjgradient = .false.
 
+  
+  !file handle
+  integer(sp )                       :: filenum    
+
+  ! output filename
+  character                          :: filename   
+
+
 contains
 
   !*******************************************************************!
