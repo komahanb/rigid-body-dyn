@@ -5,10 +5,8 @@
 
 module dynamics
 
-  use global_variables, only: solver_type, ierr
-  use global_constants, only: dp
+  use global_variables, only: solver_type
   use system_input_handler, only: setup_system
-  use types
 
   implicit none
 
@@ -22,14 +20,43 @@ contains
   subroutine execute()
 
     !-----------------------------------------------------------------!
-    ! setup the problem
+    !------------------- SETUP THE PROBLEM----------------------------!
     !-----------------------------------------------------------------!
 
     call setup_system()
 
     !-----------------------------------------------------------------!
-    ! solve the problem
+    !------------------- SOLVE THE SYSTEM ----------------------------!
     !-----------------------------------------------------------------!
+
+
+    call solve_system()
+
+    !-----------------------------------------------------------------!
+    !-------------------- POST-PROCESS THE RESULTS -------------------!
+    !-----------------------------------------------------------------!
+
+    call post_process()
+
+  end subroutine execute
+
+
+  !*******************************************************************!
+  ! Post process the results of the simulations 
+  ! e.g. tecplot output
+  !      iteration history
+  !*******************************************************************!
+  
+  subroutine post_process()
+    
+  end subroutine post_process
+
+
+  !*******************************************************************!
+  ! solve the system using appropriate linear solver
+  !*******************************************************************!
+  
+  subroutine solve_system()
 
     select case(trim(solver_type))
 
@@ -47,7 +74,6 @@ contains
 
     end select
 
-
-  end subroutine execute
+  end subroutine solve_system
 
 end module dynamics
