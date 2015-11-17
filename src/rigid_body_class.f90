@@ -99,7 +99,7 @@ module rigid_body_class
 
 interface rigid_body
 
-  procedure constructor_rigid
+  procedure constructor
 
 end interface rigid_body
 
@@ -168,7 +168,7 @@ contains
   ! qddot  : second time derivative of the state (used in elastic only)
   !*******************************************************************!
   
-  function constructor_rigid(mass, c, J, fr, gr, q, qdot) result(this)
+  function constructor(mass, c, J, fr, gr, q, qdot) result(this)
 
     ! inputs
     real(dp), intent(in) :: mass 
@@ -255,7 +255,7 @@ contains
 
     !call print_body(this)
 
-  end function constructor_rigid
+  end function constructor
   
   !*******************************************************************!
   ! Returns the rotation matrix based on the euler angles

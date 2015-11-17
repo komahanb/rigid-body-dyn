@@ -2,7 +2,7 @@
 ! Module that helps share global variables across compilation units
 !*******************************************************************
 module global_variables
-
+  use system_class
   use global_constants, only: MAX_TIME_STEPS, TOT_NDOF, ZERO
   use dispmodule, only: disp
   use tictoc, only: timer, timer_start, timer_stop
@@ -11,6 +11,9 @@ module global_variables
   implicit none
 
   save
+
+  ! stores the system in this object
+  class(system), allocatable :: dynsys
 
   ! count the number of function and jacobian calls made
   integer(sp)  :: fcnt=0, fgcnt=0

@@ -49,7 +49,7 @@ module flexible_body_class
   ! interfaces
   interface flexible_body
 
-     procedure constructor_flex ! add constructor
+     procedure constructor ! add constructor
 
   end interface flexible_body
 
@@ -66,7 +66,7 @@ contains
   ! q, qdot: state vector and time derivatives
   ! qddot  : second time derivative of the state (used in elastic only)
   !*******************************************************************!
-  function constructor_flex(mass, c, J, fr, gr, q, qdot, qs, &
+  function constructor(mass, c, J, fr, gr, q, qdot, qs, &
        & qs_dot, qs_double_dot, f, p, h, K, M) result(this)
 
     ! inputs
@@ -178,7 +178,7 @@ contains
     this%K = matrix(K)
     this%M = matrix(M)
 
-  end function constructor_flex
+  end function constructor
 
 !*******************************************************************!
 ! routine that prints the state and properties of the flexible body

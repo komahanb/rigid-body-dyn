@@ -64,16 +64,19 @@ LIBS =  -ldl -lm -lstdc++ -llapack -lblas -lpetsc #lib/lsqr.a #lib/libdisp.a #da
 
 #SRCS = hey.f90 hello.f90 hello1.f90
 #SRC := $(wildcard src/*.f90 src/*.c src/*.cpp)
-SRC  :=	src/dispmodule.f90 src/matrix_class.f90 src/sparse_matrix_class.f90 \
-	src/jacobian_matrix_class.f90 src/global_constants.f90 \
-	src/tictoc.f90 src/types.f90 src/filehandler.f90 \
+SRC  := src/global_constants.f90 src/types.f90 src/body_class.f90 \
+	src/joint_class.f90 src/dispmodule.f90 \
+	src/system_class.f90 src/matrix_class.f90 \
+	src/sparse_matrix_class.f90\
+	src/jacobian_matrix_class.f90 \
+	src/tictoc.f90 src/filehandler.f90 \
 	src/global_variables.f90 src/utils.f90 src/differ.f90 \
-	src/linear_system.f90 src/body_class.f90 src/rigid_body_class.f90\
-	src/flexible_body_class.f90 src/joint_class.f90 \
+	src/linear_system.f90  src/rigid_body_class.f90\
+	src/flexible_body_class.f90  \
 	src/spherical_joint_class.f90 \
-	src/system_class.f90 src/pendulum_system.f90 \
+	src/pendulum_system.f90 \
 	src/residual.f90 src/jacobian.f90 src/solver_utils.f90 \
-	src/snes.f90 src/dynamics_input.f90 src/dynamics.f90\
+	src/snes.f90 src/system_input_handler.f90 src/dynamics.f90 \
 	test/sparse_test.f90
 
 #test/finite_diff.f90

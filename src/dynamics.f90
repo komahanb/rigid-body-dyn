@@ -6,7 +6,6 @@
 module dynamics
 
   use global_variables, only: solver_type, ierr
-  use dynamics_input, only: read_input
   use global_constants, only: dp
   use types
   implicit none
@@ -15,10 +14,8 @@ contains
 
   subroutine setup_dynamics()
 
-    use dynamics_input
-
     ! read the input file
-    call read_input()
+!    call read_input()
 
     ! any post processing may be?
 
