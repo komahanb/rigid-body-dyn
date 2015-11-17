@@ -59,7 +59,7 @@ contains
     integer         :: bnum
     class(body)     :: bdy
 
-    print *, 'Added body to the pendulum!'
+    print *, 'Added body to the pendulum system!'
 
     allocate(this%bodies(bnum), source = bdy)
     
@@ -76,7 +76,7 @@ contains
     integer         :: jnum
     class(joint)    :: jnt
 
-    print *, 'Added joint to the pendulum!'
+    print *, 'Added joint to the pendulum system!'
 
     allocate(this%joints(jnum), source = jnt)
     

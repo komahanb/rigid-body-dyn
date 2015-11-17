@@ -23,6 +23,7 @@
 module joint_class
 
   use body_class, only: body
+  use types, only: vector
 
   implicit none
 
@@ -53,25 +54,25 @@ module joint_class
      procedure :: get_first_body , set_first_body
      procedure :: get_second_body, set_second_body
 
-!     procedure(create_joint_interface), deferred :: create_joint
+!     procedure(ijoint_residual), deferred :: joint_residual
 
   end type joint
-
-!!$  ! inteface for adding joints
+  
+  !------------------------------------------------------------------!
+  ! inteface for joint govening equations
+  !------------------------------------------------------------------!
+!!$  
 !!$  abstract interface
 !!$
-!!$     subroutine create_joint_interface(this, jnum, jtype, &
-!!$          & first_body, second_body)
+!!$     subroutine ijoint_residual(this, residual)
 !!$
-!!$       use body_class, only: body
+!!$       use types, only: vector
 !!$       import joint
 !!$
-!!$       class(joint)     :: this
-!!$       integer          :: jnum
-!!$       character(len=5) :: jtype
-!!$       class(body)      :: first_body, second_body
+!!$       class(joint) :: this
+!!$       type(vector) :: residual(2) ! 6 equations (2 in vector form)
 !!$
-!!$     end subroutine create_joint_interface
+!!$     end subroutine ijoint_residual
 !!$
 !!$  end interface
 

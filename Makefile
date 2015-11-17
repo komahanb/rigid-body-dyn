@@ -70,6 +70,7 @@ SRC  :=	src/dispmodule.f90 src/matrix_class.f90 src/sparse_matrix_class.f90 \
 	src/global_variables.f90 src/utils.f90 src/differ.f90 \
 	src/linear_system.f90 src/body_class.f90 src/rigid_body_class.f90\
 	src/flexible_body_class.f90 src/joint_class.f90 \
+	src/spherical_joint_class.f90 \
 	src/system_class.f90 src/pendulum_system.f90 \
 	src/residual.f90 src/jacobian.f90 src/solver_utils.f90 \
 	src/snes.f90 src/dynamics_input.f90 src/dynamics.f90\
