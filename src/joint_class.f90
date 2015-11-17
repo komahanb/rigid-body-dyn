@@ -25,23 +25,23 @@ module joint_class
 
   ! we create a new datatype called joint
   type, abstract :: joint
-     
+
      private
-     
+
      ! joint number
      integer :: joint_num
 
      ! spherical, revolute, prismatic, planar
-     character(len=*) :: joint_type      
-     
+     character(len=5) :: joint_type      
+
      ! the two interacting bodies
-     class(body) :: first_body, second_body
-     
+     class(body), allocatable :: first_body, second_body
+
    contains
-     
+
      procedure :: get_joint_num, set_joint_num
      procedure :: get_joint_type, set_joint_type
-     procedure :: get_first_body, set_fist_body
+     procedure :: get_first_body , set_first_body
      procedure :: get_second_body, set_second_body
 
      procedure(create_joint_interface), deferred :: create_joint
@@ -57,10 +57,10 @@ module joint_class
        use body_class, only: body
        import joint
 
-       class(joint) :: this
-       integer      :: jnum
-       character(len=*) :: jtype
-       class(body)  :: first_body, second_body
+       class(joint)     :: this
+       integer          :: jnum
+       character(len=5) :: jtype
+       class(body)      :: first_body, second_body
 
      end subroutine create_joint_interface
 
@@ -74,7 +74,7 @@ contains
 
   function get_joint_num(this)
 
-    class(joint) :: this
+    class(joint)  :: this
     integer       :: get_joint_num
 
     get_joint_num = this % joint_num
@@ -87,7 +87,7 @@ contains
 
   subroutine set_joint_num(this, jnum)
 
-    class(joint) :: this
+    class(joint)  :: this
     integer       :: jnum
 
     this % joint_num =  jnum
@@ -100,8 +100,8 @@ contains
 
   function get_joint_type(this)
 
-    class(joint)      :: this
-    character(len=*) :: get_joint_type
+    class(joint)     :: this
+    character(len=5) :: get_joint_type
 
     get_joint_type = this % joint_type
 
@@ -113,23 +113,23 @@ contains
 
   subroutine set_joint_type(this, jtype)
 
-    class(joint)      :: this
-    character(len=*) :: jtype
+    class(joint)     :: this
+    character(len=5) :: jtype
 
     this % joint_type =  jtype
 
   end subroutine set_joint_type
-  
+
   !*******************************************************************!
   ! Getter for the first_body
   !*******************************************************************!
-  
+
   function get_first_body(this)
 
     class(joint) :: this
-    class(body)  :: get_first_body
+    class(body), allocatable  :: get_first_body
 
-    get_first_body = this % first_body
+    allocate(get_first_body, source = this%first_body)
 
   end function get_first_body
 
@@ -142,7 +142,7 @@ contains
     class(joint):: this
     class(body) :: first_body
 
-    this % first_body =  first_body
+    allocate(this%first_body, source = first_body)
 
   end subroutine set_first_body
 
@@ -150,13 +150,13 @@ contains
   !*******************************************************************!
   ! Getter for the second_body
   !*******************************************************************!
-  
+
   function get_second_body(this)
 
     class(joint) :: this
-    class(body)  :: get_second_body
+    class(body), allocatable :: get_second_body
 
-    get_second_body = this % second_body
+    allocate(get_second_body, source = this%second_body)
 
   end function get_second_body
 
@@ -169,9 +169,12 @@ contains
     class(joint):: this
     class(body) :: second_body
 
-    this % second_body =  second_body
+    allocate(this % second_body, source=second_body)
 
   end subroutine set_second_body
 
 end module joint_class
 
+!    class(body), allocatable :: alloc_second_body
+!    allocate(alloc_second_body, source = second_body)
+!    allocate(this % second_body, source=alloc_second_body)
