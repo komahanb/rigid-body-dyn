@@ -1,4 +1,6 @@
-! Module that defines the system 
+!=====================================================================!
+! An abstract moduel that defines the system 
+!=====================================================================!
 module system_class
 
   ! module dependencies
@@ -8,7 +10,7 @@ module system_class
   public :: system
 
   type, abstract:: system
-     
+
      private
 
      integer   :: nbody
@@ -21,7 +23,7 @@ module system_class
 
      procedure :: get_njoint
      procedure :: set_njoint
-     
+
      procedure(iadd_body), deferred :: add_body
      procedure(iadd_joint), deferred :: add_joint
 
@@ -40,7 +42,7 @@ module system_class
 
        class(system) :: this
        integer       :: bnum
-       class(body), allocatable   :: bdy
+       class(body)   :: bdy
 
      end subroutine iadd_body
 
@@ -59,7 +61,7 @@ module system_class
 
        class(system) :: this
        integer       :: jnum
-       class(joint), allocatable  :: jnt
+       class(joint)  :: jnt
 
      end subroutine iadd_joint
 
