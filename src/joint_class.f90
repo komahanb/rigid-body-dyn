@@ -2,14 +2,23 @@
 ! Abstract class that defines joints
 !---------------------------------------------------------------------!
 ! Has functions to:
+!
 ! (a) getters and setters to joint properties
 ! (b) abstract constructor to create joints that one should implement 
 !     for each joint type downstream extending this class
 !---------------------------------------------------------------------!
 ! Note: 
 !---------------------------------------------------------------------!
+!
 ! Should be able to accomodate both rigid and elatic bodies as we use
 ! the abstract class for bodies here instead of their respective impls
+!
+! We formulate six equations for each type of joint irrespective of
+! whether or not some are trivial. This is because:
+!
+! (1) the structure of the equations is not affected by the joints
+! (2) helps exploit sparsity
+!
 !=====================================================================!
 module joint_class
 
@@ -44,27 +53,27 @@ module joint_class
      procedure :: get_first_body , set_first_body
      procedure :: get_second_body, set_second_body
 
-     procedure(create_joint_interface), deferred :: create_joint
+!     procedure(create_joint_interface), deferred :: create_joint
 
   end type joint
 
-  ! inteface for adding joints
-  abstract interface
-
-     subroutine create_joint_interface(this, jnum, jtype, &
-          & first_body, second_body)
-
-       use body_class, only: body
-       import joint
-
-       class(joint)     :: this
-       integer          :: jnum
-       character(len=5) :: jtype
-       class(body)      :: first_body, second_body
-
-     end subroutine create_joint_interface
-
-  end interface
+!!$  ! inteface for adding joints
+!!$  abstract interface
+!!$
+!!$     subroutine create_joint_interface(this, jnum, jtype, &
+!!$          & first_body, second_body)
+!!$
+!!$       use body_class, only: body
+!!$       import joint
+!!$
+!!$       class(joint)     :: this
+!!$       integer          :: jnum
+!!$       character(len=5) :: jtype
+!!$       class(body)      :: first_body, second_body
+!!$
+!!$     end subroutine create_joint_interface
+!!$
+!!$  end interface
 
 contains  
 
