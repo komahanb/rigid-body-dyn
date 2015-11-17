@@ -50,7 +50,7 @@ module residual
   use body_class
   use rigid_body_class
   use flexible_body_class
-  use joints
+  use joint_class
 
   implicit none
 

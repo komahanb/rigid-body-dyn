@@ -64,6 +64,7 @@ module rigid_body_class
 
      !     The format for c is: (in body frame)
      !     c = [ cx,  cy,  cz ]
+
      type(vector) :: c              ! first moment of inertia
 
      !  The format for J is: (in body frame)
@@ -80,6 +81,7 @@ module rigid_body_class
      type(vector) :: fr             ! reaction force
      type(vector) :: gr             ! reaction torque
 
+     type(vector) :: rj             ! position of joint
      type(vector) :: g              ! gravity vector in local frame
 
      real(dp)     :: KE             ! kinetic energy of the body
@@ -181,8 +183,6 @@ contains
     ! input/output
     type(rigid_body) :: this
 
-    ! call this%init_body()
-
     !-----------------------------------------------------------------!
     ! Inertial properties of the body
     !-----------------------------------------------------------------!
@@ -204,8 +204,6 @@ contains
     this%theta     = vector(q(4:6))
     this%v         = vector(q(7:9))
     this%omega     = vector(q(10:12))
-
-
 
     !-----------------------------------------------------------------!
     ! set the time derivatives of state into the body

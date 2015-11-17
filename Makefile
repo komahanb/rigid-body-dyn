@@ -21,7 +21,7 @@ FC = mpif90
 #------------------------------
 CC_FLAGS =  -g #-Wall
 CX_FLAGS =  -g -cpp -dM #-Wall
-FC_FLAGS =  -g -cpp -dM -Wno-unused -fbounds-check #-Wall
+FC_FLAGS =  -g -cpp -dM -Wno-unused -fbounds-check  #-std=f2008 #-Wall
 
 
 #------------------------------
@@ -69,7 +69,8 @@ SRC  :=	src/dispmodule.f90 src/matrix_class.f90 src/sparse_matrix_class.f90 \
 	src/tictoc.f90 src/types.f90 src/filehandler.f90 \
 	src/global_variables.f90 src/utils.f90 src/differ.f90 \
 	src/linear_system.f90 src/body_class.f90 src/rigid_body_class.f90\
-	src/flexible_body_class.f90 src/joints.f90 \
+	src/flexible_body_class.f90 src/joint_class.f90 \
+	src/system_class.f90\
 	src/residual.f90 src/jacobian.f90 src/solver_utils.f90 \
 	src/snes.f90 src/dynamics_input.f90 src/dynamics.f90\
 	test/sparse_test.f90

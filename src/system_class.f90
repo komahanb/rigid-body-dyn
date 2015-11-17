@@ -6,39 +6,35 @@ module system_class
   private
   public :: system
 
-  type, abstract :: system
-
+  type system
+     
      private
 
-     integer   :: num_body
+     integer   :: nbody
+     integer   :: njoint
 
    contains
 
-     procedure :: get_num_body
-     procedure :: set_num_body
+     procedure :: get_nbody
+     procedure :: set_nbody
 
-     ! deferred procedure
-     procedure(add_body_interface), deferred :: add_body
+     procedure :: get_njoint
+     procedure :: set_njoint
+
+     procedure :: add_body
+     procedure :: add_joint
 
   end type system
 
-  ! inteface for creating bodies
-  abstract interface
-
-     subroutine add_body_interface(this, bnum, bdy)
-
-       use body_class, only : body
-
-       import system
-
-       class(system):: this
-       integer      :: bnum
-       class(body)  :: bdy
-
-     end subroutine add_body_interface
-
-  end interface
-
+!!$  
+!!$  ! inteface for creating bodies
+!!$  interface add_body
+!!$     module procedure add_body_to_system
+!!$  end interface add_body
+!!$
+!!$  interface add_joint
+!!$     module procedure add_joint_to_system
+!!$  end interface add_joint
 
 contains
 
@@ -46,27 +42,81 @@ contains
   ! Getter for number of bodies
   !*******************************************************************!
 
-  function get_num_body(this)
+  function get_nbody(this)
 
     class(system) :: this
-    integer       :: get_num_body
+    integer       :: get_nbody
 
-    get_num_body = this % num_body
+    get_nbody = this % nbody
 
-  end function get_num_body
+  end function get_nbody
 
   !*******************************************************************!
   ! Setter for number of bodies
   !*******************************************************************!
 
-  subroutine set_num_body(this, bnum)
+  subroutine set_nbody(this, bnum)
 
     class(system) :: this
     integer       :: bnum
 
-    this % num_body =  bnum
+    this % nbody =  bnum
 
-  end subroutine set_num_body
+  end subroutine set_nbody
 
+   
+  !*******************************************************************!
+  ! Getter for number of bodies
+  !*******************************************************************!
+  
+  function get_njoint(this)
+
+    class(system) :: this
+    integer       :: get_njoint
+
+    get_njoint = this % njoint
+
+  end function get_njoint
+
+  !*******************************************************************!
+  ! Setter for number of bodies
+  !*******************************************************************!
+
+  subroutine set_njoint(this, jnum)
+
+    class(system) :: this
+    integer       :: jnum
+
+    this % njoint =  jnum
+
+  end subroutine set_njoint
+
+  !*******************************************************************!
+  ! Add body into the system
+  !*******************************************************************!
+
+  subroutine add_body(this, bnum, bdy)
+
+    use body_class, only  : body
+
+    class(system) :: this
+    integer       :: bnum
+    class(body)   :: bdy
+
+  end subroutine add_body
+  
+  !*******************************************************************!
+  ! Add joint into the system
+  !*******************************************************************!
+  
+  subroutine add_joint(this, jnum, jnt)
+
+    use joint_class, only : joint
+
+    class(system) :: this
+    integer       :: jnum
+    class(joint)  :: jnt
+
+  end subroutine add_joint
 
 end module system_class

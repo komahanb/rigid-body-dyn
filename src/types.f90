@@ -55,5 +55,18 @@ module types
      real(dp),allocatable :: col(:)
      real(dp),allocatable :: val(:)
   end type jac_mat
+  
+!!$  ! Type that holds all the information about the system together
+!!$  type system
+!!$
+!!$     integer :: NUM_BODIES
+!!$
+!!$     integer :: NUM_JOINTS
+!!$
+!!$     type(rigid_body), allocatable, dimension(:) :: body
+!!$
+!!$     type(joint), allocatable, dimension(:) :: jnt
+!!$
+!!$  end type system
 
 end module types

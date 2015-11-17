@@ -8,11 +8,11 @@ module dynamics
   use global_variables, only: solver_type, ierr
   use dynamics_input, only: read_input
   use global_constants, only: dp
-
+  use types
   implicit none
 
 contains
-  
+
   subroutine setup_dynamics()
 
     use dynamics_input
@@ -21,9 +21,9 @@ contains
     call read_input()
 
     ! any post processing may be?
-    
+
   end subroutine setup_dynamics
-  
+
   !*******************************************************************!
   ! Routine that wraps the whole execution logic from creating geometry
   ! to solving the system to time-marching
@@ -45,15 +45,15 @@ contains
 
     case('newton-krylov')
 
-      ! call newton_krylov_solve()
+       ! call newton_krylov_solve()
 
     case('LU')
 
        ! call lower_upper_solve()
- 
+
     case DEFAULT
 
-     !  call direct_solve()
+       !  call direct_solve()
 
     end select
 

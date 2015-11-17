@@ -19,18 +19,19 @@ module body_class
   private 
   
   ! Expose only the needed variables and functions
-  public body !, init_body
+  public :: body  
+  public :: get_body_num, set_body_num
+  public :: get_body_type, set_body_type
+  public :: init_body
   
   ! abtract that that subclass must extend
   type, abstract :: body
-     
+
      private 
 
-     ! body number
-     integer :: body_num
+     integer :: body_num      ! body number
 
-     ! rod, bar, sphere, plate
-     character(len=*) :: body_type      
+     character(len=5) :: body_type    ! rod, bar, sphere, plate
 
    contains
 
@@ -76,7 +77,7 @@ contains
   function get_body_type(this)
 
     class(body)       :: this
-    character(len=*) :: get_body_type
+    character(len=5) :: get_body_type
 
     get_body_type = this % body_type
 
@@ -89,7 +90,7 @@ contains
   subroutine set_body_type(this, btype)
 
     class(body)       :: this
-    character(len=*) :: btype
+    character(len=5) :: btype
 
     this % body_type =  btype
 
@@ -103,7 +104,7 @@ contains
 
     class(body)       :: this
     integer           :: bnum
-    character(len=*) :: btype
+    character(len=5) :: btype
 
     call this % set_body_num(bnum)
     call this % set_body_type(btype)
