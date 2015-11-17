@@ -237,18 +237,18 @@ contains
 
   end function new_matrix_from_array
 
-  !**********************************************************************************
-  ! constructor for a new matrix with entries supplied as an array (any n by n matrix
-  !**********************************************************************************
-  function mat(arr,n)
-
-    real(dp), intent(in)    :: arr(n*n)
-    integer(sp), intent(in) :: n
-    real(dp)                :: mat(n,n)
-
-    mat   = reshape(arr, (/n,n/))
-
-  end function mat
+!!$  !**********************************************************************************
+!!$  ! constructor for a new matrix with entries supplied as an array (any n by n matrix
+!!$  !**********************************************************************************
+!!$  function mat(arr,n)
+!!$
+!!$    real(dp), intent(in)    :: arr(n*n)
+!!$    integer(sp), intent(in) :: n
+!!$    real(dp)                :: mat(n,n)
+!!$
+!!$    mat   = reshape(arr, (/n,n/))
+!!$
+!!$  end function mat
 
   ! get the matrix entries as array
   function get_matrix(A)
