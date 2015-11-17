@@ -1,6 +1,10 @@
 ! Module that defines the system 
 module system_class
 
+  ! module dependencies
+  use body_class, only  : body
+  use joint_class, only : joint
+
   implicit none
 
   private
@@ -97,8 +101,6 @@ contains
 
   subroutine add_body(this, bnum, bdy)
 
-    use body_class, only  : body
-
     class(system) :: this
     integer       :: bnum
     class(body)   :: bdy
@@ -110,8 +112,6 @@ contains
   !*******************************************************************!
   
   subroutine add_joint(this, jnum, jnt)
-
-    use joint_class, only : joint
 
     class(system) :: this
     integer       :: jnum
