@@ -92,6 +92,9 @@ module global_variables
   ! output filename
   character                          :: filename   
 
+  ! tolerances used in time-integration
+  real(dp), parameter     :: REL_TOL = 1.e-7_dp
+  real(dp), parameter     :: ABS_TOL = 1.e-7_dp
 
 contains
 

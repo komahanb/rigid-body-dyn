@@ -6,8 +6,16 @@
 module dynamics
 
   use filehandler, only: newunit
-  use global_variables, only: solver_type, filenum, filename
+  
+  use global_constants, only: sp, dp
+
+  use global_variables, only: solver_type, filenum, filename, &
+       & ABS_TOL, REL_TOL, MAX_NEWTON_ITER, &
+       & start_time, dT, time, end_time, &
+       & aa, bb, fcnt
+
   use system_input_handler, only: read_input
+
   use dispmodule, only:disp
 
   implicit none
@@ -49,13 +57,14 @@ contains
     ! The following defaults are already set in global_varaibles.f90.
     ! The user is free to change here too.
     !-------------------------------------------------------------------!
-!!$
-!!$    dT         = 0.1_dp
-!!$    start_time = 0.0_dp
-!!$    end_time   = 1.0_dp
-!!$
-!!$    aa   = 1.0_dp/dT       ! used in jacobian assembly and state update
-!!$    bb   = 1.0_dp/dT**2 ! used in jacobian assembly and state update
+
+    dT         = 0.1_dp
+    start_time = 0.0_dp
+    end_time   = 1.0_dp
+
+    aa   = 1.0_dp/dT       ! used in jacobian assembly and state update
+    bb   = 1.0_dp/dT**2 ! used in jacobian assembly and state update
+
 !!$
 !!$    ! print an initial summary
 !!$    call disp(">> Starting time-integration...")
