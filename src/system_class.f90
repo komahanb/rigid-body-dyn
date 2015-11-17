@@ -2,15 +2,12 @@
 module system_class
 
   ! module dependencies
-  use body_class, only  : body
-  use joint_class, only : joint
-
   implicit none
 
   private
   public :: system
 
-  type system
+  type, abstract:: system
      
      private
 
@@ -24,21 +21,49 @@ module system_class
 
      procedure :: get_njoint
      procedure :: set_njoint
-
-     procedure :: add_body
-     procedure :: add_joint
+     
+     procedure(iadd_body), deferred :: add_body
+     procedure(iadd_joint), deferred :: add_joint
 
   end type system
+  
+  abstract interface
 
-!!$  
-!!$  ! inteface for creating bodies
-!!$  interface add_body
-!!$     module procedure add_body_to_system
-!!$  end interface add_body
-!!$
-!!$  interface add_joint
-!!$     module procedure add_joint_to_system
-!!$  end interface add_joint
+     !****************************************************************!
+     ! Add body into the system
+     !****************************************************************!
+
+     subroutine iadd_body(this, bnum, bdy)
+
+       use body_class, only  : body
+       import system
+
+       class(system) :: this
+       integer       :: bnum
+       class(body), allocatable   :: bdy
+
+     end subroutine iadd_body
+
+  end interface
+
+  abstract interface 
+
+     !****************************************************************!
+     ! Add joint into the system
+     !****************************************************************!
+
+     subroutine iadd_joint(this, jnum, jnt)
+
+       use joint_class, only : joint
+       import system
+
+       class(system) :: this
+       integer       :: jnum
+       class(joint), allocatable  :: jnt
+
+     end subroutine iadd_joint
+
+  end interface
 
 contains
 
@@ -94,29 +119,5 @@ contains
     this % njoint =  jnum
 
   end subroutine set_njoint
-
-  !*******************************************************************!
-  ! Add body into the system
-  !*******************************************************************!
-
-  subroutine add_body(this, bnum, bdy)
-
-    class(system) :: this
-    integer       :: bnum
-    class(body)   :: bdy
-
-  end subroutine add_body
-  
-  !*******************************************************************!
-  ! Add joint into the system
-  !*******************************************************************!
-  
-  subroutine add_joint(this, jnum, jnt)
-
-    class(system) :: this
-    integer       :: jnum
-    class(joint)  :: jnt
-
-  end subroutine add_joint
 
 end module system_class
