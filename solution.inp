@@ -1,0 +1,6 @@
+0.0d0       ! start time
+1.0d0       ! end time
+0.01d0      ! time_step
+50          ! MAX_NEWTON_ITERS
+1.0d-6      ! REL_TOL to stop newton updates
+1.0d-6      ! ABS_TOL to stop newton updates

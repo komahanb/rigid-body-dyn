@@ -15,9 +15,6 @@ module global_variables
   ! stores the system in this object
   class(system), allocatable :: dynsys
 
-  ! count the number of function and jacobian calls made
-  integer(sp)  :: fcnt=0, fgcnt=0
-
   integer(sp)  :: MAX_NEWTON_ITER = 50
 
   ! acceleration due to gravity (inertial frame)
@@ -93,8 +90,16 @@ module global_variables
   character                          :: filename   
 
   ! tolerances used in time-integration
-  real(dp), parameter     :: REL_TOL = 1.e-7_dp
-  real(dp), parameter     :: ABS_TOL = 1.e-7_dp
+  real(dp)     :: rel_tol = 1.e-7_dp
+  real(dp)     :: abs_tol = 1.e-7_dp
+
+  ! count the number of function and jacobian calls made
+  integer(sp)  :: fcnt = 0, fgcnt = 0, newton_cnt = 0
+  
+  ! each newton_iteration will set these parameters
+  real(dp)     :: update_norm, res_norm
+
+  logical(sp)  :: unsteady = .false.
 
 contains
 

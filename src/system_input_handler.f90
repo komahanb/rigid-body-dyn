@@ -24,14 +24,14 @@ module system_input_handler
 
   implicit none
   private
-  public :: read_input
+  public :: read_system_input
 
 contains 
 
   !*******************************************************************!
   ! Routine that reads the user input and sets the necessary variables
   !*******************************************************************!
-  subroutine read_input()
+  subroutine read_system_input()
 
     ! reference point on the body measured in body frame
     real(dp), dimension(NUM_SPAT_DIM)  :: c, fr, gr    
@@ -104,6 +104,6 @@ contains
 
     call disp(" >> System is created...")
 
-  end subroutine read_input
+  end subroutine read_system_input
 
 end module system_input_handler
