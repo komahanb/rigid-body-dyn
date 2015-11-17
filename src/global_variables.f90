@@ -36,16 +36,15 @@ module global_variables
   real(dp) :: aa != 1.0_dp/dT     ! default value
   real(dp) :: bb != 1.0_dp/dT**2  ! default value
 
+  !-------------------------------------------------------------------!
   ! time history of states and their time derivative
-  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: q_save     = 0.0_dp
-  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: q_dot_save = 0.0_dp
-  ! time history of residual
-  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: res_save   = 0.0_dp
-  ! time history of residual update
-  real(dp), dimension(TOT_NDOF, MAX_TIME_STEPS) :: dq_save    = 0.0_dp
-  ! time history of jacobian
-  real(dp), dimension(TOT_NDOF, TOT_NDOF, MAX_TIME_STEPS) ::  &
-       &jac_save = 0.0_dp 
+  !-------------------------------------------------------------------!
+  real(dp), dimension(:,:), allocatable :: q, qdot, qddot, R, dq
+
+  ! we are not saving jacobian
+  real(dp), dimension(:,:), allocatable :: dR = 0.0_dp
+ 
+  !-------------------------------------------------------------------!
 
   !-------------------------------------------------------------------!
   ! Timing objects
@@ -196,7 +195,7 @@ contains
     end if
 
     !-----------------------------------------------------------------!
-    ! finalize MPI
+    ! Finalize MPI
     !-----------------------------------------------------------------!
     call mpi_finalize(ierr)
 
@@ -211,41 +210,25 @@ contains
 
     use dispmodule, only: disp
 
-    !    call disp(">>------------------------------------------<<")
-    call disp(">>-------- Timer Summary -------------------<<")
-    !    call disp(">>------------------------------------------<<")
+    call disp("-------- Time Summary -----------")
 
     ! time taken for residual assembly
-    !    if (time_res%running) then
     call disp(" > Residual Assembly : ", (/ time_res%elapsed,&
          & time_res%elapsed/time_tot%elapsed /), orient="ROW")
-    !    end if
 
     ! time taken for jacobian assembly
-    !    if (time_jac%running) then
     call disp(" > Jacobian Assembly : ",  (/ time_jac%elapsed,&
          & time_jac%elapsed/time_tot%elapsed /), orient="ROW")
-    !    end if
 
     ! time taken for Newton solution to steady state
-    !    if (time_sol%running) then
     call disp(" > Newton Solution   : ",  (/ time_sol%elapsed,&
          & time_sol%elapsed/time_tot%elapsed /), orient="ROW")
-    !    end if
 
-    ! time taken for time marching
-    !    if (time_int%running) then
     call disp(" > Time Integration  : ",  (/ time_int%elapsed,&
          & time_int%elapsed/time_tot%elapsed /), orient="ROW")
-    !    end if
 
-    ! time taken for total time
-    !    if (time_tot%running) then
     call disp(" > Total Time        : ", (/ time_tot%elapsed,&
          & time_tot%elapsed/time_tot%elapsed /), orient="ROW")
-    !    end if
-
-    call disp(">>------------------------------------------<<")
 
   end subroutine print_timer_summary
 
