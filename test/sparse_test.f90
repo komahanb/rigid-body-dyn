@@ -71,7 +71,7 @@ contains
     !-----------------------------------------------------------------!
 
     call PetscInitialize(PETSC_NULL_CHARACTER,ierr)
-    call PetscOptionsSetValue("-snes_mf_operator","TRUE", ierr)
+!    call PetscOptionsSetValue("-snes_mf_operator","TRUE", ierr)
 
     !-----------------------------------------------------------------!
     !-------------------- INITIALIZE MPI -----------------------------! 

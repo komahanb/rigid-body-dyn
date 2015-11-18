@@ -42,7 +42,7 @@ module global_variables
   real(dp), dimension(:,:), allocatable :: q, qdot, qddot, R, dq
 
   ! we are not saving jacobian
-  real(dp), dimension(:,:), allocatable :: dR = 0.0_dp
+  real(dp), dimension(:,:), allocatable :: dR 
  
   !-------------------------------------------------------------------!
 

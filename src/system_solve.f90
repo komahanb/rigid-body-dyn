@@ -149,7 +149,7 @@ contains
        call steady_solve()
 
        ! Print the summary of the newton iteration
-       write(*,'(f15.2, e15.6, e15.6, xi4, xi4)') &
+       write(*,'(f15.2, e15.6, e15.6, i4, i4)') &
             & time, update_norm, res_norm, newton_cnt, fcnt
        
        ! Update the time
