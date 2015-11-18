@@ -74,7 +74,6 @@ SRC  := src/global_constants.f90 src/types.f90 src/body_class.f90 \
 	src/linear_system.f90  src/rigid_body_class.f90\
 	src/flexible_body_class.f90  \
 	src/spherical_joint_class.f90 \
-	src/pendulum_system.f90 \
 	src/residual.f90 src/jacobian.f90 src/solver_utils.f90 \
 	src/system_solve.f90 \
 	src/snes.f90 src/input_handler.f90 src/dynamics.f90 \

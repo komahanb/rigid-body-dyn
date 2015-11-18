@@ -4,17 +4,23 @@
 module system_class
 
   ! module dependencies
+  use body_class, only  : body
+  use joint_class, only : joint
+
   implicit none
 
   private
   public :: system
 
-  type, abstract:: system
+  type system
 
-     private
+     !private
 
      integer   :: nbody
      integer   :: njoint
+
+     class(body) , allocatable :: bodies(:)
+     class(joint), allocatable :: joints(:)
 
    contains
 
@@ -24,12 +30,19 @@ module system_class
      procedure :: get_njoint
      procedure :: set_njoint
 
-     procedure(iadd_body), deferred :: add_body
-     procedure(iadd_joint), deferred :: add_joint
+
+     !     procedure(iadd_body), deferred :: add_body
+     !     procedure(iadd_joint), deferred :: add_joint
 
   end type system
-  
-  abstract interface
+
+  ! interface for the constructor
+  interface  system
+     procedure constructor
+  end interface system
+
+
+  interface
 
      !****************************************************************!
      ! Add body into the system
@@ -48,7 +61,7 @@ module system_class
 
   end interface
 
-  abstract interface 
+  interface 
 
      !****************************************************************!
      ! Add joint into the system
@@ -67,7 +80,23 @@ module system_class
 
   end interface
 
+
 contains
+
+
+  !*******************************************************************!
+  ! Constructor for pendulum system
+  !*******************************************************************!
+  function constructor(nbody, njoint) result(this)
+
+    integer        :: nbody
+    integer        :: njoint
+    type(system) :: this
+
+    call this % set_nbody(nbody)
+    call this % set_njoint(njoint)
+
+  end function constructor
 
   !*******************************************************************!
   ! Getter for number of bodies
@@ -95,11 +124,11 @@ contains
 
   end subroutine set_nbody
 
-   
+
   !*******************************************************************!
   ! Getter for number of bodies
   !*******************************************************************!
-  
+
   function get_njoint(this)
 
     class(system) :: this
@@ -121,5 +150,38 @@ contains
     this % njoint =  jnum
 
   end subroutine set_njoint
+
+  !*******************************************************************!
+  ! Routine to add a body to the system
+  !*******************************************************************!
+  subroutine add_body(this, bnum, bdy)
+
+    ! arguments
+    class(system) :: this
+    integer         :: bnum
+    class(body)     :: bdy
+
+    print *, 'Added body to the pendulum system!'
+
+    allocate(this%bodies(bnum), source = bdy)
+
+  end subroutine add_body
+
+
+  !*******************************************************************!
+  ! Routine to add a joint to the system
+  !*******************************************************************!
+  subroutine add_joint(this, jnum, jnt)
+
+    ! arguments
+    class(system) :: this
+    integer         :: jnum
+    class(joint)    :: jnt
+
+    print *, 'Added joint to the pendulum system!'
+
+    allocate(this%joints(jnum), source = jnt)
+
+  end subroutine add_joint
 
 end module system_class
