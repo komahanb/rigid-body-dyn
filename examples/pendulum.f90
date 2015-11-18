@@ -22,6 +22,8 @@ program pendulum
 
   implicit none
 
+#include <finclude/petsc.h90>
+
   ! reference point on the body measured in body frame
   real(dp), dimension(NUM_SPAT_DIM)  :: re    
 
