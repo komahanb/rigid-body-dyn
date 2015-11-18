@@ -45,6 +45,9 @@ module global_variables
   real(dp), dimension(TOT_NDOF, TOT_NDOF, MAX_TIME_STEPS) ::  &
        &jac_save = 0.0_dp 
 
+  ! MPI related 
+  integer:: ierr, rank, nproc
+  logical:: master
 contains
   
   !*******************************************************************!

@@ -5,10 +5,15 @@ program pendulum
 
   ! import the necessary modules
   use global_constants, only: sp, dp, NUM_SPAT_DIM, TOT_NDOF
+
   use global_variables, only: ABS_TOL, REL_TOL, start_time, dT, &
-       & end_time, aa, bb, MAX_NEWTON_ITER, fcnt, init, time
+       & end_time, aa, bb, MAX_NEWTON_ITER, fcnt, init, time, &
+       &ierr, rank, nproc, master
+
   use utils, only:deg2rad
+
   use types, only: body, vector
+
   use solver_utils, only: get_updated_q, get_updated_q_dot,&
        & get_updated_q_double_dot, get_approx_q, get_approx_q_dot
   use bodies, only: create_body, set_state
@@ -62,10 +67,27 @@ program pendulum
 
   ! logical for success of newton iterations
   logical                            :: newton_success = .false.
+  
+  !-------------------------------------------------------------------!
+  Mat      :: J    ! petsc matrix for neutronic prod operator
+  integer  :: n    ! dimensions of matrix
+  integer  :: nnz  ! max number of nonzeros
+  integer  :: localn ! local size on proc
+  integer, allocatable :: d_nnz(:) ! vector of diagonal preallocation
+  integer, allocatable :: o_nnz(:) ! vector of off-diagonal preallocation
 
+  !-------------------------------------------------------------------!
+  
   call disp("========================================================")
   call disp("'                 Rigid body dynamics                  '")
   call disp("========================================================")
+  
+  ! get mpi info
+  call MPI_COMM_RANK(PETSC_COMM_WORLD,rank,ierr)
+  call MPI_COMM_SIZE(PETSC_COMM_WORLD,nproc,ierr)
+
+  ! find master
+  if (rank == 0) master = .true.
 
   !-------------------------------------------------------------------!
   ! Init routine that has sanity check on the input settings

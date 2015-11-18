@@ -14,14 +14,14 @@
 #------------------------------
 CC = mpicc
 CX = mpicxx
-FC = gfortran
+FC = mpif90
 
 #------------------------------
 # define any compile-time flags
 #------------------------------
 CC_FLAGS =  -g #-Wall
 CX_FLAGS =  -g #-Wall
-FC_FLAGS =  -g -Wno-unused -fbounds-check #-Wall
+FC_FLAGS =  -g -cpp -dM  -Wno-unused -fbounds-check #-Wall
 
 
 #------------------------------
@@ -34,7 +34,8 @@ BIN_DIR=bin
 #-----------------------------------------------------------------------
 # define any directories containing header files other than /usr/include
 #-----------------------------------------------------------------------
-INCLUDES = -I/usr/local/include -I/usr/lib/petscdir/3.4.2/include #-I./include  #-I/home/newhall/include  -I../include
+INCLUDES = -I/usr/local/include -I${PETSC_DIR}/${PETSC_ARCH}/include \
+	-I${PETSC_DIR}/include #-I${SLEPC_DIR}/include
 
 #export PETSC_DIR=/home/balay/petsc-3.2-p0
 #export PETSC_ARCH=linux-gnu-c-debug        
@@ -43,14 +44,14 @@ INCLUDES = -I/usr/local/include -I/usr/lib/petscdir/3.4.2/include #-I./include  
 #   if I wanted to include libraries not in /usr/lib I'd specify
 #   their path using -Lpath, something like:
 #-----------------------------------------------------------------------
-LIB_FLAGS = -L./lib #-L../lib #-L/home/newhall/lib  -L../lib
+LIB_FLAGS = -L./lib -L${LD_LIBRARY_PATH}/lib -L${PETSC_DIR}/${PETSC_ARCH}/lib #-L../lib #-L/home/newhall/lib  -L../lib
 
 #-----------------------------------------------------------------------
 # define any libraries to link into executable:
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname 
 #   option, something like (this will link in libmylib.so and libm.so:
 #-----------------------------------------------------------------------
-LIBS =  -ldl -lstdc++ -llapack -lblas #lib/lsqr.a #lib/libdisp.a #daesolve.a #lib/liblis.a #-ldiffer #-lmylib -lm
+LIBS =  -ldl -lm -lstdc++ -llapack -lblas -lpetsc
 
 #--------------------------
 # define the C, C++, Fortran source files
