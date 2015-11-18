@@ -61,7 +61,6 @@ program test_linsys
   aa = 1.0d0 
 
   call disp('R=',get_residual(body1))
-stop
 
   jac = get_jacobian(body1) !actual
 
