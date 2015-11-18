@@ -83,11 +83,11 @@ program pendulum
   call disp("========================================================")
   
   ! get mpi info
-  call MPI_COMM_RANK(PETSC_COMM_WORLD,rank,ierr)
-  call MPI_COMM_SIZE(PETSC_COMM_WORLD,nproc,ierr)
+!  call MPI_COMM_RANK(PETSC_COMM_WORLD,rank,ierr)
+!  call MPI_COMM_SIZE(PETSC_COMM_WORLD,nproc,ierr)
 
   ! find master
-  if (rank == 0) master = .true.
+ ! if (rank == 0) master = .true.
 
   !-------------------------------------------------------------------!
   ! Init routine that has sanity check on the input settings
