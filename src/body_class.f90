@@ -32,8 +32,18 @@ module body_class
      procedure :: get_body_type, set_body_type     
      procedure :: get_body_num, set_body_num
 
+     procedure(print_body_interface), deferred :: print
+
   end type body
   
+  ! an abstract interface for print implementations
+  abstract interface
+     subroutine print_body_interface(this)
+       import body
+       class(body) :: this
+     end subroutine print_body_interface
+  end interface
+
 contains
 
   !*******************************************************************!

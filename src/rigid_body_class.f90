@@ -106,7 +106,7 @@ module rigid_body_class
      procedure:: set_rotation, set_angrate, set_angrate_dot
      
      ! toString
-     procedure:: print_rigid_body
+     procedure:: print => print_rigid_body
 
   end type rigid_body
   
