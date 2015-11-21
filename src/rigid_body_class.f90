@@ -11,22 +11,19 @@
 module rigid_body_class
 
   ! module references
-  use body_class
-  use global_constants
-  use global_variables
+  use body_class, only : body
+  use global_constants, only : dp, NUM_SPAT_DIM, NDOF_PBODY
+  use global_variables, only : ZERO, GRAV
   use types, only: matrix, vector
-  use utils
+  use utils, only: operator(*), operator(+), operator(-),&
+       & matrix, array
   use dispmodule, only : disp
 
   ! module options
   implicit none
 
-  !  private
-
-  !  public :: rigid_body , print_rigid_body
-
-  !  public :: find_rotation
-  !  public :: find_angrate, find_angrate_dot, find_angrate_inv
+  private
+  public :: rigid_body
 
   !*******************************************************************!
   ! RIGID_BODY datatype can be used to fully characterize the STATE and 
@@ -40,17 +37,10 @@ module rigid_body_class
      ! rigid body state variables
      !----------------------------------------------------------------!
 
-     ! origin of the body frame
-     type(vector) :: r              
-
-     ! orientation of the body frame with inertial (euler angles)
-     type(vector) :: theta          
-
-     ! velocity of the origin with respect to inertial
-     type(vector) :: v              
-
-     ! angular velocity of the body frame with respect to inertial
-     type(vector) :: omega          
+     type(vector) :: r ! origin of the body frame
+     type(vector) :: theta !orientation of the body frame wrt inertial
+     type(vector) :: v !velocity of the origin with respect to inertial
+     type(vector) :: omega ! angular velocity
 
      !----------------------------------------------------------------!
      ! time derivative of states
@@ -61,7 +51,7 @@ module rigid_body_class
      type(vector) :: omega_dot
 
      !----------------------------------------------------------------!
-     ! Body Attributes
+     ! Inertial properties
      !----------------------------------------------------------------!
 
      real(dp)     :: mass    ! mass (denoted m in paper)   
@@ -78,6 +68,10 @@ module rigid_body_class
 
      type(matrix) :: J              ! second moment of inertia
 
+     !----------------------------------------------------------------!
+     ! Other properties
+     !----------------------------------------------------------------!
+    
      type(matrix) :: C_mat          ! rotation matrix
      type(matrix) :: S
      type(matrix) :: S_dot          ! transformation matrix
@@ -111,7 +105,8 @@ module rigid_body_class
      procedure:: set_joint_location, set_gravity
      procedure:: set_rotation, set_angrate, set_angrate_dot
      
-
+     ! toString
+     procedure:: print_rigid_body
 
   end type rigid_body
   
