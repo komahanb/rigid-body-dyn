@@ -196,7 +196,6 @@ contains
   ! fr     : reaction force
   ! gr     : reaction torque
   ! q, qdot: state vector and time derivatives
-  ! qddot  : second time derivative of the state (used in elastic only)
   !*******************************************************************!
 
   function constructor(mass, c, J, fr, gr, q, qdot) result(this)
