@@ -20,10 +20,13 @@ module rigid_body_class
 
   ! module options
   implicit none
-  private
-  public :: rigid_body, print_rigid_body
-  public :: get_rotation
-  public :: get_angrate, get_angrate_dot, get_angrate_inv
+
+  !  private
+
+  !  public :: rigid_body , print_rigid_body
+
+  !  public :: find_rotation
+  !  public :: find_angrate, find_angrate_dot, find_angrate_inv
 
   !*******************************************************************!
   ! RIGID_BODY datatype can be used to fully characterize the STATE and 
@@ -56,6 +59,7 @@ module rigid_body_class
      type(vector) :: theta_dot
      type(vector) :: v_dot
      type(vector) :: omega_dot
+
      !----------------------------------------------------------------!
      ! Body Attributes
      !----------------------------------------------------------------!
@@ -68,9 +72,9 @@ module rigid_body_class
      type(vector) :: c              ! first moment of inertia
 
      !  The format for J is: (in body frame)
-     !  J = [ Jxx,  Jxy,  Jxz ] = [ J[0],  J[1],  J[2] ]
-     !  . = [    ,  Jyy,  Jyz ] = [     ,  J[3],  J[4] ]
-     !  . = [    ,     ,  Jzz ] = [     ,      ,  J[5] ]
+     !  J = [ Jxx,  Jxy,  Jxz ] = [ J[1],  J[2],  J[3] ]
+     !  . = [    ,  Jyy,  Jyz ] = [     ,  J[4],  J[5] ]
+     !  . = [    ,     ,  Jzz ] = [     ,      ,  J[6] ]
 
      type(matrix) :: J              ! second moment of inertia
 
@@ -87,74 +91,635 @@ module rigid_body_class
      real(dp)     :: KE             ! kinetic energy of the body
      real(dp)     :: PE             ! potential energy of the body
 
+   contains
+
+     ! type-bound getters
+     procedure:: get_r, get_theta, get_v, get_omega
+     procedure:: get_r_dot, get_theta_dot, get_v_dot, get_omega_dot
+     procedure:: get_mass, get_first_moment, get_second_moment
+     procedure:: get_reaction_force, get_reaction_torque
+     procedure:: get_potential_energy, get_kinetic_energy
+     procedure:: get_joint_location, get_gravity
+     procedure:: get_rotation, get_angrate, get_angrate_dot
+
+     ! type-bound setters
+     procedure:: set_r, set_theta, set_v, set_omega
+     procedure:: set_r_dot, set_theta_dot, set_v_dot, set_omega_dot
+     procedure:: set_mass, set_first_moment, set_second_moment
+     procedure:: set_reaction_force, set_reaction_torque
+     procedure:: set_potential_energy, set_kinetic_energy
+     procedure:: set_joint_location, set_gravity
+     procedure:: set_rotation, set_angrate, set_angrate_dot
+     
+
+
   end type rigid_body
+  
+  !*******************************************************************!
+  ! A common interface for creating bodies and updating existing ones
+  !-------------------------------------------------------------------!
+  ! The inputs are described in the methods under the interface. One 
+  ! can use the same interface for updating existing bodies.
+  ! Shortly: use this to create and update bodies
+  !*******************************************************************!
+  
+  interface rigid_body
+     procedure constructor
+  end interface rigid_body
+  
+  !*******************************************************************!
+  ! A common interface for different ways of getting rotation matrix
+  !-------------------------------------------------------------------!
+  ! (a) find_rotation_from_angles_vec   -- > input theta as VECTOR
+  ! (b) find_rotation_from_angles_array -- > input theta(3) as array
+  ! (c) find_rotation_from_cosines -- > input dir cosines and sines
+  !*******************************************************************!
 
-!*******************************************************************!
-! A common interface for creating bodies and updating existing ones
-!-------------------------------------------------------------------!
-! The inputs are described in the methods under the interface. One 
-! can use the same interface for updating existing bodies.
-! Shortly: use this to create and update bodies
-!*******************************************************************!
+  interface find_rotation
+     module procedure &
+          & find_rotation_from_angles_array, &
+          & find_rotation_from_angles_vec,&
+          & find_rotation_from_cosines
+  end interface find_rotation
 
-interface rigid_body
+  !*******************************************************************!
+  ! A common interface for different ways of getting ang rate  matrix
+  !-------------------------------------------------------------------!
+  ! (a) find_angrate_from_angles_vec    -- > input VECTOR theta
+  ! (b) find_angrate_from_angles_array  -- > input theta(3)
+  ! (c) find_angrate_from_cosines       -- > input dir cosines and sines
+  !*******************************************************************!
 
-  procedure constructor
+  interface find_angrate
+     module procedure &
+          & find_angrate_from_angles_vec, &
+          & find_angrate_from_angles_array,&
+          & find_angrate_from_cosines
+  end interface find_angrate
 
-end interface rigid_body
+  !*******************************************************************!
+  ! A common interface for different ways of getting the time 
+  ! derivative of the ang rate matrix
+  !-------------------------------------------------------------------!
+  ! (a) find_angrate_dot_vec -- > input VECTOR theta, theta_dot
+  ! (b) find_angrate_dot_array -- > input theta(3), theta_dot(3)
+  ! (c) find_angrate_dot_cosines  -- > input dir cosines and sines
+  !*******************************************************************!
 
-!*******************************************************************!
-! A common interface for different ways of getting rotation matrix
-!-------------------------------------------------------------------!
-! (a) get_rotation_from_angles_vec   -- > input theta as VECTOR
-! (b) get_rotation_from_angles_array -- > input theta(3) as array
-! (c) get_rotation_from_cosines -- > input dir cosines and sines
-!*******************************************************************!
-interface get_rotation
-  module procedure get_rotation_from_angles_array, &
-       &get_rotation_from_angles_vec, get_rotation_from_cosines
-end interface get_rotation
+  interface find_angrate_dot
+     module procedure &
+          & find_angrate_dot_array, &
+          & find_angrate_dot_vec, &
+          & find_angrate_dot_cosines
+  end interface find_angrate_dot
 
-!*******************************************************************!
-! A common interface for different ways of getting ang rate  matrix
-!-------------------------------------------------------------------!
-! (a) get_angrate_from_angles_vec    -- > input VECTOR theta
-! (b) get_angrate_from_angles_array  -- > input theta(3)
-! (c) get_angrate_from_cosines       -- > input dir cosines and sines
-!*******************************************************************!
-interface get_angrate
-  module procedure get_angrate_from_angles_vec, &
-       &get_angrate_from_angles_array, get_angrate_from_cosines
-end interface get_angrate
+  !*******************************************************************!
+  ! A common interface for different ways of getting the inverse
+  ! of the ang rate matrix
+  !-------------------------------------------------------------------!
+  ! (a) find_angrate_inv_vec -- > input VECTOR theta, theta_dot
+  ! (b) find_angrate_inv_array -- > input theta(3), theta_dot(3)
+  ! (c) find_angrate_inv_cosines  -- > input dir cosines and sines
+  !*******************************************************************!
 
-!*******************************************************************!
-! A common interface for different ways of getting the time 
-! derivative of the ang rate matrix
-!-------------------------------------------------------------------!
-! (a) get_angrate_dot_vec -- > input VECTOR theta, theta_dot
-! (b) get_angrate_dot_array -- > input theta(3), theta_dot(3)
-! (c) get_angrate_dot_cosines  -- > input dir cosines and sines
-!*******************************************************************!
-interface get_angrate_dot
-  module procedure  get_angrate_dot_array, &
-       &get_angrate_dot_vec, get_angrate_dot_cosines
-end interface get_angrate_dot
-
-!*******************************************************************!
-! A common interface for different ways of getting the inverse
-! of the ang rate matrix
-!-------------------------------------------------------------------!
-! (a) get_angrate_inv_vec -- > input VECTOR theta, theta_dot
-! (b) get_angrate_inv_array -- > input theta(3), theta_dot(3)
-! (c) get_angrate_inv_cosines  -- > input dir cosines and sines
-!*******************************************************************!
-interface get_angrate_inv
-  module procedure get_angrate_inv_vec, &
-       &get_angrate_inv_array, &
-       &get_angrate_inv_cosines
-end interface get_angrate_inv
+  interface find_angrate_inv
+     module procedure &
+          & find_angrate_inv_vec, &
+          & find_angrate_inv_array, &
+          & find_angrate_inv_cosines
+  end interface find_angrate_inv
 
 contains
+
+  !*******************************************************************!
+  ! Getter for the position of the body
+  !*******************************************************************!
+
+  function get_r(this)
+
+    class(rigid_body) :: this
+    type(vector)     :: get_r
+
+    get_r = this % r
+
+  end function get_r
+
+  !*******************************************************************!
+  ! Getter for the orientation of the body
+  !*******************************************************************!
+
+  function get_theta(this)
+
+    class(rigid_body) :: this
+    type(vector)     :: get_theta
+
+    get_theta = this % theta
+
+  end function get_theta
+
+  !*******************************************************************!
+  ! Getter for the velocity of the body
+  !*******************************************************************!
+
+  function get_v(this)
+
+    class(rigid_body) :: this
+    type(vector)     :: get_v
+
+    get_v = this % v
+
+  end function get_v
+
+  !*******************************************************************!
+  ! Getter for the angular velocity of the body
+  !*******************************************************************!
+
+  function get_omega(this)
+
+    class(rigid_body) :: this
+    type(vector)     :: get_omega
+
+    get_omega = this % omega
+
+  end function get_omega
+
+  !*******************************************************************!
+  ! Getter for the kinetic energy of the body
+  !*******************************************************************!
+
+  function get_kinetic_energy(this)
+
+    class(rigid_body) :: this
+    real(dp) :: get_kinetic_energy
+
+    get_kinetic_energy = this % KE
+
+  end function get_kinetic_energy
+
+  !*******************************************************************!
+  ! Getter for the potential energy of the body
+  !*******************************************************************!
+
+  function get_potential_energy(this)
+
+    class(rigid_body) :: this
+    real(dp)     :: get_potential_energy
+
+    get_potential_energy = this % PE
+
+  end function get_potential_energy
+
+  !*******************************************************************!
+  ! Getter for the rdot of the body
+  !*******************************************************************!
+
+  function get_r_dot(this)
+
+    class(rigid_body) :: this
+    type(vector)     :: get_r_dot
+
+    get_r_dot = this % r_dot
+
+  end function get_r_dot
+
+  !*******************************************************************!
+  ! Getter for theta_dot of the body
+  !*******************************************************************!
+
+  function get_theta_dot(this)
+
+    class(rigid_body) :: this
+    type(vector)     :: get_theta_dot
+
+    get_theta_dot = this % theta_dot
+
+  end function get_theta_dot
+
+  !*******************************************************************!
+  ! Getter for vdot of the body
+  !*******************************************************************!
+
+  function get_v_dot(this)
+
+    class(rigid_body) :: this
+    type(vector)     :: get_v_dot
+
+    get_v_dot = this % v_dot
+
+  end function get_v_dot
+
+  !*******************************************************************!
+  ! Getter for the angular velocity of the body
+  !*******************************************************************!
+
+  function get_omega_dot(this)
+
+    class(rigid_body) :: this
+    type(vector)     :: get_omega_dot
+
+    get_omega_dot = this % omega_dot
+
+  end function get_omega_dot
+
+
+  !*******************************************************************!
+  ! Getter for the mass of the body
+  !*******************************************************************!
+
+  function get_mass(this)
+
+    class(rigid_body) :: this
+    real(dp)     :: get_mass
+
+    get_mass = this % mass
+
+  end function get_mass
+
+  !*******************************************************************!
+  ! Getter for the first_moment of the body
+  !*******************************************************************!
+
+  function get_first_moment (this)
+
+    class(rigid_body) :: this
+    type(vector)      :: get_first_moment
+
+    get_first_moment = this % c
+
+  end function get_first_moment
+
+  !*******************************************************************!
+  ! Getter for the second_moment of the body
+  !*******************************************************************!
+
+  function get_second_moment (this)
+
+    class(rigid_body) :: this
+    type(matrix)      :: get_second_moment
+
+    get_second_moment = this % J
+
+  end function get_second_moment
+
+  !*******************************************************************!
+  ! Getter for the reaction_force of the body
+  !*******************************************************************!
+
+  function get_reaction_force(this)
+
+    class(rigid_body) :: this
+    type(vector) :: get_reaction_force
+
+    get_reaction_force = this % fr
+
+  end function get_reaction_force
+  
+
+  !*******************************************************************!
+  ! Getter for the reaction_torque of the body
+  !*******************************************************************!
+
+  function get_reaction_torque(this)
+
+    class(rigid_body) :: this
+    type(vector) :: get_reaction_torque
+
+    get_reaction_torque = this % gr
+
+  end function get_reaction_torque
+
+
+  !*******************************************************************!
+  ! Getter for the joint_location on the body
+  !*******************************************************************!
+  
+  function get_joint_location(this)
+
+    class(rigid_body) :: this
+    type(vector) :: get_joint_location
+
+    get_joint_location = this % rj
+
+  end function get_joint_location
+
+  !*******************************************************************!
+  ! Getter for the gravity vector in the body
+  !*******************************************************************!
+  
+  function get_gravity(this)
+
+    class(rigid_body) :: this
+    type(vector) :: get_gravity
+
+    get_gravity = this % g
+
+  end function get_gravity
+
+  !*******************************************************************!
+  ! Getter for body to inertial rotation matrix
+  !*******************************************************************!
+
+  function get_rotation(this)
+
+    class(rigid_body) :: this
+    type(matrix) :: get_rotation
+
+    get_rotation = this % C_mat
+    
+  end function get_rotation
+
+
+  !*******************************************************************!
+  ! Getter for the angular rate matrix
+  !*******************************************************************!
+
+  function get_angrate(this)
+
+    class(rigid_body) :: this
+    type(matrix) :: get_angrate
+
+    get_angrate = this % S
+
+  end function get_angrate
+
+
+  !*******************************************************************!
+  ! Getter for the angrate_dot matrix
+  !*******************************************************************!
+
+  function get_angrate_dot(this)
+
+    class(rigid_body) :: this
+    type(matrix) :: get_angrate_dot
+
+    get_angrate_dot = this % S_dot
+
+  end function get_angrate_dot
+  
+  !===================== SETTERS TO TYPE VARIABLES ===================!
+ 
+  !*******************************************************************!
+  ! Setter for the position of the body
+  !*******************************************************************!
+
+  subroutine set_r(this, r)
+
+    class(rigid_body) :: this
+    type(vector)     :: r
+
+    this % r = r
+
+  end subroutine set_r
+
+  !*******************************************************************!
+  ! Setter for the orientation of the body
+  !*******************************************************************!
+
+  subroutine set_theta(this, theta)
+
+    class(rigid_body) :: this
+    type(vector)     :: theta
+
+    this % theta = theta
+
+  end subroutine set_theta
+
+  !*******************************************************************!
+  ! Setter for the velocity of the body
+  !*******************************************************************!
+
+  subroutine set_v(this, v)
+
+    class(rigid_body) :: this
+    type(vector)     :: v
+
+    this % v = v
+
+  end subroutine set_v
+
+  !*******************************************************************!
+  ! Setter for the angular velocity of the body
+  !*******************************************************************!
+
+  subroutine set_omega(this, omega)
+
+    class(rigid_body) :: this
+    type(vector)      :: omega
+
+    this % omega = omega
+
+  end subroutine set_omega
+
+  !*******************************************************************!
+  ! Setter for the kinetic energy of the body
+  !*******************************************************************!
+
+  subroutine set_kinetic_energy(this, KE)
+
+    class(rigid_body) :: this
+    real(dp) :: KE
+
+    this % KE = KE
+
+  end subroutine set_kinetic_energy
+
+  !*******************************************************************!
+  ! Setter for the potential energy of the body
+  !*******************************************************************!
+
+  subroutine set_potential_energy(this, PE)
+
+    class(rigid_body) :: this
+    real(dp)     :: PE
+
+    this % PE = PE
+
+  end subroutine set_potential_energy
+
+  !*******************************************************************!
+  ! Setter for the rdot of the body
+  !*******************************************************************!
+
+  subroutine set_r_dot(this, r_dot)
+
+    class(rigid_body) :: this
+    type(vector)      :: r_dot
+
+    this % r_dot = r_dot
+
+  end subroutine set_r_dot
+
+  !*******************************************************************!
+  ! Setter for theta_dot of the body
+  !*******************************************************************!
+
+  subroutine set_theta_dot(this, theta_dot)
+
+    class(rigid_body) :: this
+    type(vector)      :: theta_dot
+
+    this % theta_dot = theta_dot
+
+  end subroutine set_theta_dot
+
+  !*******************************************************************!
+  ! Setter for vdot of the body
+  !*******************************************************************!
+
+  subroutine set_v_dot(this, v_dot)
+
+    class(rigid_body) :: this
+    type(vector)      :: v_dot
+
+    this % v_dot = v_dot
+
+  end subroutine set_v_dot
+
+  !*******************************************************************!
+  ! Setter for the angular velocity of the body
+  !*******************************************************************!
+
+  subroutine set_omega_dot(this, omega_dot)
+
+    class(rigid_body) :: this
+    type(vector)      :: omega_dot
+
+    this % omega_dot = omega_dot
+
+  end subroutine set_omega_dot
+
+
+  !*******************************************************************!
+  ! Setter for the mass of the body
+  !*******************************************************************!
+
+  subroutine set_mass(this, mass)
+
+    class(rigid_body) :: this
+    real(dp)      :: mass
+
+    this % mass = mass
+
+  end subroutine set_mass
+
+  !*******************************************************************!
+  ! Setter for the first_moment of the body
+  !*******************************************************************!
+
+  subroutine set_first_moment (this, c)
+
+    class(rigid_body) :: this
+    type(vector)      :: c
+
+    this % c = c
+
+  end subroutine set_first_moment
+
+  !*******************************************************************!
+  ! Setter for the second_moment of the body
+  !*******************************************************************!
+
+  subroutine set_second_moment (this, J)
+
+    class(rigid_body) :: this
+    type(matrix)      :: J
+
+    this % J = J
+
+  end subroutine set_second_moment
+  
+  !*******************************************************************!
+  ! Setter for the reaction_force of the body
+  !*******************************************************************!
+
+  subroutine set_reaction_force(this, fr)
+
+    class(rigid_body) :: this
+    type(vector) :: fr
+
+    this % fr = fr
+
+  end subroutine set_reaction_force
+  
+
+  !*******************************************************************!
+  ! Setter for the reaction_torque of the body
+  !*******************************************************************!
+
+  subroutine set_reaction_torque(this, gr)
+
+    class(rigid_body) :: this
+    type(vector) :: gr
+
+    this % gr = gr
+
+  end subroutine set_reaction_torque
+
+
+  !*******************************************************************!
+  ! Setter for the joint_location on the body
+  !*******************************************************************!
+  
+  subroutine set_joint_location(this, rj)
+
+    class(rigid_body) :: this
+    type(vector) :: rj
+
+    this % rj = rj
+
+  end subroutine set_joint_location
+
+  !*******************************************************************!
+  ! Setter for the gravity vector in the body
+  !*******************************************************************!
+  
+  subroutine set_gravity(this, g)
+
+    class(rigid_body) :: this
+    type(vector) :: g
+
+    this % g = g
+
+  end subroutine set_gravity
+
+  !*******************************************************************!
+  ! Setter for body to inertial rotation matrix
+  !*******************************************************************!
+
+  subroutine set_rotation(this, C_mat)
+
+    class(rigid_body) :: this
+    type(matrix) :: C_mat
+
+    this % C_mat = C_mat
+    
+  end subroutine set_rotation
+
+  !*******************************************************************!
+  ! Setter for the angular rate matrix
+  !*******************************************************************!
+  
+  subroutine set_angrate(this, S)
+
+    class(rigid_body) :: this
+    type(matrix) :: S
+
+    this % S = S
+
+  end subroutine set_angrate
+
+  !*******************************************************************!
+  ! Setter for the angrate_dot matrix
+  !*******************************************************************!
+
+  subroutine set_angrate_dot(this, S_dot)
+
+    class(rigid_body) :: this
+    type(matrix) :: S_dot
+
+    this % S_dot = S_dot
+
+  end subroutine set_angrate_dot
 
   !*******************************************************************!
   ! create a body using the supplied parameters
@@ -167,7 +732,7 @@ contains
   ! q, qdot: state vector and time derivatives
   ! qddot  : second time derivative of the state (used in elastic only)
   !*******************************************************************!
-  
+
   function constructor(mass, c, J, fr, gr, q, qdot) result(this)
 
     ! inputs
@@ -220,9 +785,9 @@ contains
     ! update the rotation and angular rate matrices
     !-----------------------------------------------------------------!
 
-    this%C_mat     = get_rotation(this%theta)
-    this%S         = get_angrate(this%theta)
-    this%S_dot     = get_angrate_dot(this%theta, this%theta_dot)
+    this%C_mat     = find_rotation(this%theta)
+    this%S         = find_angrate(this%theta)
+    this%S_dot     = find_angrate_dot(this%theta, this%theta_dot)
 
     !-----------------------------------------------------------------!
     ! update the new direction of the gravity vector in body frame
@@ -256,11 +821,11 @@ contains
     !call print_body(this)
 
   end function constructor
-  
+
   !*******************************************************************!
   ! Returns the rotation matrix based on the euler angles
   ! Compute the 3-2-1 Euler angle rotation
-  
+
   ! C = C1(theta_1)*C2(theta_2)*C3(theta_3)
   !
   ! Input: theta as an array
@@ -268,7 +833,7 @@ contains
   ! 
   ! Ref: Section 2.2 Eq. 18/19 Hughes
   !*******************************************************************!
-  function get_rotation_from_angles_array(theta) result(CMAT)
+  function find_rotation_from_angles_array(theta) result(CMAT)
 
     real(dp), intent(in)       :: theta(NUM_SPAT_DIM)    
     type(matrix)               :: CMAT
@@ -284,9 +849,9 @@ contains
     c3 = cos(theta(3))
     s3 = sin(theta(3))
 
-    CMAT = get_rotation_from_cosines(c1, c2, c3, s1, s2, s3)
+    CMAT = find_rotation_from_cosines(c1, c2, c3, s1, s2, s3)
 
-  end function get_rotation_from_angles_array
+  end function find_rotation_from_angles_array
 
   !*******************************************************************!
   ! Returns the rotation matrix based on the euler angles
@@ -300,7 +865,7 @@ contains
   ! 
   ! Ref: Section 2.2 Eq. 18/19 Hughes
   !*******************************************************************!
-  function get_rotation_from_angles_vec(thetain) result(CMAT)
+  function find_rotation_from_angles_vec(thetain) result(CMAT)
 
     type(vector), intent(in)   :: thetain
     real(dp)                   :: theta(NUM_SPAT_DIM)
@@ -310,9 +875,9 @@ contains
     theta = array(thetain)
 
     ! call the method that takes angles array
-    CMAT  =  get_rotation_from_angles_array(theta)
+    CMAT  =  find_rotation_from_angles_array(theta)
 
-  end function get_rotation_from_angles_vec
+  end function find_rotation_from_angles_vec
 
   !*******************************************************************!
   ! Returns the rotation matrix (euler angles) based on the sines and 
@@ -325,7 +890,7 @@ contains
   !
   ! Ref: Section 2.2 Eq. 18/19 Hughes
   !*******************************************************************!
-  function get_rotation_from_cosines(c1,c2,c3,s1,s2,s3) result(CMAT)
+  function find_rotation_from_cosines(c1,c2,c3,s1,s2,s3) result(CMAT)
 
     real(dp), intent(in)       :: c1, c2, c3, s1, s2, s3
     type(matrix)               :: CMAT
@@ -334,7 +899,7 @@ contains
          & s1*s2*c3 - c1*s3, s1*s2*s3 + c1*c3, s1*c2,&
          & c1*s2*c3 + s1*s3, c1*s2*s3 - s1*c3, c1*c2 /))
 
-  end function get_rotation_from_cosines
+  end function find_rotation_from_cosines
 
 
   !*******************************************************************!
@@ -349,7 +914,7 @@ contains
   ! 
   ! Ref: Section 2.3 Eq. 24/25 Hughes
   ! ******************************************************************!
-  function get_angrate_from_angles_vec(thetain) result(SMAT)
+  function find_angrate_from_angles_vec(thetain) result(SMAT)
 
     type(vector) :: thetain
     real(dp)     :: theta(NUM_SPAT_DIM)    
@@ -359,9 +924,9 @@ contains
     theta = array(thetain)
 
     ! call the function with array signature
-    SMAT = get_angrate_from_angles_array(theta)
+    SMAT = find_angrate_from_angles_array(theta)
 
-  end function get_angrate_from_angles_vec
+  end function find_angrate_from_angles_vec
 
   !*******************************************************************!
   ! Returns the ang rate matrix from the supplied euler angles
@@ -375,7 +940,7 @@ contains
   ! 
   ! Ref: Section 2.3 Eq. 24/25 Hughes
   ! ******************************************************************!
-  function get_angrate_from_angles_array(theta) result(SMAT)
+  function find_angrate_from_angles_array(theta) result(SMAT)
 
     real(dp)     :: theta(NUM_SPAT_DIM)    
     type(matrix) :: SMAT
@@ -391,9 +956,9 @@ contains
     c3 = cos(theta(3))
     s3 = sin(theta(3))
 
-    SMAT = get_angrate_from_cosines(c1, c2, c3, s1, s2, s3)
+    SMAT = find_angrate_from_cosines(c1, c2, c3, s1, s2, s3)
 
-  end function get_angrate_from_angles_array
+  end function find_angrate_from_angles_array
 
   !*******************************************************************!
   ! Returns the rotation matrix (euler angles) based on the sines and 
@@ -408,7 +973,7 @@ contains
   ! 
   ! Ref: Section 2.3 Eq. 24/25 Hughes
   !*******************************************************************!
-  function get_angrate_from_cosines(c1,c2,c3,s1,s2,s3) result(SMAT)
+  function find_angrate_from_cosines(c1,c2,c3,s1,s2,s3) result(SMAT)
 
     real(dp), intent(in)       :: c1, c2, c3, s1, s2, s3
     type(matrix)               :: SMAT
@@ -417,7 +982,7 @@ contains
          & 0.0_dp,  c1,  s1*c2, &
          & 0.0_dp,  -s1,  c1*c2 /))
 
-  end function get_angrate_from_cosines
+  end function find_angrate_from_cosines
 
   !-----------------------------------------------------------
   ! Returns the time derivative of angular rate matrix
@@ -430,7 +995,7 @@ contains
   ! Output: SMAT_DOT
   !
   !-----------------------------------------------------------
-  function get_angrate_dot_vec(thetain, dthetain) result(SMAT_DOT)
+  function find_angrate_dot_vec(thetain, dthetain) result(SMAT_DOT)
 
     type(vector) :: thetain, dthetain
     type(matrix) :: SMAT_DOT
@@ -441,9 +1006,9 @@ contains
     theta = array(thetain); dtheta=array(dthetain);   
 
     ! call the function matching array signature
-    SMAT_DOT = get_angrate_dot_array(theta,dtheta)
+    SMAT_DOT = find_angrate_dot_array(theta,dtheta)
 
-  end function get_angrate_dot_vec
+  end function find_angrate_dot_vec
 
 
   !-----------------------------------------------------------
@@ -457,7 +1022,7 @@ contains
   ! Output: SMAT_DOT
   !
   !-----------------------------------------------------------
-  function get_angrate_dot_array(theta, dtheta) result(SMAT_DOT)
+  function find_angrate_dot_array(theta, dtheta) result(SMAT_DOT)
 
     real(dp)     :: theta(NUM_SPAT_DIM), dtheta(NUM_SPAT_DIM)
     type(matrix) :: SMAT_DOT
@@ -474,9 +1039,9 @@ contains
     c3 = cos(theta(3))
     s3 = sin(theta(3))
 
-    SMAT_DOT = get_angrate_dot_cosines( c1, c2, c3, s1, s2, s3, dtheta)
+    SMAT_DOT = find_angrate_dot_cosines( c1, c2, c3, s1, s2, s3, dtheta)
 
-  end function get_angrate_dot_array
+  end function find_angrate_dot_array
 
 
   !-----------------------------------------------------------
@@ -490,7 +1055,7 @@ contains
   ! Output: SMAT_DOT
   !
   !-----------------------------------------------------------
-  function get_angrate_dot_cosines( c1, c2, c3, s1, s2, s3, dtheta) &
+  function find_angrate_dot_cosines( c1, c2, c3, s1, s2, s3, dtheta) &
        &result(SMAT_DOT)
 
     real(dp)     :: dtheta(NUM_SPAT_DIM) 
@@ -501,14 +1066,14 @@ contains
          & 0.0_dp, -s1*dtheta(1), c1*c2*dtheta(1)-s1*s2*dtheta(2),&
          & 0.0_dp, -c1*dtheta(1), -s1*c2*dtheta(1)-c1*s2*dtheta(2)/))
 
-  end function get_angrate_dot_cosines
+  end function find_angrate_dot_cosines
 
 
   ! ******************************************************************!
   ! Returns the inverse of the angular rate matrix for the supplied
   ! theta vector
   ! ******************************************************************!
-  function get_angrate_inv_vec(thetain) &
+  function find_angrate_inv_vec(thetain) &
        &result(SMAT_INV)
 
     type(vector) :: thetain
@@ -519,15 +1084,15 @@ contains
     theta = array(thetain)
 
     ! call the method that takes array as input
-    SMAT_INV =  get_angrate_inv_array(theta)
+    SMAT_INV =  find_angrate_inv_array(theta)
 
-  end function get_angrate_inv_vec
+  end function find_angrate_inv_vec
 
   ! ******************************************************************!
   ! Returns the inverse of the angular rate matrix for the supplied
   ! theta array
   ! ******************************************************************!
-  function get_angrate_inv_array(theta) &
+  function find_angrate_inv_array(theta) &
        &result(SMAT_INV)
 
     real(dp)     :: theta(NUM_SPAT_DIM)
@@ -543,15 +1108,15 @@ contains
     c3 = cos(theta(3))
     s3 = sin(theta(3))
 
-    SMAT_INV =  get_angrate_inv_cosines(  c1, c2, c3, s1, s2, s3)
+    SMAT_INV =  find_angrate_inv_cosines(  c1, c2, c3, s1, s2, s3)
 
-  end function get_angrate_inv_array
+  end function find_angrate_inv_array
 
   ! ******************************************************************!
   ! Returns the inverse of the angular rate matrix for the supplied
   ! direction cosines
   ! ******************************************************************!
-  function get_angrate_inv_cosines( c1, c2, c3, s1, s2, s3) &
+  function find_angrate_inv_cosines( c1, c2, c3, s1, s2, s3) &
        &result(SMAT_INV)
 
     real(dp)     :: c1, c2, c3, s1, s2, s3
@@ -561,7 +1126,7 @@ contains
          &0.0_dp, c1, -s1, 0.0_dp,&
          & s1/c2, c1/c2 /))
 
-  end function get_angrate_inv_cosines
+  end function find_angrate_inv_cosines
 
   !*******************************************************************!
   ! routine that prints the state and properties of the body
