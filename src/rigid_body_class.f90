@@ -186,6 +186,99 @@ module rigid_body_class
 
 contains
 
+
+  !*******************************************************************!
+  ! create a body using the supplied parameters
+  !-------------------------------------------------------------------!
+  ! mass   : mass of the body
+  ! c      : first moment of mass 
+  ! J      : second moment of mass
+  ! fr     : reaction force
+  ! gr     : reaction torque
+  ! q, qdot: state vector and time derivatives
+  ! qddot  : second time derivative of the state (used in elastic only)
+  !*******************************************************************!
+
+  function constructor(mass, c, J, fr, gr, q, qdot) result(this)
+
+    ! inputs
+    real(dp), intent(in) :: mass 
+    real(dp), intent(in) :: c(NUM_SPAT_DIM)
+    real(dp), intent(in) :: J(NUM_SPAT_DIM, NUM_SPAT_DIM)
+    real(dp), intent(in) :: fr(NUM_SPAT_DIM)
+    real(dp), intent(in) :: gr(NUM_SPAT_DIM)
+
+    real(dp), intent(in) :: q(NDOF_PBODY)
+    real(dp), intent(in) :: qdot(NDOF_PBODY)
+
+    ! input/output
+    type(rigid_body) :: this
+
+    !-----------------------------------------------------------------!
+    ! Inertial properties of the body
+    !-----------------------------------------------------------------!
+
+    call this % set_mass(mass)
+    call this % set_first_moment(vector(c))
+    call this % set_second_moment(matrix(J))
+
+    !-----------------------------------------------------------------!
+    ! set the state into the body
+    !-----------------------------------------------------------------!
+
+    call this % set_r(vector(q(1:3)))
+    call this % set_theta(vector(q(4:6)))
+    call this % set_v(vector(q(7:9)))
+    call this % set_omega(vector(q(10:12)))
+
+    !-----------------------------------------------------------------!
+    ! set the time derivatives of state into the body
+    !-----------------------------------------------------------------!
+
+    call this % set_r_dot(vector(qdot(1:3)))
+    call this % set_theta_dot(vector(qdot(4:6)))
+    call this % set_v_dot(vector(qdot(7:9)))
+    call this % set_omega_dot(vector(qdot(10:12)))
+
+    !-----------------------------------------------------------------!
+    ! update the rotation and angular rate matrices
+    !-----------------------------------------------------------------!
+
+    call this % set_rotation(find_rotation(this%theta))
+    call this % set_angrate(find_angrate(this%theta))
+    call this % set_angrate_dot(&
+         & find_angrate_dot (this % theta, this % theta_dot) )
+
+    !-----------------------------------------------------------------!
+    ! update the new direction of the gravity vector in body frame
+    !-----------------------------------------------------------------!
+
+    call this % set_gravity (this % C_mat * GRAV)
+    
+    !-----------------------------------------------------------------!
+    ! Mechanical Energy 
+    !-----------------------------------------------------------------!
+    
+    call this % set_kinetic_energy( &
+         & 0.5_dp*(this % mass* this % v * this%v &
+         & + this % omega*this % J* this % omega) )
+
+    call this % set_potential_energy(this % mass * this% g *this % r)
+
+    !-----------------------------------------------------------------!
+    ! Joint reactions
+    !-----------------------------------------------------------------!
+
+    call this % set_reaction_force( vector(fr) )
+
+    call this % set_reaction_torque( vector(gr) )
+
+    if (this%mass .eq. ZERO) stop "ERROR: Body with zero mass??!?"
+    
+    !call print_body(this)
+
+  end function constructor
+
   !*******************************************************************!
   ! Getter for the position of the body
   !*******************************************************************!
@@ -717,107 +810,6 @@ contains
   end subroutine set_angrate_dot
 
   !*******************************************************************!
-  ! create a body using the supplied parameters
-  !-------------------------------------------------------------------!
-  ! mass   : mass of the body
-  ! c      : first moment of mass 
-  ! J      : second moment of mass
-  ! fr     : reaction force
-  ! gr     : reaction torque
-  ! q, qdot: state vector and time derivatives
-  ! qddot  : second time derivative of the state (used in elastic only)
-  !*******************************************************************!
-
-  function constructor(mass, c, J, fr, gr, q, qdot) result(this)
-
-    ! inputs
-    real(dp), intent(in) :: mass 
-    real(dp), intent(in) :: c(NUM_SPAT_DIM)
-    real(dp), intent(in) :: J(NUM_SPAT_DIM, NUM_SPAT_DIM)
-    real(dp), intent(in) :: fr(NUM_SPAT_DIM)
-    real(dp), intent(in) :: gr(NUM_SPAT_DIM)
-
-    real(dp), intent(in) :: q(NDOF_PBODY)
-    real(dp), intent(in) :: qdot(NDOF_PBODY)
-
-    ! input/output
-    type(rigid_body) :: this
-
-    !-----------------------------------------------------------------!
-    ! Inertial properties of the body
-    !-----------------------------------------------------------------!
-
-    ! mass of the body
-    this%mass = mass
-
-    ! moment of inertia in body-fixed frame
-    this%J = matrix(J)       !-mass*skew(re)*skew(re)
-
-    !first moment of inertia in body-fixed frame: mass*(cg location)
-    this%c = vector(c)       ! mass*re
-
-    !-----------------------------------------------------------------!
-    ! set the state into the body
-    !-----------------------------------------------------------------!
-
-    this%r         = vector(q(1:3))
-    this%theta     = vector(q(4:6))
-    this%v         = vector(q(7:9))
-    this%omega     = vector(q(10:12))
-
-    !-----------------------------------------------------------------!
-    ! set the time derivatives of state into the body
-    !-----------------------------------------------------------------!
-
-
-    this%r_dot     = vector(qdot(1:3))
-    this%theta_dot = vector(qdot(4:6))
-    this%v_dot     = vector(qdot(7:9))
-    this%omega_dot = vector(qdot(10:12))
-
-
-    !-----------------------------------------------------------------!
-    ! update the rotation and angular rate matrices
-    !-----------------------------------------------------------------!
-
-    this%C_mat     = find_rotation(this%theta)
-    this%S         = find_angrate(this%theta)
-    this%S_dot     = find_angrate_dot(this%theta, this%theta_dot)
-
-    !-----------------------------------------------------------------!
-    ! update the new direction of the gravity vector in body frame
-    !-----------------------------------------------------------------!
-
-    this%g = this%C_mat*GRAV
-
-    !-----------------------------------------------------------------!
-    ! Mechanical Energy 
-    !-----------------------------------------------------------------!
-
-    ! update the kinetic energy
-    this%KE = 0.5_dp*(this%mass * this%v *  this%v &
-         & + this%omega*this%J* this%omega) ! + coupling term
-
-    ! update potential energy
-    this%PE = this%mass*this%g*this%r
-
-    !-----------------------------------------------------------------!
-    ! Joint reactions
-    !-----------------------------------------------------------------!
-
-    ! reaction force 
-    this%fr    = vector(fr)   
-
-    ! reaction torque
-    this%gr    = vector(gr)
-
-    if (this%mass .eq. ZERO) stop "ERROR: Body with zero mass??!?"
-
-    !call print_body(this)
-
-  end function constructor
-
-  !*******************************************************************!
   ! Returns the rotation matrix based on the euler angles
   ! Compute the 3-2-1 Euler angle rotation
 
@@ -1151,10 +1143,10 @@ contains
          & ORIENT = 'ROW')
     call disp('   > omega_dot  =   ', array(this%omega_dot), SEP=', ',&
          &ORIENT = 'ROW')
-    call DISP('')
+    call disp('')
+    call disp('   > mass       =   ', this%mass)
     call disp('   > c          =   ', array(this%c), SEP=', ',&
          & ORIENT = 'ROW')
-    call DISP('')
     call disp('   > J          =   ', matrix(this%J))
     call DISP('')
     call disp('   > Rot Mat    =   ', matrix(this%C_mat))
