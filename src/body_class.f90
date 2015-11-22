@@ -35,14 +35,19 @@ module body_class
      procedure :: get_body_type, set_body_type     
      procedure :: get_body_num, set_body_num
 
+     procedure(get_r_interface), deferred        :: get_r
+     procedure(get_rotation_interface), deferred :: get_rotation
+     procedure(get_joint_location_interface), deferred :: &
+          & get_joint_location
+
      procedure(get_residual_interface), deferred :: get_residual
      procedure(print_body_interface), deferred :: print
 
   end type body
   
-  ! an abstract-interface for finding residual of the body
   abstract interface
 
+     ! an abstract-interface for finding residual of the body
      function get_residual_interface(this) result(res)
        use global_constants, only : dp, NDOF_PBODY
        import body
@@ -50,15 +55,35 @@ module body_class
        real(dp)    :: res(NDOF_PBODY)
      end function get_residual_interface
      
-  end interface
-
-  ! an abstract-interface for print implementations
-  abstract interface
-
+     ! an abstract-interface for print implementations
      subroutine print_body_interface(this)
        import body
        class(body) :: this
      end subroutine print_body_interface
+
+     ! an abstract-interface for implementing rotation matrix
+     function get_rotation_interface(this)
+       use types, only : matrix
+       import body
+       class(body) :: this
+       type(matrix) :: get_rotation_interface
+     end function get_rotation_interface
+
+     ! an abstract-interface for returning the position of body axis
+     function get_r_interface(this)
+       use types, only : vector
+       import body
+       class(body)  :: this
+       type(vector) :: get_r_interface
+     end function get_r_interface
+
+     !inteface for getting the joint location on the body
+     function get_joint_location_interface(this)
+       use types, only : vector
+       import body
+       class(body)  :: this
+       type(vector) :: get_joint_location_interface
+     end function get_joint_location_interface
 
   end interface
 

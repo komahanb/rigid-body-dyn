@@ -104,10 +104,10 @@ module global_constants
 
   ! Number of joint equations in vector form per joint
   ! It this is set to zero, only single body simulation is considered
-  integer(sp), parameter  :: NUM_JOINT_EQN = 0
+  integer(sp), parameter  :: NUM_JOINT_EQN = 2
 
   ! Number of governing eqns in vector form  for all bodies and joints
-  integer(sp), parameter  :: TOT_NEQN = (NUM_DYNAM_EQN +&
+  integer(sp), parameter  :: TOT_NEQN = (NUM_DYNAM_EQN + &
        & NUM_ELAST_EQN)*NUM_BODIES + NUM_JOINT_EQN * NUM_JOINTS
 
   ! ------------------------------------------------------------------!

@@ -7,11 +7,13 @@
 module spherical_joint_class
 
   use global_constants, only : dp, NDOF_PJOINT, NUM_JOINT_EQN
+  use global_variables
   use joint_class, only : joint
   use body_class, only : body
+  use rigid_body_class
   use utils, only: operator(*), operator(+), operator(-),&
-       & matrix, array, skew
-  use types, only: vector
+       & matrix, array, skew, trans
+  use types, only: vector, matrix
 
   implicit none
 
@@ -64,17 +66,39 @@ contains
     
     class(spherical_joint) :: this
     
-    type(vector) :: res_vec(NUM_JOINT_EQN) ! 6 equations (2 in vector form)
     real(dp)     :: residual(NDOF_PJOINT) ! scalar form
+    type(vector) :: res_vec(NUM_JOINT_EQN) ! 6 equations (2 in vector form)
+
+    ! local variables
+    type(vector) :: ra1, ra, rb, rb1
+    type(matrix) :: C_a, C_b
+
+    class(body), allocatable   :: bodyA, bodyB
     
-    !res_vec(1) = 
-    !res_vec(2) = 
+    ! set the local variables
+
+    allocate(bodyA, source = this % get_first_body() )
+    allocate(bodyB, source = this % get_second_body() )
     
+    ra = bodyA % get_r()
+    rb = bodyB % get_r()
+
+    ra1 = bodyA % get_joint_location()
+    rb1 = bodyB % get_joint_location()
+
+    C_a = bodyA % get_rotation()
+    C_b = bodyB % get_rotation()
+
+    ! Joint equations
+    
+    res_vec(1)  = ra + trans(C_a) * ra1 - rb - trans(C_b) * rb1 !force
+    res_vec(2)  = zeroV ! torque
+
     !-----------------------------------------------------------------!
     ! convert vector to array form
     !-----------------------------------------------------------------!
     
-    residual = array( res_vec )
+    residual = array(res_vec)
     
   end function get_joint_residual
 

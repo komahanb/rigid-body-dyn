@@ -107,7 +107,7 @@ module rigid_body_class
 
      ! return the residual
      procedure:: get_residual => get_body_residual
-     
+          
      ! toString
      procedure:: print => print_rigid_body
      
@@ -287,7 +287,7 @@ contains
          & + skew(omega)*J*omega - skew(c)*g - gr
 
     !-----------------------------------------------------------------!
-    ! convert vector to array for
+    ! convert vector to array form
     !-----------------------------------------------------------------!
 
     residual = array(res_dyn)

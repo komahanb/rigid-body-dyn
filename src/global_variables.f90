@@ -2,6 +2,7 @@
 ! Module that helps share global variables across compilation units
 !*******************************************************************
 module global_variables
+
   use system_class
   use global_constants, only: MAX_TIME_STEPS, TOT_NDOF, ZERO
   use dispmodule, only: disp
@@ -112,71 +113,71 @@ contains
   !*******************************************************************!
 
   subroutine initialize()
-
-    use mpi
-
-    integer            :: i         ! loop counter
-    integer            :: argc      ! number of command line arguments
-    character(len=25)  :: argv       ! a command line argument
-
-    !-----------------------------------------------------------------!
-    ! initialize mpi
-    !-----------------------------------------------------------------!
-
-    call mpi_init(ierr)
-    call mpi_comm_rank(mpi_comm_world,rank,ierr)
-    call mpi_comm_size(mpi_comm_world,nproc,ierr)
-
-    if (ierr.ne.0) call finalize()
-
-    ! find master
-    if (rank .eq. 0) then       
-       master = .true.
-       call disp('>> Performing initialization...')
-       call disp('>> Number of processors :', nproc)
-    end if
-
-    !-----------------------------------------------------------------!
-    ! Start the total timer
-    !-----------------------------------------------------------------!
-    call timer_start(time_tot)
-!
-    !-----------------------------------------------------------------!
-    ! process command line arguments
-    !-----------------------------------------------------------------!
-
-    ! get number of command line arguments
-    argc = command_argument_count()
-
-    ! begin loop around command line args
-    do i = 1, argc
-
-       ! get that argument
-       call get_command_argument(i,argv)
-
-       ! begin case structure
-       select case(trim(argv))
-
-          ! solver
-       case('--solver_type')
-
-          ! get next argument
-          call get_command_argument(i+1,argv)
-
-          ! set global var
-          solver_type = trim(argv)
-
-          ! do nothing here
-       case default
-
-       end select
-
-    end do
-
-    initialized = .true.
-
-    if (master) call disp('>> Initialization complete...')
-
+!!$
+!!$!    use mpi
+!!$
+!!$    integer            :: i         ! loop counter
+!!$    integer            :: argc      ! number of command line arguments
+!!$    character(len=25)  :: argv       ! a command line argument
+!!$
+!!$    !-----------------------------------------------------------------!
+!!$    ! initialize mpi
+!!$    !-----------------------------------------------------------------!
+!!$
+!!$    call mpi_init(ierr)
+!!$    call mpi_comm_rank(mpi_comm_world,rank,ierr)
+!!$    call mpi_comm_size(mpi_comm_world,nproc,ierr)
+!!$
+!!$    if (ierr.ne.0) call finalize()
+!!$
+!!$    ! find master
+!!$    if (rank .eq. 0) then       
+!!$       master = .true.
+!!$       call disp('>> Performing initialization...')
+!!$       call disp('>> Number of processors :', nproc)
+!!$    end if
+!!$
+!!$    !-----------------------------------------------------------------!
+!!$    ! Start the total timer
+!!$    !-----------------------------------------------------------------!
+!!$    call timer_start(time_tot)
+!!$!
+!!$    !-----------------------------------------------------------------!
+!!$    ! process command line arguments
+!!$    !-----------------------------------------------------------------!
+!!$
+!!$    ! get number of command line arguments
+!!$    argc = command_argument_count()
+!!$
+!!$    ! begin loop around command line args
+!!$    do i = 1, argc
+!!$
+!!$       ! get that argument
+!!$       call get_command_argument(i,argv)
+!!$
+!!$       ! begin case structure
+!!$       select case(trim(argv))
+!!$
+!!$          ! solver
+!!$       case('--solver_type')
+!!$
+!!$          ! get next argument
+!!$          call get_command_argument(i+1,argv)
+!!$
+!!$          ! set global var
+!!$          solver_type = trim(argv)
+!!$
+!!$          ! do nothing here
+!!$       case default
+!!$
+!!$       end select
+!!$
+!!$    end do
+!!$
+!!$    initialized = .true.
+!!$
+!!$    if (master) call disp('>> Initialization complete...')
+!!$
   end subroutine initialize
 
 
@@ -186,20 +187,20 @@ contains
 
   subroutine finalize()
 
-    !-----------------------------------------------------------------!
-    ! Stop the timer
-    !-----------------------------------------------------------------!
-    if (master) then
-       call timer_stop(time_tot)
-       call print_timer_summary()
-    end if
-
-    !-----------------------------------------------------------------!
-    ! Finalize MPI
-    !-----------------------------------------------------------------!
-    call mpi_finalize(ierr)
-
-    if(master)  call disp (">> End of execution...")
+!!$    !-----------------------------------------------------------------!
+!!$    ! Stop the timer
+!!$    !-----------------------------------------------------------------!
+!!$    if (master) then
+!!$       call timer_stop(time_tot)
+!!$       call print_timer_summary()
+!!$    end if
+!!$
+!!$    !-----------------------------------------------------------------!
+!!$    ! Finalize MPI
+!!$    !-----------------------------------------------------------------!
+!!$    call mpi_finalize(ierr)
+!!$
+!!$    if(master)  call disp (">> End of execution...")
 
   end subroutine finalize
 
