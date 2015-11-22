@@ -79,7 +79,7 @@ module rigid_body_class
      type(vector) :: fr             ! reaction force
      type(vector) :: gr             ! reaction torque
 
-     type(vector) :: rj             ! position of joint
+     type(vector) :: ra             ! position of joint
      type(vector) :: g              ! gravity vector in local frame
 
      real(dp)     :: KE             ! kinetic energy of the body
@@ -592,7 +592,7 @@ contains
     class(rigid_body) :: this
     type(vector) :: get_joint_location
 
-    get_joint_location = this % rj
+    get_joint_location = this % ra
 
   end function get_joint_location
 
@@ -854,12 +854,12 @@ contains
   ! Setter for the joint_location on the body
   !*******************************************************************!
   
-  subroutine set_joint_location(this, rj)
+  subroutine set_joint_location(this, ra)
 
     class(rigid_body) :: this
-    type(vector) :: rj
+    type(vector) :: ra
 
-    this % rj = rj
+    this % ra = ra
 
   end subroutine set_joint_location
 

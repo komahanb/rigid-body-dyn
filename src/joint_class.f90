@@ -40,6 +40,7 @@ module joint_class
 
      integer :: joint_num           ! joint number
      character(len=5) :: joint_type ! spherical, revolute, prismatic, planar
+     ! could just use ra and c_a but will leave it for now
      class(body), allocatable :: first_body, second_body ! the two interacting bodies
 
    contains
