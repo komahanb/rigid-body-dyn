@@ -36,6 +36,15 @@ module body_class
      procedure :: get_body_num, set_body_num
 
      procedure(get_r_interface), deferred        :: get_r
+!!$     procedure(get_theta_interface), deferred    :: get_theta
+!!$     procedure(get_v_interface), deferred        :: get_v
+!!$     procedure(get_omega_interface), deferred    :: get_omega
+!!$
+!!$     procedure(get_r_dot_interface), deferred        :: get_r_dot
+!!$     procedure(get_theta_dot_interface), deferred    :: get_theta_dot
+!!$     procedure(get_v_dot_interface), deferred        :: get_v_dot
+!!$     procedure(get_omega_dot_interface), deferred    :: get_omega_dot
+
      procedure(get_rotation_interface), deferred :: get_rotation
      procedure(get_joint_location_interface), deferred :: &
           & get_joint_location

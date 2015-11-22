@@ -4,8 +4,8 @@
 module system_class
 
   ! module dependencies
-  use body_class, only  : body
-  use joint_class, only : joint
+  use body_class,  only : body  ! takes any impl of body class
+  use joint_class, only : joint ! takes any impl of joint class
 
   implicit none
 
