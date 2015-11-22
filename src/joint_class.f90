@@ -51,12 +51,17 @@ module joint_class
      procedure :: get_second_body, set_second_body
 
      procedure(get_residual_interface), deferred :: get_residual
+     procedure(get_jacobian_interface), deferred :: get_jacobian
 
   end type joint
 
+  !-------------------------------------------------------------------!
+  ! List of abstract iterfaces all sub types must implement
+  !-------------------------------------------------------------------!
 
-  ! an abstract-interface for finding residual of the body
   abstract interface
+
+     ! an abstract-interface for finding residual of the joint
 
      function get_residual_interface(this) result(res)
        use global_constants, only : dp, NDOF_PJOINT
@@ -64,7 +69,16 @@ module joint_class
        class(joint) :: this
        real(dp)    :: res(NDOF_PJOINT)
      end function get_residual_interface
+
+     ! an abstract-interface for finding jacobian of the joint
      
+     function get_jacobian_interface(this) result(jacobian)
+       use global_constants, only : dp, NDOF_PJOINT
+       import joint
+       class(joint) :: this
+       real(dp)     :: jacobian(NDOF_PJOINT, NDOF_PJOINT) ! maybe sparse format
+     end function get_jacobian_interface
+
   end interface
   
 contains  

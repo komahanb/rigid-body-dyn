@@ -41,6 +41,8 @@ module body_class
           & get_joint_location
 
      procedure(get_residual_interface), deferred :: get_residual
+     procedure(get_jacobian_interface), deferred :: get_jacobian
+
      procedure(print_body_interface), deferred :: print
 
   end type body
@@ -55,7 +57,17 @@ module body_class
        real(dp)    :: res(NDOF_PBODY)
      end function get_residual_interface
      
+     ! an abstract-interface for finding jacobian of the joint
+     
+     function get_jacobian_interface(this) result(jacobian)
+       use global_constants, only : dp, NDOF_PBODY
+       import body
+       class(body)  :: this
+       real(dp)     :: jacobian(NDOF_PBODY, NDOF_PBODY) ! maybe sparse format
+     end function get_jacobian_interface
+
      ! an abstract-interface for print implementations
+
      subroutine print_body_interface(this)
        import body
        class(body) :: this
