@@ -1,8 +1,8 @@
-!=====================================================================================!
+!=====================================================================!
 ! Implementation of the joint_abstract class for speherical joints
 ! Spherical joint suppots arbitrary rotation about a fixed point
 ! The effect of elastic deformations are ignored for simplicity
-!=====================================================================================!
+!=====================================================================!
 
 module spherical_joint_class
 
@@ -28,7 +28,10 @@ module spherical_joint_class
 
    contains
 
+     ! implementations for deferred functions and routines from abstract class
+
      procedure :: get_residual => get_joint_residual
+     procedure :: get_jacobian => get_joint_jacobian
 
   end type spherical_joint
   
@@ -102,5 +105,51 @@ contains
     
   end function get_joint_residual
 
+  
+  !*******************************************************************!
+  ! Function that implements the joint equations
+  !*******************************************************************!
+  
+  function get_joint_jacobian(this) result (jacobian)
+
+    class(spherical_joint) :: this
+    real(dp)     :: jacobian(NDOF_PJOINT, NDOF_PJOINT)      ! 6 x 6 scalar form
+
+    type(matrix) :: jac_block(NUM_JOINT_EQN, NUM_JOINT_EQN) ! 2 X 2 in matrix-block form
+
+!!$    ! local variables
+!!$    type(vector) :: ra1, ra, rb, rb1
+!!$    type(matrix) :: C_a, C_b
+!!$
+!!$    class(body), allocatable   :: bodyA, bodyB
+
+    ! set the local variables
+
+!!$    allocate(bodyA, source = this % get_first_body() )
+!!$    allocate(bodyB, source = this % get_second_body() )
+!!$    
+!!$    ra = bodyA % get_r()
+!!$    rb = bodyB % get_r()
+!!$
+!!$    ra1 = bodyA % get_joint_location()
+!!$    rb1 = bodyB % get_joint_location()
+!!$
+!!$    C_a = bodyA % get_rotation()
+!!$    C_b = bodyB % get_rotation()
+
+    ! Joint jacobian
+
+!!$    jac_block(1,1) = 
+!!$    jac_block(2,1) = 
+!!$    jac_block(1,2) = 
+!!$    jac_block(2,2) = 
+
+    !-----------------------------------------------------------------!
+    ! convert block to primitive matrix form
+    !-----------------------------------------------------------------!
+
+    jacobian = matrix(jac_block)
+
+  end function get_joint_jacobian
 
 end module spherical_joint_class

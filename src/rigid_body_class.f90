@@ -108,6 +108,9 @@ module rigid_body_class
      ! return the residual
      procedure:: get_residual => get_body_residual
           
+     ! return the jacobian
+     procedure:: get_jacobian => get_body_jacobian
+          
      ! toString
      procedure:: print => print_rigid_body
      
@@ -188,6 +191,32 @@ module rigid_body_class
   end interface find_angrate_inv
 
 contains
+
+  
+  !*******************************************************************!
+  ! Function that implements the body equations
+  !*******************************************************************!
+  
+  function get_body_jacobian(this) result (jacobian)
+
+    class(rigid_body) :: this
+    real(dp)     :: jacobian(NDOF_PBODY, NDOF_PBODY)      ! 12 x 12 scalar form
+
+    type(matrix) :: jac_block(NUM_BODY_EQN, NUM_BODY_EQN) ! 4 X 4 in matrix-block form
+
+    !-----------------------------------------------------------------!
+    ! convert block to primitive matrix form
+    !-----------------------------------------------------------------!
+
+!!$    jac_block(1,1) = 
+!!$    jac_block(2,1) = 
+
+!!$    jac_block(1,2) = 
+!!$    jac_block(2,2) = 
+
+    jacobian = matrix(jac_block)
+
+  end function get_body_jacobian
 
 
   !*******************************************************************!
