@@ -32,26 +32,26 @@ module flexible_body_class
      !----------------------------------------------------------------!
      ! elatic state variables and time derivatives
      !----------------------------------------------------------------!
-     type(vector) :: qs
-     type(vector) :: qs_dot
-     type(vector) :: qs_double_dot
+  type(vector) :: qs
+  type(vector) :: qs_dot
+  type(vector) :: qs_double_dot
 
-     type(matrix) :: p              ! 
-     type(matrix) :: h              ! 
+  type(matrix) :: p              ! 
+  type(matrix) :: h              ! 
 
-     type(matrix) :: K              ! stiffness matrix
-     type(matrix) :: M              ! mass matrix
+  type(matrix) :: K              ! stiffness matrix
+  type(matrix) :: M              ! mass matrix
 
-     type(vector) :: f              ! elastic force
+  type(vector) :: f              ! elastic force
 
-  end type flexible_body
+end type flexible_body
 
-  ! interfaces
-  interface flexible_body
+! interfaces
+!  interface flexible_body
 
-     procedure constructor ! add constructor
+!     procedure constructor ! add constructor
 
-  end interface flexible_body
+!  end interface flexible_body
 
 contains
 
@@ -66,8 +66,8 @@ contains
   ! q, qdot: state vector and time derivatives
   ! qddot  : second time derivative of the state (used in elastic only)
   !*******************************************************************!
-  function constructor(mass, c, J, fr, gr, q, qdot, qs, &
-       & qs_dot, qs_double_dot, f, p, h, K, M) result(this)
+function constructor(mass, c, J, fr, gr, q, qdot, qs, &
+    & qs_dot, qs_double_dot, f, p, h, K, M) result(this)
 
     ! inputs
     real(dp), intent(in) :: mass 
@@ -93,103 +93,106 @@ contains
     ! input/output
     type(flexible_body)  :: this
 
-    !this = rigid_body(mass, c, J, fr, gr, q, qdot)
-    
-    !-----------------------------------------------------------------!
-    ! Inertial properties of the body
-    !-----------------------------------------------------------------!
+!!$    !this = rigid_body(mass, c, J, fr, gr, q, qdot)
+!!$    
+!!$    !-----------------------------------------------------------------!
+!!$    ! Inertial properties of the body
+!!$    !-----------------------------------------------------------------!
+!!$
+!!$    ! mass of the body
+!!$    this%mass = mass
+!!$
+!!$    ! moment of inertia in body-fixed frame
+!!$    this%J = matrix(J)       !-mass*skew(re)*skew(re)
+!!$
+!!$    !first moment of inertia in body-fixed frame: mass*(cg location)
+!!$    this%c = vector(c)       ! mass*re
+!!$
+!!$    !-----------------------------------------------------------------!
+!!$    ! set the state into the body
+!!$    !-----------------------------------------------------------------!
+!!$    
+!!$       this%r         = vector(q(1:3))
+!!$       this%theta     = vector(q(4:6))
+!!$       this%v         = vector(q(7:9))
+!!$       this%omega     = vector(q(10:12))
+!!$    
+!!$
+!!$    !-----------------------------------------------------------------!
+!!$    ! set the time derivatives of state into the body
+!!$    !-----------------------------------------------------------------!
+!!$
+!!$    
+!!$       this%r_dot     = vector(qdot(1:3))
+!!$       this%theta_dot = vector(qdot(4:6))
+!!$       this%v_dot     = vector(qdot(7:9))
+!!$       this%omega_dot = vector(qdot(10:12))
+!!$    
+!!$
+!!$    !-----------------------------------------------------------------!
+!!$    ! update the rotation and angular rate matrices
+!!$    !-----------------------------------------------------------------!
+!!$
+!!$    this%C_mat     = get_rotation(this%theta)
+!!$    this%S         = get_angrate(this%theta)
+!!$    this%S_dot     = get_angrate_dot(this%theta, this%theta_dot)
+!!$
+!!$    !-----------------------------------------------------------------!
+!!$    ! update the new direction of the gravity vector in body frame
+!!$    !-----------------------------------------------------------------!
+!!$
+!!$    this%g = this%C_mat*GRAV
+!!$
+!!$    !-----------------------------------------------------------------!
+!!$    ! Mechanical Energy 
+!!$    !-----------------------------------------------------------------!
+!!$
+!!$    ! update the kinetic energy
+!!$    this%KE = 0.5_dp*(this%mass * this%v *  this%v &
+!!$         & + this%omega*this%J* this%omega) ! + coupling term
+!!$
+!!$    ! update potential energy
+!!$    this%PE = this%mass*this%g*this%r
+!!$
+!!$    !-----------------------------------------------------------------!
+!!$    ! Joint reactions
+!!$    !-----------------------------------------------------------------!
+!!$
+!!$    ! reaction force 
+!!$    this%fr    = vector(fr)   
+!!$
+!!$    ! reaction torque
+!!$    this%gr    = vector(gr)
+!!$
+!!$    if (this%mass .eq. ZERO) stop "ERROR: Body with zero mass!"
+!!$
+!!$
+!!$    this%qs = vector(qs)
+!!$    this%qs_dot = vector(qs_dot)
+!!$    this%qs_double_dot = vector(qs_double_dot)
+!!$
+!!$    this%f = vector(f)
+!!$
+!!$    this%p = matrix(p)
+!!$    this%h = matrix(h)
+!!$    this%K = matrix(K)
+!!$    this%M = matrix(M)
 
-    ! mass of the body
-    this%mass = mass
 
-    ! moment of inertia in body-fixed frame
-    this%J = matrix(J)       !-mass*skew(re)*skew(re)
+ stop "dummy impl"
 
-    !first moment of inertia in body-fixed frame: mass*(cg location)
-    this%c = vector(c)       ! mass*re
-
-    !-----------------------------------------------------------------!
-    ! set the state into the body
-    !-----------------------------------------------------------------!
-    
-       this%r         = vector(q(1:3))
-       this%theta     = vector(q(4:6))
-       this%v         = vector(q(7:9))
-       this%omega     = vector(q(10:12))
-    
-
-    !-----------------------------------------------------------------!
-    ! set the time derivatives of state into the body
-    !-----------------------------------------------------------------!
-
-    
-       this%r_dot     = vector(qdot(1:3))
-       this%theta_dot = vector(qdot(4:6))
-       this%v_dot     = vector(qdot(7:9))
-       this%omega_dot = vector(qdot(10:12))
-    
-
-    !-----------------------------------------------------------------!
-    ! update the rotation and angular rate matrices
-    !-----------------------------------------------------------------!
-
-    this%C_mat     = get_rotation(this%theta)
-    this%S         = get_angrate(this%theta)
-    this%S_dot     = get_angrate_dot(this%theta, this%theta_dot)
-
-    !-----------------------------------------------------------------!
-    ! update the new direction of the gravity vector in body frame
-    !-----------------------------------------------------------------!
-
-    this%g = this%C_mat*GRAV
-
-    !-----------------------------------------------------------------!
-    ! Mechanical Energy 
-    !-----------------------------------------------------------------!
-
-    ! update the kinetic energy
-    this%KE = 0.5_dp*(this%mass * this%v *  this%v &
-         & + this%omega*this%J* this%omega) ! + coupling term
-
-    ! update potential energy
-    this%PE = this%mass*this%g*this%r
-
-    !-----------------------------------------------------------------!
-    ! Joint reactions
-    !-----------------------------------------------------------------!
-
-    ! reaction force 
-    this%fr    = vector(fr)   
-
-    ! reaction torque
-    this%gr    = vector(gr)
-
-    if (this%mass .eq. ZERO) stop "ERROR: Body with zero mass!"
-
-
-    this%qs = vector(qs)
-    this%qs_dot = vector(qs_dot)
-    this%qs_double_dot = vector(qs_double_dot)
-
-    this%f = vector(f)
-
-    this%p = matrix(p)
-    this%h = matrix(h)
-    this%K = matrix(K)
-    this%M = matrix(M)
-
-  end function constructor
+end function constructor
 
 !*******************************************************************!
 ! routine that prints the state and properties of the flexible body
 !******************************************************************!
 subroutine print_flexible_body(this)
 
-  use dispmodule
+ use dispmodule
 
-  class(flexible_body):: this
+ class(flexible_body):: this
 
-  print*,"Implement please!!"
+ print*,"Implement please!!"
 
 end subroutine print_flexible_body
 

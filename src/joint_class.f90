@@ -38,14 +38,9 @@ module joint_class
 
      private
 
-     ! joint number
-     integer :: joint_num
-
-     ! spherical, revolute, prismatic, planar
-     character(len=5) :: joint_type      
-
-     ! the two interacting bodies
-     class(body), allocatable :: first_body, second_body
+     integer :: joint_num           ! joint number
+     character(len=5) :: joint_type ! spherical, revolute, prismatic, planar
+     class(body), allocatable :: first_body, second_body ! the two interacting bodies
 
    contains
 
@@ -54,28 +49,23 @@ module joint_class
      procedure :: get_first_body , set_first_body
      procedure :: get_second_body, set_second_body
 
-!     procedure(ijoint_residual), deferred :: joint_residual
+     procedure(get_residual_interface), deferred :: get_residual
 
   end type joint
-  
-  !------------------------------------------------------------------!
-  ! inteface for joint govening equations
-  !------------------------------------------------------------------!
-!!$  
-!!$  abstract interface
-!!$
-!!$     subroutine ijoint_residual(this, residual)
-!!$
-!!$       use types, only: vector
-!!$       import joint
-!!$
-!!$       class(joint) :: this
-!!$       type(vector) :: residual(2) ! 6 equations (2 in vector form)
-!!$
-!!$     end subroutine ijoint_residual
-!!$
-!!$  end interface
 
+
+  ! an abstract-interface for finding residual of the body
+  abstract interface
+
+     function get_residual_interface(this) result(res)
+       use global_constants, only : dp, NDOF_PJOINT
+       import joint
+       class(joint) :: this
+       real(dp)    :: res(NDOF_PJOINT)
+     end function get_residual_interface
+     
+  end interface
+  
 contains  
 
   !*******************************************************************!
@@ -184,7 +174,3 @@ contains
   end subroutine set_second_body
 
 end module joint_class
-
-!    class(body), allocatable :: alloc_second_body
-!    allocate(alloc_second_body, source = second_body)
-!    allocate(this % second_body, source=alloc_second_body)

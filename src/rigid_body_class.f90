@@ -12,11 +12,11 @@ module rigid_body_class
 
   ! module references
   use body_class, only : body
-  use global_constants, only : dp, NUM_SPAT_DIM, NDOF_PBODY
-  use global_variables, only : ZERO, GRAV
+  use global_constants
+  use global_variables
   use types, only: matrix, vector
   use utils, only: operator(*), operator(+), operator(-),&
-       & matrix, array
+       & matrix, array, skew
   use dispmodule, only : disp
 
   ! module options
@@ -24,7 +24,7 @@ module rigid_body_class
 
   private
   public :: rigid_body
-
+  
   !*******************************************************************!
   ! RIGID_BODY datatype can be used to fully characterize the STATE and 
   ! ATTRIBUTES of a rigid body . A rigid_body object contains virtually
@@ -38,7 +38,7 @@ module rigid_body_class
      !----------------------------------------------------------------!
 
      type(vector) :: r ! origin of the body frame
-     type(vector) :: theta !orientation of the body frame wrt inertial
+     type(vector) :: theta ! orientation of the body frame wrt inertial
      type(vector) :: v !velocity of the origin with respect to inertial
      type(vector) :: omega ! angular velocity
 
@@ -104,10 +104,13 @@ module rigid_body_class
      procedure:: set_potential_energy, set_kinetic_energy
      procedure:: set_joint_location, set_gravity
      procedure:: set_rotation, set_angrate, set_angrate_dot
+
+     ! return the residual
+     procedure:: get_residual => get_body_residual
      
      ! toString
      procedure:: print => print_rigid_body
-
+     
   end type rigid_body
   
   !*******************************************************************!
@@ -187,6 +190,110 @@ module rigid_body_class
 contains
 
 
+  !*******************************************************************!
+  ! function that returns the residual
+  !*******************************************************************!
+  
+  function  get_body_residual(this) result (residual)
+
+    ! dummy variable
+    class(rigid_body) :: this
+
+    ! output
+    real(dp)     :: residual(NDOF_PBODY)
+    type(vector) :: res_dyn(NUM_BODY_EQN)
+
+    ! create local variables
+    type(vector) :: r, theta, v, omega
+    type(vector) :: r_dot,  theta_dot, v_dot, omega_dot
+    type(vector) :: c, fr, gr, g
+    type(matrix) :: J, C_mat, S, S_dot
+    real(dp)     :: mass
+    
+    fcnt = fcnt + 1
+
+    !--------------------------------------
+    ! set the values for local variables
+    !--------------------------------------
+
+    ! rigid body state variables
+
+    r             = this % get_r()
+    theta         = this % get_r_dot()
+    v             = this % get_theta()
+    omega         = this % get_theta_dot()
+
+    ! time derivative of states
+
+    r_dot         = this % get_r_dot()
+    theta_dot     = this % get_theta_dot()
+    v_dot         = this % get_v_dot()
+    omega_dot     = this % get_omega_dot()
+
+    ! other body Attributes
+
+    mass          = this % get_mass()
+    c             = this % get_first_moment()
+    J             = this % get_second_moment()
+
+    C_mat         = this % get_rotation()
+    S             = this % get_angrate()
+    S_dot         = this % get_angrate_dot()
+
+    fr            = this % get_reaction_force()
+    gr            = this % get_reaction_torque()
+
+    g             = this % get_gravity()
+
+    !-----------------------------------------------------------------!
+    ! Now assembling the residual terms. The final vector form of 
+    ! the residual can be converted into array form just by using the 
+    ! array(res_vector).
+    !-----------------------------------------------------------------!
+
+    !-----------------------------------------------------------------!
+    ! Kinematics eqn-1 (2 terms)
+    !-----------------------------------------------------------------!
+    ! C r_dot - v
+    !-----------------------------------------------------------------!
+
+    res_dyn(1)  = C_mat*r_dot - v
+
+    !-----------------------------------------------------------------!
+    ! Kinematics eqn-2 (2 terms)
+    !-----------------------------------------------------------------!
+    ! S theta_dot - omega
+    !-----------------------------------------------------------------!
+
+    res_dyn(2)  = S*theta_dot - omega
+
+    !-----------------------------------------------------------------!
+    ! Dynamics eqn-1 (8 terms)
+    !-----------------------------------------------------------------!
+    !m(v_dot - g) -c x omega_dot + omega x (m v - c x omega) -fr
+    !-----------------------------------------------------------------!
+
+    res_dyn(3)  = mass*(v_dot - g) - skew(c)*omega_dot &
+         & + skew(omega)*(mass*v - skew(c)*omega) - fr
+
+    !-----------------------------------------------------------------!
+    ! Dynamics eqn 2 (9-terms)
+    !-----------------------------------------------------------------!
+    ! c x v_dot + J omega_dot  + c x omega x v + omega x J omega 
+    ! - c x g - gr
+    !-----------------------------------------------------------------!
+
+    res_dyn(4)  = skew(c)*v_dot + J*omega_dot + skew(c)*skew(omega)*v &
+         & + skew(omega)*J*omega - skew(c)*g - gr
+
+    !-----------------------------------------------------------------!
+    ! convert vector to array for
+    !-----------------------------------------------------------------!
+
+    residual = array(res_dyn)
+    
+  end function get_body_residual
+  
   !*******************************************************************!
   ! create a body using the supplied parameters
   !-------------------------------------------------------------------!
@@ -277,11 +384,11 @@ contains
     !call print_body(this)
 
   end function constructor
-
+  
   !*******************************************************************!
   ! Getter for the position of the body
   !*******************************************************************!
-
+  
   function get_r(this)
 
     class(rigid_body) :: this

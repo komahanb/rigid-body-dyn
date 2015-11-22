@@ -13,6 +13,9 @@
 
 module body_class
   
+  ! module dependencies
+  use global_constants, only : dp
+
   implicit none
 
   ! Default make everything private
@@ -32,17 +35,34 @@ module body_class
      procedure :: get_body_type, set_body_type     
      procedure :: get_body_num, set_body_num
 
+     procedure(get_residual_interface), deferred :: get_residual
      procedure(print_body_interface), deferred :: print
 
   end type body
   
-  ! an abstract interface for print implementations
+  ! an abstract-interface for finding residual of the body
   abstract interface
+
+     function get_residual_interface(this) result(res)
+       use global_constants, only : dp, NDOF_PBODY
+       import body
+       class(body) :: this
+       real(dp)    :: res(NDOF_PBODY)
+     end function get_residual_interface
+     
+  end interface
+
+  ! an abstract-interface for print implementations
+  abstract interface
+
      subroutine print_body_interface(this)
        import body
        class(body) :: this
      end subroutine print_body_interface
+
   end interface
+
+
 
 contains
 
