@@ -21,7 +21,7 @@ FC = mpif90
 #------------------------------
 CC_FLAGS =  -g #-Wall
 CX_FLAGS =  -g -cpp -dM #-Wall
-FC_FLAGS =  -g -cpp -dM -Wno-unused -fbounds-check -std=f2008 #-Wall
+FC_FLAGS =  -g -cpp -dM -Wno-unused -fbounds-check #-Wall
 
 
 #------------------------------

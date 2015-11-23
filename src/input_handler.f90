@@ -24,9 +24,10 @@ module input_handler
        & aa, bb, fcnt, unsteady,&
        & update_norm, res_norm, newton_cnt, master, dynsys
 
-  use rigid_body_class, only: rigid_body, print_rigid_body
+  use rigid_body_class, only: rigid_body
   use joint_class, only: joint
-  use pendulum_class, only : pendulum
+  use spherical_joint_class
+!  use pendulum_class, only : pendulum
   use dispmodule, only: disp
   use filehandler, only: newunit
 
@@ -56,6 +57,7 @@ contains
     real(dp)                           :: qdot(TOT_NDOF) = 0.0_dp
 
     type(rigid_body)                   :: body
+    type(spherical_joint)              :: sjoint
 
 
     !-----------------------------------------------------------------!
@@ -93,7 +95,7 @@ contains
 
     body = rigid_body(mass, c, J, fr, gr, q, qdot)
 
-    call print_rigid_body(body)
+    call body % print()
 
     !-----------------------------------------------------------------!
     !----------------------- CREATE SYSTEM ---------------------------!
@@ -103,15 +105,18 @@ contains
     
     ! Create a system by allocating the dynamic system as pendulum
     
-    allocate(dynsys, source = pendulum(nbody = 1, njoint = 0))
+!    allocate(dynsys, source = pendulum(nbody = 1, njoint = 0))
     
     ! The above step just allocated space. Now we add the bodies and 
     ! joints into the system
 
-    call dynsys % add_body(bnum = 1, bdy = body)
-
+    call dynsys % add_body (bnum = 1, bdy = body)
+!    call dynsys % add_joint(jnum = 1, jnt = sjoint)
+    
+    !    call dynsys % add_body(bnum = 1, bdy = body)
+    
     call disp(" >> System is created...")
-
+    
   end subroutine read_system_input
 
 

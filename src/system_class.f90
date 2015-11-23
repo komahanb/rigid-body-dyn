@@ -30,6 +30,8 @@ module system_class
      procedure :: get_njoint
      procedure :: set_njoint
 
+     procedure  :: add_body
+     procedure  :: add_joint
 
      !     procedure(iadd_body), deferred :: add_body
      !     procedure(iadd_joint), deferred :: add_joint
@@ -42,43 +44,43 @@ module system_class
   end interface system
 
 
-  interface
-
-     !****************************************************************!
-     ! Add body into the system
-     !****************************************************************!
-
-     subroutine iadd_body(this, bnum, bdy)
-
-       use body_class, only  : body
-       import system
-
-       class(system) :: this
-       integer       :: bnum
-       class(body)   :: bdy
-
-     end subroutine iadd_body
-
-  end interface
-
-  interface 
-
-     !****************************************************************!
-     ! Add joint into the system
-     !****************************************************************!
-
-     subroutine iadd_joint(this, jnum, jnt)
-
-       use joint_class, only : joint
-       import system
-
-       class(system) :: this
-       integer       :: jnum
-       class(joint)  :: jnt
-
-     end subroutine iadd_joint
-
-  end interface
+!!$  interface
+!!$
+!!$     !****************************************************************!
+!!$     ! Add body into the system
+!!$     !****************************************************************!
+!!$
+!!$     subroutine iadd_body(this, bnum, bdy)
+!!$
+!!$       use body_class, only  : body
+!!$       import system
+!!$
+!!$       class(system) :: this
+!!$       integer       :: bnum
+!!$       class(body)   :: bdy
+!!$
+!!$     end subroutine iadd_body
+!!$
+!!$  end interface
+!!$
+!!$  interface 
+!!$
+!!$     !****************************************************************!
+!!$     ! Add joint into the system
+!!$     !****************************************************************!
+!!$
+!!$     subroutine iadd_joint(this, jnum, jnt)
+!!$
+!!$       use joint_class, only : joint
+!!$       import system
+!!$
+!!$       class(system) :: this
+!!$       integer       :: jnum
+!!$       class(joint)  :: jnt
+!!$
+!!$     end subroutine iadd_joint
+!!$
+!!$  end interface
 
 
 contains

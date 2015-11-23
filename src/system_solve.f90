@@ -50,8 +50,8 @@ contains
           ! Update the state for every other iteration that first
           !-----------------------------------------------------------!
 
-          if (k .gt. 1)  call set_state(q, q_dot, dynsys%bodies(1))
-          
+!!$          if (k .gt. 1)  call set_state(q, q_dot, dynsys%bodies(1))
+!!$          
 !!$          !-------------------------------------------------------------!
 !!$          !---------------------RESIDUAL ASSEMBLY-----------------------!
 !!$          !-------------------------------------------------------------!

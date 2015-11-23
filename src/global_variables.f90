@@ -14,7 +14,7 @@ module global_variables
   save
 
   ! stores the system in this object
-  class(system), allocatable :: dynsys
+  type(system), allocatable :: dynsys
 
   ! acceleration due to gravity (inertial frame)
   type(vector), parameter :: GRAV = vector((/ 0.0_dp, -9.8_dp, 0.0_dp/))
