@@ -1,0 +1,2 @@
+mpif90 main.f90
+mpiexec -np 8 ./a.out 
